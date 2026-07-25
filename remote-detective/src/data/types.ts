@@ -189,6 +189,7 @@ export interface CaseInternalMetadata {
 }
 
 export interface CaseFileDef {
+  title: string;
   victimName: string;
   victimAge: number;
   victimRole: string;
@@ -292,6 +293,51 @@ export type SuspectPressureMap = Record<SuspectId, number>;
 
 /** Historial persistente de mensajes por sospechoso. */
 export type CallHistoryMap = Record<SuspectId, ChatMessage[]>;
+
+/**
+ * Datos serializables y observables de una partida. Las acciones se mantienen
+ * separadas para que persistencia y UI no confundan datos con capacidades.
+ */
+export interface GameSessionState {
+  phase: GamePhase;
+  activeView: ActiveView;
+  score: number;
+  incorrectAttempts: number;
+  timerEndTimestamp: number | null;
+  discoveredContradictions: Set<ContradictionId>;
+  suspectPressure: SuspectPressureMap;
+  accusationUsed: boolean;
+  activeCallSuspect: SuspectId | null;
+  /** Identificador interno de la llamada; nunca lo proporciona la UI. */
+  callSessionId: string | null;
+  /** Identificador interno de la petición; nunca lo proporciona la UI. */
+  currentRequestId: string | null;
+  callHistory: CallHistoryMap;
+  registeredStatements: Set<StatementId>;
+  lastContradictionFeedback: ContradictionFeedbackState | null;
+  isInterrogationLoading: boolean;
+}
+
+/** Superficie pública mínima del store consumida por la UI. */
+export interface GameActions {
+  startGame: () => void;
+  resetGame: () => void;
+  openCaseFile: () => void;
+  openEvidence: () => void;
+  openAccusation: () => void;
+  returnToDesktop: () => void;
+  startCall: (suspectId: SuspectId) => void;
+  endCall: () => void;
+  /** La UI entrega únicamente texto; IDs y mensajes se generan internamente. */
+  askQuestion: (question: string) => Promise<void>;
+  presentEvidence: (evidenceId: EvidenceId, statementId: StatementId) => void;
+  submitAccusation: (accusation: AccusationInput) => void;
+  triggerTimeDefeat: () => void;
+  clearFeedback: () => void;
+}
+
+/** Contrato completo del store, sin dependencia de Zustand ni React. */
+export interface GameState extends GameSessionState, GameActions {}
 
 /**
  * Los cuatro resultados posibles de combinar evidencia y declaración.
