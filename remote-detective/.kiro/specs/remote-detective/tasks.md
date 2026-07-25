@@ -6,26 +6,26 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
 
 ## Tasks
 
-- [ ] 1. Preparar la base TypeScript y congelar el caso narrativo
+- [x] 1. Preparar la base TypeScript y congelar el caso narrativo
   - [x] 1.1 Configurar el proyecto frontend y las herramientas de validación
     - Crear la estructura Vite/React/TypeScript aprobada, scripts no interactivos de desarrollo, `test` y `build`, Vitest, CSS Modules, Zustand y `@dnd-kit/core`.
     - Configurar TypeScript estricto, aliases necesarios y valores tipados de `src/config.ts`, sin usar `any` en APIs exportadas.
     - Mantener el frontend funcional en modo local cuando no existan variables o servicios de Bedrock.
     - _Requirements: 14.1, 14.3, 15.7, 15.8, 16.6, 19.1_
 
-  - [ ] 1.2 Crear los tipos e identificadores estables del dominio
+  - [x] 1.2 Crear los tipos e identificadores estables del dominio
     - Implementar en `src/data/types.ts` los IDs, modelos narrativos, estados de juego, entradas de acusación, mensajes, respuestas y resultados descritos en el diseño.
     - Tipar props, acciones públicas y retornos exportados; separar tipos narrativos, de store y de UI sin dependencias de React en datos o lógica.
     - Representar los cuatro resultados visuales exigidos para contradicciones, incluido “relacionada pero insuficiente”, sin alterar las seis contradicciones válidas congeladas.
     - _Requirements: 1.1-1.5, 8.6-8.9, 13.1-13.2, 14.1-14.3_
 
-  - [ ] 1.3 Implementar los datos narrativos congelados del caso
+  - [x] 1.3 Implementar los datos narrativos congelados del caso
     - Crear módulos separados para los cuatro sospechosos, seis evidencias disponibles desde el inicio, seis declaraciones canónicas, seis contradicciones, solución, cronología y opciones de acusación exactamente como aparecen en `design.md`.
     - Incluir metadatos internos tipados para relevancia y relaciones, pero no exponerlos mediante modelos de presentación.
     - Conservar a Daniel Rivas, las tres contradicciones obligatorias, las cuatro evidencias requeridas y la secuencia lógica aprobada sin añadir personajes, evidencias o mecánicas.
     - _Requirements: 1.1-1.7, 5.1-5.4, 7.7-7.8, 9.1, 12.2-12.3, 14.2, 14.5_
 
-  - [ ] 1.4 Implementar respuestas locales, reglas y configuración narrativa
+  - [x] 1.4 Implementar respuestas locales, reglas y configuración narrativa
     - Crear el catálogo aprobado con cinco respuestas principales más una genérica por sospechoso, grupos de palabras clave, prioridades y `statementId` permitidos.
     - Crear reglas de puntuación, opciones de motivo/método, duración de 720 000 ms y configuración de endpoint/modo/timeout sin dominios fijos.
     - Mantener todos estos módulos libres de imports de componentes React.
