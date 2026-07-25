@@ -1,40 +1,4 @@
-.shell {
+.app {
   min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 2rem;
   background: radial-gradient(circle at top, #292929, #0b0b0b 65%);
-}
-
-.caseFile {
-  width: min(42rem, 100%);
-  padding: 3rem;
-  border: 1px solid #545454;
-  box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 45%);
-  background: #171717;
-}
-
-.caseFile h1 {
-  margin: 0.5rem 0 1rem;
-  color: #e7e2d5;
-  font-size: clamp(2rem, 7vw, 4.5rem);
-  letter-spacing: 0.08em;
-}
-
-.classification {
-  margin: 0;
-  color: #b44a42;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-}
-
-.status {
-  display: inline-block;
-  margin-top: 1.5rem;
-  padding: 0.45rem 0.75rem;
-  border: 1px solid #6e6e6e;
-  color: #c9c9c9;
-  font-size: 0.85rem;
-  text-transform: uppercase;
 }

@@ -31,26 +31,26 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - Mantener todos estos módulos libres de imports de componentes React.
     - _Requirements: 7.1-7.8, 10.1, 11.1-11.4, 12.2, 14.2, 16.1, 16.6_
 
-- [ ] 2. Implementar y probar los motores deterministas puros
-  - [ ] 2.1 Implementar el motor local de respuestas
+- [x] 2. Implementar y probar los motores deterministas puros
+  - [x] 2.1 Implementar el motor local de respuestas
     - Implementar normalización de mayúsculas, acentos, puntuación y espacios, validando vacío y máximo de 300 caracteres.
     - Resolver coincidencias por grupo completo, especificidad y prioridad; devolver siempre la respuesta específica o la genérica estable del sospechoso.
     - No permitir que el motor local modifique score, presión, contradicciones ni estado de partida.
     - _Requirements: 6.3-6.4, 7.1-7.8, 11.6, 14.3_
 
-  - [ ] 2.2 Implementar motores de contradicciones y puntuación
+  - [x] 2.2 Implementar motores de contradicciones y puntuación
     - Evaluar evidencia/declaración exclusivamente contra datos locales y distinguir válida, ya descubierta, relacionada pero insuficiente e incorrecta.
     - Aplicar puntos y presión una sola vez, penalización única con piso cero y cálculo final único con bonus y segundos restantes.
     - Mantener funciones puras sin imports de React, Zustand o Bedrock.
     - _Requirements: 8.2-8.9, 11.1-11.6, 14.3, 15.1_
 
-  - [ ] 2.3 Implementar motores de confesión, acusación y temporizador
+  - [x] 2.3 Implementar motores de confesión, acusación y temporizador
     - Evaluar confesión solo con partida, llamada y timer activos, Daniel, presión mínima y las tres contradicciones obligatorias.
     - Evaluar acusación por culpable, motivo, método y subconjunto de evidencias requeridas; permitir evidencias extra sin relajar las requeridas.
     - Calcular tiempo restante desde timestamp, convertir a segundos y detectar expiración con piso cero.
     - _Requirements: 9.1-9.6, 10.1-10.4, 12.7-12.9, 14.3, 15.2-15.4_
 
-  - [ ] 2.4 Grupo de pruebas (a): integridad narrativa y motor local
+  - [x] 2.4 Grupo de pruebas (a): integridad narrativa y motor local
     - Verificar conteos, IDs únicos y referencias cruzadas; exactamente cuatro sospechosos, seis evidencias disponibles, seis declaraciones canónicas utilizables y seis contradicciones distribuidas 3/1/1/1, con solución y secuencia lógica resolubles únicamente mediante datos congelados.
     - Verificar al menos cinco respuestas principales y exactamente una genérica estable por sospechoso, además de dos formulaciones razonables para acceder a cada declaración necesaria.
     - Cubrir normalización de acentos, mayúsculas, puntuación y espacios; vacío y más de 300 caracteres; exigencia de todos los términos del grupo; desempate por mayor especificidad y luego prioridad; coincidencias conocidas y desconocidas.
@@ -58,7 +58,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - **Propiedades cubiertas: 18 y 19; integridad narrativa aprobada.**
     - _Requirements: 1.1-1.7, 6.3-6.4, 7.2-7.8, 7.9, 15.5, 15.7_
 
-  - [ ] 2.5 Grupo de pruebas (b): contradicciones, presión, confesión y puntuación
+  - [x] 2.5 Grupo de pruebas (b): contradicciones, presión, confesión y puntuación
     - Probar cada contradicción válida con sus puntos y presión de catálogo, una sola vez; repetición `already_discovered` sin modificar score, presión ni intentos; combinación incorrecta con una sola penalización y score mínimo cero para valores mayores, iguales y menores que la penalización; evidencia relacionada insuficiente sin penalización.
     - Variar individualmente fase, llamada, timer, sospechoso, presión y contradicciones obligatorias para demostrar que la confesión exige toda la conjunción, no ocurre con condiciones parciales y no puede activarse mediante acción pública, UI o Bedrock.
     - Probar que la tercera contradicción de Daniel durante una llamada activa usa la presión y el conjunto recién actualizados, activa automáticamente `victory_confession`, incluye esa contradicción en la puntuación y no duplica bonus ni cálculo final.
@@ -67,7 +67,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - **Propiedades cubiertas: 1-6, 9 y 17.**
     - _Requirements: 8.2-8.9, 9.1-9.6, 11.1-11.6, 15.1-15.2_
 
-  - [ ] 2.6 Grupo de pruebas (c): acusación, temporizador y finalización
+  - [x] 2.6 Grupo de pruebas (c): acusación, temporizador y finalización
     - Probar acusación correcta, derrota por cada culpable/motivo/método incorrecto y por evidencias requeridas incompletas; aceptar evidencias extra, evaluar internamente desde `AccusationInput` y consumir el intento solo al confirmar.
     - Verificar que abrir o cancelar acusación no cambia `accusationUsed`, que una confirmación es irreversible y que la UI no puede entregar el resultado calculado.
     - Cubrir cálculo de tiempo, formato derivable, expiración desde escritorio, expediente, evidencias, llamada y acusación; timestamp nulo o expirado produce `defeat_time` seguro y prevalece sobre acusación o confesión en curso.
@@ -76,26 +76,26 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - **Propiedades cubiertas: 7-10, 16 y 21.**
     - _Requirements: 9.4-9.5, 10.1-10.4, 11.4-11.5, 12.4-12.9, 13.7, 13.9-13.11, 15.3-15.4, 15.6, 18.5_
 
-- [ ] 3. Construir y probar el store Zustand, persistencia e interrogación segura
-  - [ ] 3.1 Implementar serialización y validación de persistencia
+- [x] 3. Construir y probar el store Zustand, persistencia e interrogación segura
+  - [x] 3.1 Implementar serialización y validación de persistencia
     - Crear `PersistedGameState`, `HydratedGameData`, conversión `Set`/array y validación estricta de versión, tipos e IDs narrativos.
     - Corregir combinaciones inconsistentes de llamada/vista, regenerar sesión de llamada válida y descartar datos corruptos sin restaurar IDs de solicitud, loading, feedback o controladores.
     - Detectar timestamps expirados durante hidratación y producir derrota por tiempo.
     - _Requirements: 10.3, 13.7, 14.1, 18.1-18.7_
 
-  - [ ] 3.2 Crear el estado inicial y las acciones de navegación del `gameStore`
+  - [x] 3.2 Crear el estado inicial y las acciones de navegación del `gameStore`
     - Implementar un único store con fases, vistas, timer, score, presión, historial, declaraciones, llamadas y superficie pública mínima definida en el diseño.
     - Implementar inicio, navegación entre paneles, apertura/cierre seguro de llamadas, cancelación de acusación y timer continuo sin exponer `setActiveView('call')`.
     - Generar `callSessionId` solo mediante `startCall` y limpiar solicitud/loading al iniciar o terminar llamadas.
     - _Requirements: 2.4-2.5, 3.1-3.3, 6.1-6.2, 6.9-6.11, 10.1-10.2, 13.1-13.8_
 
-  - [ ] 3.3 Integrar contradicciones, finalización, acusación y reinicio en el store
+  - [x] 3.3 Integrar contradicciones, finalización, acusación y reinicio en el store
     - Implementar `presentEvidence` atómico sobre declaraciones registradas, usando valores nuevos para presión/contradicciones antes de comprobar confesión.
     - Implementar `submitAccusation`, `triggerTimeDefeat` y `finalizeGame` internos con precedencia del timer, único intento confirmado y cálculo final exactamente una vez.
     - Implementar reinicio completo, limpieza de llamadas/solicitudes/feedback/loading y eliminación de persistencia al terminar o reiniciar.
     - _Requirements: 8.2-8.10, 9.1-9.6, 10.3-10.4, 11.1-11.6, 12.4-12.9, 13.7-13.11, 15.1-15.4, 15.6_
 
-  - [ ] 3.4 Implementar `askQuestion` y el servicio Bedrock con fallback local seguro
+  - [x] 3.4 Implementar `askQuestion` y el servicio Bedrock con fallback local seguro
     - Implementar todas las guardas previas conjuntas antes de crear request ID, loading, pregunta o historial; la UI solo podrá entregar texto.
     - Registrar la pregunta una vez, obtener una candidata local completa y usar Bedrock solo en modo configurado, con `AbortController`, timeout y contexto local permitido.
     - Validar exactamente `{ text, statementId }`, máximo 500 caracteres y pertenencia del ID al sospechoso; ante cualquier incumplimiento descartar toda la respuesta Bedrock y usar la candidata local.
@@ -103,7 +103,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - Mantener fallos y respuestas obsoletas no intrusivos, sin permitir que Bedrock altere ninguna regla de juego; el fallback local es obligatorio y suficiente para terminar la partida.
     - _Requirements: 6.3-6.9, 7.7-7.9, 11.6, 14.4, 16.1-16.6_
 
-  - [ ] 3.5 Conectar `sessionStorage` al ciclo de vida del store
+  - [x] 3.5 Conectar `sessionStorage` al ciclo de vida del store
     - Guardar la partida activa al iniciarla y después de cada acción significativa: inicio y fin de llamada, respuesta aceptada, declaración canónica registrada, commit atómico de mensaje más declaración, presentación de evidencia, cambios de contradicciones, presión, score o intentos incorrectos, navegación persistida y cancelación de acusación si se persiste la vista.
     - Escribir el mensaje aceptado del sospechoso y la declaración canónica en `sessionStorage` solo después de que el commit atómico conjunto haya sido aceptado; nunca persistir un estado parcial ni una solicitud pendiente.
     - Persistir `timerEndTimestamp`, nunca el tiempo restante literal; no guardar cada segundo ni durante una solicitud pendiente.
@@ -112,7 +112,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - Degradar de forma segura si `sessionStorage` no está disponible y eliminar la sesión al finalizar o reiniciar.
     - _Requirements: 18.1-18.7, 10.3-10.4, 13.11, 14.4_
 
-  - [ ] 3.6 Grupo de pruebas (d): persistencia e hidratación
+  - [x] 3.6 Grupo de pruebas (d): persistencia e hidratación
     - Probar serialización `Set`↔array, versión y validación exhaustiva de IDs/tipos; datos corruptos o incompletos devuelven `null` y permiten una partida nueva.
     - Verificar guardado de todos los eventos significativos definidos en 3.5 y ausencia de escrituras por tick, pending o estados transitorios; comprobar que solo se guardan partidas activas y que finalizar o reiniciar elimina la sesión.
     - Hidratar `activeCallSuspect` válido con un `callSessionId` nuevo; corregir llamada sin sospechoso, sospechoso sin vista call y sospechoso inexistente a escritorio; no reanudar solicitudes.
@@ -121,7 +121,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - **Invariantes de persistencia e hidratación aprobados.**
     - _Requirements: 10.3-10.4, 13.6-13.7, 18.1-18.7_
 
-  - [ ] 3.7 Grupo de pruebas (e): interrogación asíncrona, fallback y concurrencia
+  - [x] 3.7 Grupo de pruebas (e): interrogación asíncrona, fallback y concurrencia
     - Hacer fallar por separado cada guarda previa —fase, timestamp nulo/expirado, vista, sospechoso, sesión, pregunta vacía o mayor a 300— y comprobar que no se crea request ID, loading, pregunta ni historial; tras superarlas, generar el ID internamente y registrar exactamente una pregunta antes de esperar.
     - Verificar que la superficie pública acepta solo texto en `askQuestion`, que no existen `processResponse`, `registerStatement`, `triggerConfession` ni setter público de feedback/vista call, y que `startCall` es la única vía para abrir llamada y generar sesión.
     - Cubrir modo local y endpoint ausente sin `fetch`; error, timeout, JSON inválido, campos extra, tipos erróneos, texto vacío o mayor a 500, `statementId` desconocido o de otro sospechoso: descartar toda la respuesta Bedrock —texto incluido— y usar la candidata local completa.
@@ -134,13 +134,13 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - _Requirements: 6.3-6.11, 7.6-7.9, 9.3, 10.3-10.4, 11.6, 13.2, 13.5, 13.7, 14.1, 14.4, 15.5, 16.1-16.5_
 
 - [ ] 4. Implementar y probar la experiencia frontend y drag-and-drop
-  - [ ] 4.1 Implementar pantallas de título, instrucciones y composición principal
+  - [x] 4.1 Implementar pantallas de título, instrucciones y composición principal
     - Crear título/subtítulo exactos, acción de inicio, instrucciones completas y retorno visible.
     - Componer `App`, `TitleScreen`, `InstructionsScreen`, `GameScreen` y `EndScreen` según `phase`, sin duplicar estado global.
     - Mostrar resultado, tipo de victoria/derrota, score final y reinicio en fases terminales.
     - _Requirements: 2.1-2.5, 13.1, 13.9-13.11_
 
-  - [ ] 4.2 Implementar escritorio, expediente, evidencias y HUD persistente
+  - [x] 4.2 Implementar escritorio, expediente, evidencias y HUD persistente
     - Crear header con timer `mm:ss` y score, navegación diferenciada y retorno al escritorio en todas las vistas activas.
     - Crear expediente con víctima, crimen y cuatro perfiles; crear lista/detalle de las seis evidencias con visual o placeholder.
     - Usar view models que omitan relevancia, sospechosos relacionados y contradicción resuelta.

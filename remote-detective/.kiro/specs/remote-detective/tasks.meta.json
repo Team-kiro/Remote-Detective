@@ -79,6 +79,11 @@
         "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784954988610
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785006909391
       }
     ],
     "2.2 Implementar motores de contradicciones y puntuación": [
@@ -86,6 +91,11 @@
         "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784954989118
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785006910591
       }
     ],
     "2.3 Implementar motores de confesión, acusación y temporizador": [
@@ -93,6 +103,11 @@
         "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784954989416
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785006912074
       }
     ],
     "2.4 Grupo de pruebas (a): integridad narrativa y motor local": [
@@ -100,6 +115,11 @@
         "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784954989553
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785006913579
       }
     ],
     "2.5 Grupo de pruebas (b): contradicciones, presión, confesión y puntuación": [
@@ -107,6 +127,16 @@
         "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784954989822
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785009580691
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785010788245
       }
     ],
     "2.6 Grupo de pruebas (c): acusación, temporizador y finalización": [
@@ -114,6 +144,16 @@
         "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784954990328
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785010798932
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785011722249
       }
     ],
     "3.1 Implementar serialización y validación de persistencia": [
@@ -121,6 +161,11 @@
         "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784954990555
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785006914982
       }
     ],
     "3.2 Crear el estado inicial y las acciones de navegación del `gameStore`": [
@@ -128,6 +173,11 @@
         "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784954990705
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785006916328
       }
     ],
     "3.3 Integrar contradicciones, finalización, acusación y reinicio en el store": [
@@ -135,6 +185,11 @@
         "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784954990947
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785006917101
       }
     ],
     "3.4 Implementar `askQuestion` y el servicio Bedrock con fallback local seguro": [
@@ -142,6 +197,16 @@
         "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784954991225
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785006921694
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785007625286
       }
     ],
     "3.5 Conectar `sessionStorage` al ciclo de vida del store": [
@@ -149,6 +214,16 @@
         "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784954991743
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785007626539
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785009574562
       }
     ],
     "3.6 Grupo de pruebas (d): persistencia e hidratación": [
@@ -156,6 +231,16 @@
         "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784954992004
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785011755380
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785013855011
       }
     ],
     "3.7 Grupo de pruebas (e): interrogación asíncrona, fallback y concurrencia": [
@@ -163,6 +248,16 @@
         "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784954992177
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785011755957
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785013855874
       }
     ],
     "4.1 Implementar pantallas de título, instrucciones y composición principal": [
@@ -170,6 +265,21 @@
         "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784954992397
+      },
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785013863812
+      },
+      {
+        "executionId": "2f50845c-77f4-49bd-9eeb-7d9e9f3edcb7",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785014632775
+      },
+      {
+        "executionId": "2f50845c-77f4-49bd-9eeb-7d9e9f3edcb7",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785015311248
       }
     ],
     "4.2 Implementar escritorio, expediente, evidencias y HUD persistente": [
@@ -177,6 +287,21 @@
         "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784954992561
+      },
+      {
+        "executionId": "2f50845c-77f4-49bd-9eeb-7d9e9f3edcb7",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785015312474
+      },
+      {
+        "executionId": "0a5a2c94-1193-4845-8d39-7f7193039d2e",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785016914785
+      },
+      {
+        "executionId": "0a5a2c94-1193-4845-8d39-7f7193039d2e",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785017654135
       }
     ],
     "4.3 Implementar formulario y confirmación de acusación": [
@@ -275,6 +400,20 @@
         "executionId": "2ab478a1-f238-44e6-aa71-b9630e9de36e",
         "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
         "timestamp": 1784958906244
+      }
+    ],
+    "2. Implementar y probar los motores deterministas puros": [
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785011722891
+      }
+    ],
+    "3. Construir y probar el store Zustand, persistencia e interrogación segura": [
+      {
+        "executionId": "e1671656-a760-40bd-b032-b69ed70f4448",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1785013856696
       }
     ]
   }

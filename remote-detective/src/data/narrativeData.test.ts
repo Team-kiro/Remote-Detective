@@ -13,6 +13,10 @@ import {
   MOTIVE_IDS,
   STATEMENT_IDS,
   SUSPECT_IDS,
+  isContradictionId,
+  isEvidenceId,
+  isStatementId,
+  isSuspectId,
 } from '@/data/types';
 
 describe('frozen narrative data', () => {
@@ -88,5 +92,139 @@ describe('frozen narrative data', () => {
       time: '21:30',
       event: 'Policía precinta la escena',
     });
+  });
+});
+
+describe('narrative integrity of the frozen case', () => {
+  it('keeps the approved counts and unique identifiers in every catalogue', () => {
+    expect(SUSPECTS).toHaveLength(4);
+    expect(EVIDENCE).toHaveLength(6);
+    expect(Object.keys(STATEMENTS)).toHaveLength(6);
+    expect(CONTRADICTIONS).toHaveLength(6);
+
+    expect(new Set(SUSPECTS.map(({ id }) => id)).size).toBe(4);
+    expect(new Set(EVIDENCE.map(({ id }) => id)).size).toBe(6);
+    expect(new Set(Object.values(STATEMENTS).map(({ id }) => id)).size).toBe(6);
+    expect(new Set(CONTRADICTIONS.map(({ id }) => id)).size).toBe(6);
+
+    for (const [key, statement] of Object.entries(STATEMENTS)) {
+      expect(statement.id).toBe(key);
+      expect(isStatementId(statement.id)).toBe(true);
+      expect(isSuspectId(statement.suspectId)).toBe(true);
+      expect(statement.canonicalText.trim().length).toBeGreaterThan(0);
+    }
+
+    for (const contradiction of CONTRADICTIONS) {
+      expect(isContradictionId(contradiction.id)).toBe(true);
+      expect(isEvidenceId(contradiction.evidenceId)).toBe(true);
+      expect(contradiction.explanation.trim().length).toBeGreaterThan(0);
+      expect(contradiction.points).toBeGreaterThan(0);
+      expect(contradiction.pressureIncrease).toBeGreaterThan(0);
+    }
+  });
+
+  it('only accepts the six approved statements as contradiction targets', () => {
+    const targetedStatements = CONTRADICTIONS.map(({ statementId }) => statementId);
+
+    for (const statementId of targetedStatements) {
+      expect(isStatementId(statementId)).toBe(true);
+      expect(STATEMENT_IDS).toContain(statementId);
+      expect(STATEMENTS[statementId]).toBeDefined();
+    }
+
+    expect(new Set(targetedStatements).size).toBe(6);
+    for (const statementId of STATEMENT_IDS) {
+      expect(targetedStatements).toContain(statementId);
+    }
+  });
+
+  it('gives Daniel three contradicting statements and one to each innocent suspect', () => {
+    const statementsBySuspect = (suspectId: string): number =>
+      new Set(
+        CONTRADICTIONS.filter(
+          (contradiction) => contradiction.suspectId === suspectId,
+        ).map(({ statementId }) => statementId),
+      ).size;
+
+    expect(statementsBySuspect('daniel')).toBe(3);
+    expect(statementsBySuspect('elena')).toBe(1);
+    expect(statementsBySuspect('roberto')).toBe(1);
+    expect(statementsBySuspect('sofia')).toBe(1);
+
+    for (const suspect of SUSPECTS) {
+      expect(suspect._internal.lies.length).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('keeps every evidence available from the start with observable player info', () => {
+    for (const evidence of EVIDENCE) {
+      expect(new Set(Object.keys(evidence))).toEqual(
+        new Set([
+          'id',
+          'name',
+          'category',
+          'description',
+          'observableInfo',
+          'image',
+          '_internal',
+        ]),
+      );
+      expect(evidence.observableInfo.trim().length).toBeGreaterThan(0);
+      expect(['physical', 'document', 'digital']).toContain(evidence.category);
+    }
+  });
+
+  it('resolves the solution exclusively with frozen catalogue data', () => {
+    const evidenceIds = new Set(EVIDENCE.map(({ id }) => id));
+    const contradictionIds = new Set(CONTRADICTIONS.map(({ id }) => id));
+
+    expect(SOLUTION.culpritId).toBe('daniel');
+    expect(SUSPECTS.some(({ id }) => id === SOLUTION.culpritId)).toBe(true);
+    expect(MOTIVE_OPTIONS.some(({ id }) => id === SOLUTION.motiveId)).toBe(true);
+    expect(METHOD_OPTIONS.some(({ id }) => id === SOLUTION.methodId)).toBe(true);
+
+    expect(SOLUTION.requiredEvidenceIds).toHaveLength(4);
+    expect(new Set(SOLUTION.requiredEvidenceIds).size).toBe(4);
+    for (const evidenceId of SOLUTION.requiredEvidenceIds) {
+      expect(evidenceIds.has(evidenceId)).toBe(true);
+    }
+
+    expect(SOLUTION.mandatoryContradictionIds).toHaveLength(3);
+    expect(new Set(SOLUTION.mandatoryContradictionIds).size).toBe(3);
+    for (const contradictionId of SOLUTION.mandatoryContradictionIds) {
+      expect(contradictionIds.has(contradictionId)).toBe(true);
+      const contradiction = CONTRADICTIONS.find(({ id }) => id === contradictionId);
+      expect(contradiction?.suspectId).toBe('daniel');
+    }
+
+    const danielPressure = CONTRADICTIONS.filter(
+      ({ suspectId }) => suspectId === 'daniel',
+    ).reduce((total, { pressureIncrease }) => total + pressureIncrease, 0);
+    expect(danielPressure).toBeGreaterThanOrEqual(SOLUTION.confessionPressureThreshold);
+  });
+
+  it('documents a logical sequence of at least three deduction steps', () => {
+    const steps = CONTRADICTIONS.map((contradiction) => ({
+      evidenceId: contradiction.evidenceId,
+      statementId: contradiction.statementId,
+      suspectId: contradiction.suspectId,
+      incriminatesCulprit: contradiction.suspectId === SOLUTION.culpritId,
+    }));
+
+    const incriminating = steps.filter(({ incriminatesCulprit }) => incriminatesCulprit);
+    const discarding = steps.filter(({ incriminatesCulprit }) => !incriminatesCulprit);
+
+    expect(incriminating.length).toBeGreaterThanOrEqual(3);
+    expect(new Set(discarding.map(({ suspectId }) => suspectId)).size).toBe(3);
+
+    const pairs = steps.map(({ evidenceId, statementId }) => `${evidenceId}|${statementId}`);
+    expect(new Set(pairs).size).toBe(steps.length);
+
+    for (const step of steps) {
+      const evidence = EVIDENCE.find(({ id }) => id === step.evidenceId);
+      expect(evidence).toBeDefined();
+      expect(evidence?.observableInfo.trim().length).toBeGreaterThan(0);
+      expect(STATEMENTS[step.statementId].suspectId).toBe(step.suspectId);
+    }
   });
 });

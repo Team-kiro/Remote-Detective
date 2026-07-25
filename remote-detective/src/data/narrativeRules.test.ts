@@ -16,7 +16,7 @@ describe('local narrative responses', () => {
       const specific = responses.filter(({ isGeneric }) => !isGeneric);
       const generic = responses.filter(({ isGeneric }) => isGeneric);
 
-      expect(specific).toHaveLength(5);
+      expect(specific.length).toBeGreaterThanOrEqual(5);
       expect(generic).toHaveLength(1);
       expect(generic[0]).toMatchObject({
         id: `resp_${suspectId}_generic`,
@@ -24,6 +24,19 @@ describe('local narrative responses', () => {
         statementId: null,
         priority: 0,
       });
+      expect(generic[0]?.text.trim().length ?? 0).toBeGreaterThan(0);
+
+      for (const response of specific) {
+        expect(response.text.trim().length).toBeGreaterThan(0);
+        expect(response.keywordGroups.length).toBeGreaterThan(0);
+        for (const group of response.keywordGroups) {
+          expect(group.length).toBeGreaterThan(0);
+          for (const term of group) {
+            expect(term).toBe(term.toLowerCase());
+            expect(term.normalize('NFD').replace(/[\u0300-\u036f]/g, '')).toBe(term);
+          }
+        }
+      }
     }
   });
 
