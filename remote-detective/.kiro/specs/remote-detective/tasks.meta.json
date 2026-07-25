@@ -1,0 +1,244 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Configurar el proyecto frontend y las herramientas de validación": [
+      {
+        "executionId": "86c87391-8c3c-4914-b337-e0ec6403a30c",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954271567
+      },
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954987671
+      },
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784955002578
+      },
+      {
+        "executionId": "326f64be-b750-4844-891d-b2a1a1a61d69",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784956657887
+      }
+    ],
+    "1.2 Crear los tipos e identificadores estables del dominio": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954988105
+      }
+    ],
+    "1.3 Implementar los datos narrativos congelados del caso": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954988283
+      }
+    ],
+    "1.4 Implementar respuestas locales, reglas y configuración narrativa": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954988456
+      }
+    ],
+    "2.1 Implementar el motor local de respuestas": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954988610
+      }
+    ],
+    "2.2 Implementar motores de contradicciones y puntuación": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954989118
+      }
+    ],
+    "2.3 Implementar motores de confesión, acusación y temporizador": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954989416
+      }
+    ],
+    "2.4 Grupo de pruebas (a): integridad narrativa y motor local": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954989553
+      }
+    ],
+    "2.5 Grupo de pruebas (b): contradicciones, presión, confesión y puntuación": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954989822
+      }
+    ],
+    "2.6 Grupo de pruebas (c): acusación, temporizador y finalización": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954990328
+      }
+    ],
+    "3.1 Implementar serialización y validación de persistencia": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954990555
+      }
+    ],
+    "3.2 Crear el estado inicial y las acciones de navegación del `gameStore`": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954990705
+      }
+    ],
+    "3.3 Integrar contradicciones, finalización, acusación y reinicio en el store": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954990947
+      }
+    ],
+    "3.4 Implementar `askQuestion` y el servicio Bedrock con fallback local seguro": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954991225
+      }
+    ],
+    "3.5 Conectar `sessionStorage` al ciclo de vida del store": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954991743
+      }
+    ],
+    "3.6 Grupo de pruebas (d): persistencia e hidratación": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954992004
+      }
+    ],
+    "3.7 Grupo de pruebas (e): interrogación asíncrona, fallback y concurrencia": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954992177
+      }
+    ],
+    "4.1 Implementar pantallas de título, instrucciones y composición principal": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954992397
+      }
+    ],
+    "4.2 Implementar escritorio, expediente, evidencias y HUD persistente": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954992561
+      }
+    ],
+    "4.3 Implementar formulario y confirmación de acusación": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954992725
+      }
+    ],
+    "4.4 Implementar panel de llamadas, historial y entrada de preguntas": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954992928
+      }
+    ],
+    "4.5 Implementar contradicciones con `@dnd-kit/core`": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954993093
+      }
+    ],
+    "4.6 Aplicar estética noir y adaptación mínima del viewport": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954993287
+      }
+    ],
+    "4.7 Grupo de pruebas (f): superficie pública y flujos críticos UI": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954993468
+      }
+    ],
+    "5. Checkpoint MVP local - Ensure all tests pass": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954993636
+      }
+    ],
+    "6.1 Preparar el paquete backend y la plantilla SAM": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954993842
+      }
+    ],
+    "6.2 Implementar validación de solicitudes y construcción de prompts": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954994219
+      }
+    ],
+    "6.3 Implementar cliente Bedrock, handler, timeout y CORS": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954994430
+      }
+    ],
+    "6.4 Grupo de pruebas (g): contrato backend": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954994622
+      }
+    ],
+    "7.1 Configurar build y hosting del frontend en AWS Amplify": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954994792
+      }
+    ],
+    "7.2 Crear la documentación técnica y de Spec-Driven Development": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954994971
+      }
+    ],
+    "8. Checkpoint final de entrega - Ensure all tests pass": [
+      {
+        "executionId": "a4e3c19e-f9be-49be-9388-eebc9c3dfade",
+        "chatSessionId": "sess_b61b32fe-c1f8-4c56-a3e5-b414c5bdac2d",
+        "timestamp": 1784954995139
+      }
+    ]
+  }
+}

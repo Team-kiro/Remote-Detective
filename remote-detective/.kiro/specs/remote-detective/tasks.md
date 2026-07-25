@@ -7,7 +7,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
 ## Tasks
 
 - [ ] 1. Preparar la base TypeScript y congelar el caso narrativo
-  - [ ] 1.1 Configurar el proyecto frontend y las herramientas de validación
+  - [x] 1.1 Configurar el proyecto frontend y las herramientas de validación
     - Crear la estructura Vite/React/TypeScript aprobada, scripts no interactivos de desarrollo, `test` y `build`, Vitest, CSS Modules, Zustand y `@dnd-kit/core`.
     - Configurar TypeScript estricto, aliases necesarios y valores tipados de `src/config.ts`, sin usar `any` en APIs exportadas.
     - Mantener el frontend funcional en modo local cuando no existan variables o servicios de Bedrock.
