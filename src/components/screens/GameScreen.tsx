@@ -86,7 +86,7 @@ export function GameScreen(): React.JSX.Element {
 
   let panel: React.JSX.Element;
   if (isCallSection) {
-    panel = <CallPanel suspects={SUSPECT_PROFILE_VIEWS} />;
+    panel = <CallPanel suspects={SUSPECT_PROFILE_VIEWS} evidence={EVIDENCE_VIEWS} />;
   } else if (activeView === 'casefile') {
     panel = <CaseFile caseFile={CASE_FILE_VIEW} />;
   } else if (activeView === 'evidence') {

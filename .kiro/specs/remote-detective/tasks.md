@@ -158,7 +158,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - Renderizar declaraciones registradas usando el texto canónico, sin aceptar IDs o mensajes creados por la UI.
     - _Requirements: 6.1-6.11, 7.8, 14.4, 16.5_
 
-  - [ ] 4.5 Implementar contradicciones con `@dnd-kit/core`
+  - [x] 4.5 Implementar contradicciones con `@dnd-kit/core`
     - Crear evidencias arrastrables y declaraciones canónicas registradas como únicos destinos válidos, con soporte pointer y keyboard.
     - Cancelar drops fuera de una declaración sin evaluar; presentar feedback diferenciado para contradicción válida, evidencia relacionada pero insuficiente, combinación incorrecta y contradicción ya descubierta.
     - La UI y `@dnd-kit/core` solo llaman `presentEvidence(evidenceId, statementId)`; el store decide internamente el resultado, los cambios de estado y la posible confesión.

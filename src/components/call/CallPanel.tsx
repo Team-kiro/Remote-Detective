@@ -1,31 +1,63 @@
 /**
  * Sistema de llamadas: selector de sospechosos, llamada activa, historial
- * persistente por sospechoso y entrada de preguntas.
+ * persistente por sospechoso, entrada de preguntas y presentación de evidencias
+ * sobre declaraciones mediante drag-and-drop.
  *
  * El componente solo lee estado y llama acciones públicas: la vista de llamada
  * se abre exclusivamente con `startCall`, `askQuestion` recibe únicamente el
  * texto de la pregunta y las declaraciones se muestran con su texto canónico
- * congelado, nunca con textos ni identificadores fabricados por la UI.
+ * congelado, nunca con textos ni identificadores fabricados por la UI. El
+ * arrastre solo invoca `presentEvidence(evidenceId, statementId)`: resultado,
+ * presión, puntuación, penalización y confesión los decide el store.
  *
- * Requisitos: 6.1-6.11, 7.8, 14.4, 16.5
+ * Requisitos: 5.1, 6.1-6.11, 7.8, 8.1-8.10, 9.1-9.3, 13.8, 14.4, 16.5
  */
 
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
 import { useCallback, useState } from 'react';
 import styles from '@/components/call/CallPanel.module.css';
+import { resolveDrop } from '@/components/call/contradictionDrop';
 import { config } from '@/config';
 import { STATEMENTS } from '@/data/statements';
-import type { StatementDef, SuspectId, SuspectProfileView } from '@/data/types';
+import type {
+  ContradictionFeedbackState,
+  ContradictionOutcome,
+  EvidenceView,
+  StatementDef,
+  SuspectId,
+  SuspectProfileView,
+} from '@/data/types';
 import { MAX_QUESTION_LENGTH } from '@/logic/localResponseEngine';
 import { useGameStore } from '@/store/gameStore';
 
 export interface CallPanelProps {
   /** Los cuatro sospechosos, ya proyectados sin metadatos internos. */
   suspects: readonly SuspectProfileView[];
+  /** Las seis evidencias, disponibles durante toda la llamada. */
+  evidence: readonly EvidenceView[];
 }
 
 const STATEMENT_LIST: readonly StatementDef[] = Object.values(STATEMENTS);
 
-export function CallPanel({ suspects }: CallPanelProps): React.JSX.Element {
+/** Mensaje fijo de cada uno de los cuatro resultados posibles. */
+const FEEDBACK_MESSAGES: Record<ContradictionOutcome, string> = {
+  valid: 'Contradicción demostrada.',
+  already_discovered: 'Ya habías demostrado esta contradicción.',
+  related_insufficient:
+    'La evidencia es relevante para este sospechoso, pero no demuestra la contradicción.',
+  incorrect: 'La combinación no demuestra nada: se aplicó la penalización.',
+};
+
+export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Element {
   const activeCallSuspect = useGameStore((state) => state.activeCallSuspect);
   const suspectPressure = useGameStore((state) => state.suspectPressure);
   const callHistory = useGameStore((state) => state.callHistory);
@@ -34,9 +66,38 @@ export function CallPanel({ suspects }: CallPanelProps): React.JSX.Element {
   const startCall = useGameStore((state) => state.startCall);
   const endCall = useGameStore((state) => state.endCall);
   const askQuestion = useGameStore((state) => state.askQuestion);
+  const presentEvidence = useGameStore((state) => state.presentEvidence);
+  const clearFeedback = useGameStore((state) => state.clearFeedback);
+  const feedback = useGameStore((state) => state.lastContradictionFeedback);
 
   const [draft, setDraft] = useState('');
   const [error, setError] = useState<string | null>(null);
+  // Solo presentación: resalta las zonas de drop mientras dura el arrastre.
+  const [isDragging, setIsDragging] = useState(false);
+
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
+
+  const handleDragStart = useCallback((): void => {
+    setIsDragging(true);
+    clearFeedback();
+  }, [clearFeedback]);
+
+  const handleDragCancel = useCallback((): void => {
+    setIsDragging(false);
+  }, []);
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent): void => {
+      setIsDragging(false);
+      const drop = resolveDrop(event.active.id, event.over?.id, evidence);
+      if (drop === null) {
+        return;
+      }
+
+      presentEvidence(drop.evidenceId, drop.statementId);
+    },
+    [evidence, presentEvidence],
+  );
 
   const handleSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>): void => {
@@ -176,37 +237,149 @@ export function CallPanel({ suspects }: CallPanelProps): React.JSX.Element {
             )}
           </form>
 
-          <section className={styles.statements} aria-labelledby="call-statements-heading">
-            <h3 id="call-statements-heading" className={styles.subtitle}>
-              Declaraciones registradas
-            </h3>
-            {registeredStatements.size === 0 ? (
+          <DndContext
+            sensors={sensors}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
+          >
+            <section className={styles.evidenceTray} aria-labelledby="call-evidence-heading">
+              <h3 id="call-evidence-heading" className={styles.subtitle}>
+                Evidencias disponibles
+              </h3>
               <p className={styles.hint}>
-                Todavía no hay declaraciones registradas en esta investigación.
+                Arrastra una evidencia sobre una declaración registrada. Con teclado: enfoca la
+                evidencia, pulsa Espacio, muévete con las flechas y pulsa Espacio para soltarla.
               </p>
-            ) : (
-              <ul className={styles.statementList}>
-                {STATEMENT_LIST.filter((statement) => registeredStatements.has(statement.id)).map(
-                  (statement) => (
-                    <li
-                      key={statement.id}
-                      className={styles.statementCard}
-                      data-statement={statement.id}
-                    >
-                      <span className={styles.statementAuthor}>
-                        {suspects.find((suspect) => suspect.id === statement.suspectId)?.name ??
-                          statement.suspectId}
-                      </span>
-                      <span className={styles.statementText}>{statement.canonicalText}</span>
-                    </li>
-                  ),
-                )}
+              <ul className={styles.evidenceList}>
+                {evidence.map((item) => (
+                  <li key={item.id}>
+                    <DraggableEvidence evidence={item} />
+                  </li>
+                ))}
               </ul>
-            )}
-          </section>
+            </section>
+
+            <section className={styles.statements} aria-labelledby="call-statements-heading">
+              <h3 id="call-statements-heading" className={styles.subtitle}>
+                Declaraciones registradas
+              </h3>
+              {registeredStatements.size === 0 ? (
+                <p className={styles.hint}>
+                  Todavía no hay declaraciones registradas en esta investigación.
+                </p>
+              ) : (
+                <ul className={styles.statementList}>
+                  {STATEMENT_LIST.filter((statement) => registeredStatements.has(statement.id)).map(
+                    (statement) => (
+                      <DroppableStatement
+                        key={statement.id}
+                        statement={statement}
+                        author={
+                          suspects.find((suspect) => suspect.id === statement.suspectId)?.name ??
+                          statement.suspectId
+                        }
+                        isDragging={isDragging}
+                      />
+                    ),
+                  )}
+                </ul>
+              )}
+              {/* El aviso va al final: si apareciera encima, desplazaría las
+                  zonas de drop justo después de cada intento. */}
+              {feedback === null ? null : <Feedback feedback={feedback} onDismiss={clearFeedback} />}
+            </section>
+          </DndContext>
         </>
       )}
     </section>
+  );
+}
+
+/**
+ * Evidencia arrastrable. Su identificador es el `EvidenceId` congelado: la UI no
+ * fabrica identificadores ni resultados, solo transporta la pareja al store.
+ */
+function DraggableEvidence({ evidence }: { evidence: EvidenceView }): React.JSX.Element {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: evidence.id,
+  });
+
+  return (
+    <button
+      type="button"
+      ref={setNodeRef}
+      className={isDragging ? styles.evidenceChipDragging : styles.evidenceChip}
+      // El transform sigue al puntero y al teclado; sin él dnd-kit desplaza la
+      // página para mantener visible una evidencia que nunca se mueve.
+      style={
+        transform === null
+          ? undefined
+          : { transform: `translate3d(${String(transform.x)}px, ${String(transform.y)}px, 0)` }
+      }
+      data-drag-evidence={evidence.id}
+      {...listeners}
+      {...attributes}
+    >
+      {evidence.name}
+    </button>
+  );
+}
+
+/** Declaración canónica registrada: único destino válido de un arrastre. */
+function DroppableStatement({
+  statement,
+  author,
+  isDragging,
+}: {
+  statement: StatementDef;
+  author: string;
+  isDragging: boolean;
+}): React.JSX.Element {
+  const { setNodeRef, isOver } = useDroppable({ id: statement.id });
+
+  const className = [
+    styles.statementCard,
+    isDragging ? styles.statementCardAvailable : null,
+    isOver ? styles.statementCardOver : null,
+  ]
+    .filter((token) => token !== null)
+    .join(' ');
+
+  return (
+    <li ref={setNodeRef} className={className} data-statement={statement.id} data-over={isOver}>
+      <span className={styles.statementAuthor}>{author}</span>
+      <span className={styles.statementText}>{statement.canonicalText}</span>
+    </li>
+  );
+}
+
+/**
+ * Los cuatro resultados se distinguen por texto, color y `data-feedback`. La
+ * explicación solo la aporta el store; la UI nunca la redacta.
+ */
+function Feedback({
+  feedback,
+  onDismiss,
+}: {
+  feedback: ContradictionFeedbackState;
+  onDismiss: () => void;
+}): React.JSX.Element {
+  return (
+    <div
+      className={styles.feedback}
+      data-feedback={feedback.type}
+      role="status"
+      aria-live="polite"
+    >
+      <p className={styles.feedbackMessage}>{FEEDBACK_MESSAGES[feedback.type]}</p>
+      {feedback.explanation === undefined ? null : (
+        <p className={styles.feedbackExplanation}>{feedback.explanation}</p>
+      )}
+      <button type="button" className={styles.feedbackDismiss} onClick={onDismiss}>
+        Cerrar aviso
+      </button>
+    </div>
   );
 }
 
