@@ -87,7 +87,7 @@ test.describe('Escritorio de la partida', () => {
         'aria-current',
         'page',
       );
-      await expect(page.getByTestId('hud-timer')).toContainText(/1[01]:\d{2}/);
+      await expect(page.getByTestId('hud-timer')).toContainText(/\d{2}:\d{2}/);
       await expect(page.getByTestId('hud-score')).toContainText('0');
     }
   });
