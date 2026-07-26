@@ -5,6 +5,11 @@
  * segundos. Los errores del proveedor se propagan como BedrockError para que
  * el handler los mapee a 502 sin filtrar detalles internos.
  *
+ * BEDROCK_MODEL_ID debe ser un perfil de inferencia entre regiones (prefijo
+ * "us."): los Claude actuales rechazan la invocación por ID de modelo directo
+ * con throughput bajo demanda, y los antiguos están marcados como legacy y
+ * niegan el acceso.
+ *
  * Requisitos: 16.1, 17.3, 17.5
  */
 
@@ -46,7 +51,8 @@ interface ClaudeResponse {
 export async function invokeBedrock(
   systemPrompt: string,
   userMessage: string,
-  modelId: string = process.env['BEDROCK_MODEL_ID'] ?? 'anthropic.claude-3-haiku-20240307-v1:0',
+  modelId: string = process.env['BEDROCK_MODEL_ID'] ??
+    'us.anthropic.claude-haiku-4-5-20251001-v1:0',
   region: string = process.env['AWS_REGION'] ?? 'us-east-1',
 ): Promise<string> {
   const client = new BedrockRuntimeClient({ region });
