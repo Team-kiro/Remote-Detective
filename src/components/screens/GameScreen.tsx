@@ -3,18 +3,18 @@
  *
  * Compone el HUD persistente (temporizador `mm:ss` y puntuación), la navegación
  * lateral diferenciada y el área principal, que cambia según `activeView`:
- * escritorio, expediente, evidencias y acusación quedan implementados aquí,
- * mientras que el área de llamada queda conectada para la tarea 4.4.
+ * escritorio, expediente, evidencias, llamadas y acusación.
  *
  * El componente solo invoca acciones públicas del store (`openCaseFile`,
  * `openEvidence`, `openAccusation`, `submitAccusation`, `returnToDesktop`) y no
  * duplica estado global: la vista `call` únicamente puede abrirse mediante
- * `startCall`, que pertenece al panel de llamadas de la tarea 4.4.
+ * `startCall`, que invoca el panel de llamadas al elegir sospechoso.
  *
  * Requisitos: 3.1-3.3, 4.1-4.3, 5.1-5.5, 10.1-10.2, 12.1-12.9, 13.2-13.6
  */
 
 import { useCallback, useState } from 'react';
+import { CallPanel } from '@/components/call/CallPanel';
 import { AccusationPanel } from '@/components/desktop/AccusationPanel';
 import { CaseFile } from '@/components/desktop/CaseFile';
 import { Desktop } from '@/components/desktop/Desktop';
@@ -85,17 +85,7 @@ export function GameScreen(): React.JSX.Element {
 
   let panel: React.JSX.Element;
   if (isCallSection) {
-    // Área conectada para la tarea 4.4 (panel de llamadas e interrogatorio).
-    panel = (
-      <section className={styles.pending} aria-labelledby="call-heading">
-        <h2 id="call-heading" className={styles.pendingTitle}>
-          Sistema de llamadas
-        </h2>
-        <p className={styles.pendingText}>
-          El selector de sospechosos y el interrogatorio se habilitan en la siguiente entrega.
-        </p>
-      </section>
-    );
+    panel = <CallPanel suspects={SUSPECT_PROFILE_VIEWS} />;
   } else if (activeView === 'casefile') {
     panel = <CaseFile caseFile={CASE_FILE_VIEW} />;
   } else if (activeView === 'evidence') {

@@ -43,30 +43,6 @@
   outline-offset: 3px;
 }
 
-.pending {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 1.5rem;
-  border: 1px dashed #545454;
-  background: #171717;
-  color: #d4cfc2;
-}
-
-.pendingTitle {
-  margin: 0;
-  color: #b44a42;
-  font-size: 1rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.pendingText {
-  margin: 0;
-  color: #b9b4a8;
-  line-height: 1.6;
-}
-
 @media (width < 1024px) {
   .body {
     grid-template-columns: 1fr;

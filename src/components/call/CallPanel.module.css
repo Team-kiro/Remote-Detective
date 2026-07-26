@@ -1,0 +1,272 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid #3d3d3d;
+  background: #171717;
+  color: #d4cfc2;
+}
+
+.header {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.title {
+  margin: 0;
+  color: #b44a42;
+  font-size: 1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  display: block;
+  margin: 0 0 0.5rem;
+  color: #e7e2d5;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.modeBadge {
+  padding: 0.15rem 0.5rem;
+  border: 1px solid #545454;
+  color: #8f8a80;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hint,
+.status {
+  margin: 0;
+  color: #b9b4a8;
+  font-size: 0.85rem;
+}
+
+.suspectList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.suspectButton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #3d3d3d;
+  background: #141414;
+  color: #d4cfc2;
+  text-align: left;
+  cursor: pointer;
+}
+
+.suspectButton:hover {
+  filter: brightness(1.2);
+}
+
+.suspectButton:focus-visible,
+.endCall:focus-visible,
+.send:focus-visible,
+.input:focus-visible {
+  outline: 3px solid #e7e2d5;
+  outline-offset: 2px;
+}
+
+.callHeader {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #3d3d3d;
+  background: #141414;
+}
+
+.portrait,
+.portraitPlaceholder {
+  width: 6rem;
+  height: 6rem;
+  object-fit: cover;
+  border: 1px solid #545454;
+}
+
+.portraitPlaceholder {
+  display: grid;
+  place-items: center;
+  background: repeating-linear-gradient(45deg, #1d1d1d, #1d1d1d 6px, #222 6px, #222 12px);
+  color: #8f8a80;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.suspectName {
+  margin: 0;
+  color: #e7e2d5;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.suspectRole {
+  margin: 0;
+  color: #b9b4a8;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pressure {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  color: #b9b4a8;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+.pressureBar {
+  width: 7rem;
+  height: 0.5rem;
+}
+
+.endCall {
+  align-self: start;
+  padding: 0.6rem 1rem;
+  border: 1px solid #b44a42;
+  background: #221515;
+  color: #e7e2d5;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.messageList {
+  display: grid;
+  gap: 0.5rem;
+  max-height: 20rem;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.playerMessage,
+.suspectMessage {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid #3d3d3d;
+  background: #141414;
+}
+
+.suspectMessage {
+  border-color: #545454;
+  background: #1a1717;
+}
+
+.messageAuthor {
+  color: #b9b4a8;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.messageText {
+  line-height: 1.5;
+}
+
+.loading {
+  margin: 0;
+  color: #b9b4a8;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #3d3d3d;
+  background: #141414;
+  color: #d4cfc2;
+  resize: vertical;
+}
+
+.send {
+  align-self: start;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid #545454;
+  background: #1d1d1d;
+  color: #e7e2d5;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.send:disabled {
+  color: #8f8a80;
+  cursor: not-allowed;
+}
+
+.error {
+  margin: 0;
+  color: #b44a42;
+  font-size: 0.85rem;
+}
+
+.statementList {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.statementCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px dashed #545454;
+  background: #141414;
+}
+
+.statementAuthor {
+  color: #b9b4a8;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.statementText {
+  line-height: 1.5;
+}
+
+@media (width < 1024px) {
+  .callHeader {
+    grid-template-columns: 1fr;
+  }
+}

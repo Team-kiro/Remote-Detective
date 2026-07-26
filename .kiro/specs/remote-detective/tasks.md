@@ -152,7 +152,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - Deshabilitar nuevos envíos después de una acusación confirmada y dejar que el store determine victoria o derrota.
     - _Requirements: 12.1-12.9, 13.6, 14.4_
 
-  - [ ] 4.4 Implementar panel de llamadas, historial y entrada de preguntas
+  - [x] 4.4 Implementar panel de llamadas, historial y entrada de preguntas
     - Mostrar selector de cuatro sospechosos, retrato, nombre, presión, historial persistente por sospechoso y acción de terminar llamada.
     - Implementar campo máximo 300, validación visible de vacío, loading, errores no bloqueantes y distintivo discreto de modo local.
     - Renderizar declaraciones registradas usando el texto canónico, sin aceptar IDs o mensajes creados por la UI.
