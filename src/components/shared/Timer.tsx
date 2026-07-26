@@ -15,6 +15,7 @@ const LEVEL_CLASS: Record<TimerLevel, string | undefined> = {
   calm: styles.timer,
   caution: styles.timerCaution,
   critical: styles.timerCritical,
+  final: styles.timerFinal,
 };
 
 export function Timer(): React.JSX.Element {

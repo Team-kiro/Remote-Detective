@@ -14,6 +14,7 @@ export default defineConfig({
     // `e2e-tests/` pertenecen a Playwright.
     include: ['src/**/*.test.{ts,tsx}'],
     environment: 'jsdom',
+    setupFiles: ['./src/test-setup.ts'],
     globals: true,
     passWithNoTests: false,
     clearMocks: true,

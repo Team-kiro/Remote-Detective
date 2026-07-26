@@ -147,22 +147,22 @@ describe('submitAccusation: evaluación interna desde AccusationInput', () => {
   );
 
   it.each(MOTIVE_IDS.filter((motiveId) => motiveId !== SOLUTION.motiveId))(
-    'un motivo incorrecto (%s) pierde la partida',
+    'un motivo incorrecto (%s) pierde la partida pero conserva el crédito parcial',
     (motiveId) => {
       useGameStore.getState().submitAccusation({ ...CORRECT_ACCUSATION, motiveId });
 
       expect(useGameStore.getState().phase).toBe('defeat_accusation');
-      expect(useGameStore.getState().score).toBe(SCORING_RULES.minimumScore);
+      expect(useGameStore.getState().score).toBe(SCORING_RULES.partialSuspectBonus);
     },
   );
 
   it.each(METHOD_IDS.filter((methodId) => methodId !== SOLUTION.methodId))(
-    'un método incorrecto (%s) pierde la partida',
+    'un método incorrecto (%s) pierde la partida pero conserva el crédito parcial',
     (methodId) => {
       useGameStore.getState().submitAccusation({ ...CORRECT_ACCUSATION, methodId });
 
       expect(useGameStore.getState().phase).toBe('defeat_accusation');
-      expect(useGameStore.getState().score).toBe(SCORING_RULES.minimumScore);
+      expect(useGameStore.getState().score).toBe(SCORING_RULES.partialSuspectBonus);
     },
   );
 

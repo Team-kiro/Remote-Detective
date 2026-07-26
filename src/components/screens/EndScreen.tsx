@@ -41,7 +41,7 @@ const END_SCREEN_COPY: Record<EndGamePhase, EndScreenCopy> = {
     outcome: 'Derrota',
     heading: 'Derrota por acusación incorrecta',
     detail:
-      'La acusación confirmada no coincide con la solución del caso, y solo se permite un intento por partida.',
+      'La acusación confirmada no coincide con la solución del caso, y solo se permite un intento por partida. La puntuación conserva lo que sí acertaste.',
   },
 };
 

@@ -134,13 +134,27 @@
   filter: brightness(1.2);
 }
 
+/*
+ * `<dialog open>` nativo: la capa superior, el scrim y la trampa de foco los
+ * pone el navegador, aquí solo se le pone el traje noir.
+ */
 .dialog {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  max-width: min(34rem, calc(100vw - 2rem));
   padding: 1.25rem;
   border: 1px solid var(--accent-danger);
   background: var(--bg-active);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-screen);
+}
+
+.dialog[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dialog::backdrop {
+  background: var(--scrim-panel);
 }
 
 .dialogTitle {

@@ -20,6 +20,22 @@
   color: var(--accent-danger-text);
 }
 
+/*
+ * El último minuto es el único momento con movimiento en toda la interfaz: un
+ * latido lento y sin desplazamiento, para que la cuenta atrás se sienta y no
+ * solo se lea. La regla global de `prefers-reduced-motion` lo neutraliza.
+ */
+.timerFinal {
+  composes: timerCritical;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
 .label {
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-label);
@@ -28,7 +44,8 @@
 }
 
 .timerCaution .label,
-.timerCritical .label {
+.timerCritical .label,
+.timerFinal .label {
   color: inherit;
 }
 

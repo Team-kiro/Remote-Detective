@@ -251,6 +251,11 @@ export interface ScoringRules {
   incorrectCombinationPenalty: number;
   confessionBonus: number;
   correctAccusationBonus: number;
+  /**
+   * Crédito parcial cuando la acusación falla pero señala al culpable correcto.
+   * Es la única pista que recibe el jugador derrotado: el caso no se revela.
+   */
+  partialSuspectBonus: number;
   timeRemainingFactor: number;
   minimumScore: 0;
 }

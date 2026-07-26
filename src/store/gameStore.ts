@@ -27,7 +27,7 @@ import { SOLUTION } from '@/data/solution';
 import { STATEMENTS } from '@/data/statements';
 import { SUSPECTS } from '@/data/suspects';
 import { isStatementId } from '@/data/types';
-import { evaluateAccusation } from '@/logic/accusationEngine';
+import { evaluateAccusation, partialAccusationPoints } from '@/logic/accusationEngine';
 import { shouldTriggerConfession } from '@/logic/confessionEngine';
 import { evaluateContradiction } from '@/logic/contradictionEngine';
 import { getLocalResponse, MAX_QUESTION_LENGTH } from '@/logic/localResponseEngine';
@@ -344,7 +344,7 @@ export const useGameStore = create<GameState>((set, get) => {
    * tiempo restante real, y se limpian llamada, sesión, solicitud, feedback y
    * loading.
    */
-  const finalizeGame = (endPhase: EndGamePhase): void => {
+  const finalizeGame = (endPhase: EndGamePhase, partialCredit = 0): void => {
     const state = get();
     if (state.phase !== 'active') {
       return;
@@ -358,6 +358,7 @@ export const useGameStore = create<GameState>((set, get) => {
       incorrectAttempts: state.incorrectAttempts,
       victoryType: victoryTypeOf(endPhase),
       timeRemainingMs,
+      partialCredit,
       rules: SCORING_RULES,
     });
 
@@ -605,7 +606,10 @@ export const useGameStore = create<GameState>((set, get) => {
       set({ accusationUsed: true });
 
       const result = evaluateAccusation(accusation, SOLUTION);
-      finalizeGame(result === 'victory' ? 'victory_accusation' : 'defeat_accusation');
+      finalizeGame(
+        result === 'victory' ? 'victory_accusation' : 'defeat_accusation',
+        partialAccusationPoints(accusation, SOLUTION, SCORING_RULES),
+      );
     },
 
     /** Derrota por tiempo agotado desde cualquier vista de la partida activa. */

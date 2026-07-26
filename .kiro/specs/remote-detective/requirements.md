@@ -190,7 +190,7 @@ Remote Detective es un juego web de investigación criminal con estética noir. 
 
 #### Criterios de Aceptación
 
-1. THE Aplicación SHALL calcular la Puntuación como la suma de: puntos por contradicciones válidas descubiertas, puntos por confesión del culpable, puntos por acusación final correcta, y puntos por tiempo restante al ganar, menos las penalizaciones por combinaciones incorrectas, con un valor mínimo de cero.
+1. THE Aplicación SHALL calcular la Puntuación como la suma de: puntos por contradicciones válidas descubiertas, puntos por confesión del culpable, puntos por acusación final correcta, puntos de crédito parcial cuando una acusación derrotada señala al culpable correcto, y puntos por tiempo restante al ganar, menos las penalizaciones por combinaciones incorrectas, con un valor mínimo de cero.
 2. WHEN el jugador descubre una contradicción válida, THE Aplicación SHALL sumar los puntos definidos en el módulo de reglas de puntuación para esa contradicción.
 3. WHEN el jugador realiza una combinación incorrecta en el Sistema_Contradicciones, THE Aplicación SHALL restar los puntos de penalización definidos en las reglas de puntuación, sin reducir la Puntuación por debajo de cero.
 4. WHEN la Partida finaliza en victoria, THE Aplicación SHALL sumar puntos proporcionales al tiempo restante según el factor definido en las reglas de puntuación.

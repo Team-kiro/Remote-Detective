@@ -24,6 +24,8 @@ export interface FinalScoreInput {
   incorrectAttempts: number;
   victoryType: VictoryType | null;
   timeRemainingMs: number;
+  /** Crédito parcial ya calculado por el motor de acusación; cero por defecto. */
+  partialCredit?: number;
   rules?: ScoringRules;
 }
 
@@ -81,20 +83,23 @@ export function remainingSecondsFromMs(timeRemainingMs: number): number {
 }
 
 /**
- * Puntuación final: base + bonus de victoria + segundos restantes por factor.
+ * Puntuación final: base + crédito parcial + bonus de victoria + segundos
+ * restantes por factor.
  *
  * El cálculo es idempotente: la misma entrada produce siempre el mismo valor y
  * no acumula bonus internamente. El tiempo restante solo puntúa en victoria.
  */
 export function calculateFinalScore(state: FinalScoreInput): number {
   const rules = state.rules ?? SCORING_RULES;
+  const partialCredit = safeCount(state.partialCredit ?? 0);
 
-  const baseScore = calculateBaseScore(
-    state.discoveredContradictions,
-    state.contradictionsData,
-    state.incorrectAttempts,
-    rules,
-  );
+  const baseScore =
+    calculateBaseScore(
+      state.discoveredContradictions,
+      state.contradictionsData,
+      state.incorrectAttempts,
+      rules,
+    ) + partialCredit;
 
   if (state.victoryType === null) {
     return Math.max(rules.minimumScore, baseScore);

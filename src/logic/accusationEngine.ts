@@ -5,7 +5,13 @@
  * Requisitos: 12.7-12.9, 14.3, 15.3
  */
 
-import type { AccusationInput, AccusationResult, NarrativeSolution } from '@/data/types';
+import { SCORING_RULES } from '@/data/scoringRules';
+import type {
+  AccusationInput,
+  AccusationResult,
+  NarrativeSolution,
+  ScoringRules,
+} from '@/data/types';
 
 /**
  * Devuelve `'victory'` solo si la acusación coincide en culpable, motivo y
@@ -35,4 +41,28 @@ export function evaluateAccusation(
   );
 
   return hasAllRequiredEvidence ? 'victory' : 'defeat';
+}
+
+/**
+ * Crédito parcial de una acusación derrotada: los puntos se otorgan solo si el
+ * sospechoso señalado era el culpable real.
+ *
+ * Es deliberadamente el único indicio que devuelve una derrota. El caso tiene
+ * una sola solución, así que revelarla convertiría la partida perdida en un
+ * spoiler; una puntuación distinta de cero dice «ibas por buen camino» sin
+ * nombrar a nadie.
+ *
+ * ponytail: pista muda hasta que haya más de un caso; entonces conviene
+ * detallar qué eje falló en la pantalla final.
+ */
+export function partialAccusationPoints(
+  accusation: AccusationInput,
+  solution: NarrativeSolution,
+  rules: ScoringRules = SCORING_RULES,
+): number {
+  if (evaluateAccusation(accusation, solution) === 'victory') {
+    return 0;
+  }
+
+  return accusation.suspectId === solution.culpritId ? rules.partialSuspectBonus : 0;
 }

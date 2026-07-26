@@ -10,7 +10,7 @@
  * Requisitos: 12.1-12.9, 13.6, 14.4
  */
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from '@/components/desktop/AccusationPanel.module.css';
 import { METHOD_OPTIONS, MOTIVE_OPTIONS } from '@/data/accusationOptions';
 import {
@@ -51,6 +51,16 @@ export function AccusationPanel({
   const [methodId, setMethodId] = useState<MethodId | null>(null);
   const [selectedEvidence, setSelectedEvidence] = useState<readonly EvidenceId[]>([]);
   const [isConfirming, setIsConfirming] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  // `showModal` es lo que aporta el scrim, la trampa de foco y el cierre con
+  // Escape: replicarlos a mano sería reescribir el diálogo nativo peor.
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (dialog !== null && !dialog.open) {
+      dialog.showModal();
+    }
+  }, [isConfirming]);
 
   // Se conserva el orden del catálogo, no el de marcado del jugador.
   const evidenceIds = evidence
@@ -204,12 +214,15 @@ export function AccusationPanel({
       </button>
 
       {isConfirming && isSubmittable && suspectId !== null && motiveId !== null && methodId !== null ? (
-        <div
+        <dialog
+          ref={dialogRef}
           className={styles.dialog}
-          role="dialog"
           aria-labelledby="accusation-confirm-heading"
           aria-describedby="accusation-confirm-description"
           data-testid="accusation-confirm"
+          onClose={() => {
+            setIsConfirming(false);
+          }}
         >
           <h3 id="accusation-confirm-heading" className={styles.dialogTitle}>
             Confirmar acusación
@@ -218,7 +231,8 @@ export function AccusationPanel({
             Acusas a {suspects.find((suspect) => suspect.id === suspectId)?.name ?? suspectId} por{' '}
             {MOTIVE_OPTIONS.find((option) => option.id === motiveId)?.text ?? motiveId}, mediante{' '}
             {METHOD_OPTIONS.find((option) => option.id === methodId)?.text ?? methodId}, con{' '}
-            {evidenceIds.length} evidencia(s). Esta decisión es definitiva.
+            {evidenceIds.length} {evidenceIds.length === 1 ? 'evidencia' : 'evidencias'}. Esta
+            decisión es definitiva.
           </p>
 
           <div className={styles.dialogActions}>
@@ -245,7 +259,7 @@ export function AccusationPanel({
               Cancelar y volver al escritorio
             </button>
           </div>
-        </div>
+        </dialog>
       ) : null}
     </section>
   );

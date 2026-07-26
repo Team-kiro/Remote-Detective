@@ -24,8 +24,11 @@ export const TIMER_CRITICAL_SECONDS = 120;
 /** Umbral en segundos a partir del cual el temporizador pide atención. */
 export const TIMER_CAUTION_SECONDS = 240;
 
+/** Umbral en segundos del último minuto: el escalón que además late. */
+export const TIMER_FINAL_MINUTE_SECONDS = 60;
+
 /** Nivel de urgencia del temporizador, de menor a mayor. */
-export type TimerLevel = 'calm' | 'caution' | 'critical';
+export type TimerLevel = 'calm' | 'caution' | 'critical' | 'final';
 
 export interface TimerViewModel {
   /** Segundos restantes, nunca negativos. */
@@ -72,6 +75,9 @@ function displayedSeconds(endTimestamp: number | null): number {
 
 /** Escalón de urgencia correspondiente a los segundos restantes. */
 export function timerLevel(secondsRemaining: number): TimerLevel {
+  if (secondsRemaining < TIMER_FINAL_MINUTE_SECONDS) {
+    return 'final';
+  }
   if (secondsRemaining < TIMER_CRITICAL_SECONDS) {
     return 'critical';
   }
@@ -85,6 +91,7 @@ const LEVEL_ANNOUNCEMENTS: Record<TimerLevel, string> = {
   calm: '',
   caution: 'Quedan cuatro minutos de investigación.',
   critical: 'Quedan dos minutos de investigación.',
+  final: 'Queda un minuto de investigación.',
 };
 
 export function useTimer(): TimerViewModel {
