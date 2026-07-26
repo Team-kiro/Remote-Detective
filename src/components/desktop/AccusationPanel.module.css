@@ -82,6 +82,9 @@
   margin: -1px;
   overflow: hidden;
   clip-path: inset(50%);
+  /* El contenedor ya dibuja el anillo de foco vía :has(:focus-visible);
+     anular el outline nativo evita el doble anillo sin perder accesibilidad. */
+  outline: none;
 }
 
 .suspectGrid {

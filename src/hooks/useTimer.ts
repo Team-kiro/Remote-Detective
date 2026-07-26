@@ -75,13 +75,13 @@ function displayedSeconds(endTimestamp: number | null): number {
 
 /** Escalón de urgencia correspondiente a los segundos restantes. */
 export function timerLevel(secondsRemaining: number): TimerLevel {
-  if (secondsRemaining < TIMER_FINAL_MINUTE_SECONDS) {
+  if (secondsRemaining <= TIMER_FINAL_MINUTE_SECONDS) {
     return 'final';
   }
-  if (secondsRemaining < TIMER_CRITICAL_SECONDS) {
+  if (secondsRemaining <= TIMER_CRITICAL_SECONDS) {
     return 'critical';
   }
-  if (secondsRemaining < TIMER_CAUTION_SECONDS) {
+  if (secondsRemaining <= TIMER_CAUTION_SECONDS) {
     return 'caution';
   }
   return 'calm';
