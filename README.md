@@ -170,7 +170,7 @@ Ver [`docs/deployment.md`](docs/deployment.md) para la guía completa de Amplify
 ### Frontend en AWS Amplify
 
 1. Conectar el repositorio en la consola de Amplify.
-2. El repositorio es un monorepo: configurar la raíz de la app en `frontend`, con `npm ci` como comando de instalación, `npm run build` como comando de build y `frontend/dist` como directorio de artefactos. No hay `amplify.yml` versionado; los ajustes se definen en la consola.
+2. El repositorio es un monorepo: configurar la raíz de la app en `frontend`, con `npm ci` como comando de instalación, `npm run build` como comando de build y `dist` como directorio de artefactos, relativo a la raíz `frontend`. No hay `amplify.yml` versionado; los ajustes se definen en la consola.
 3. Configurar las variables de entorno `VITE_API_URL` y `VITE_INTERROGATION_MODE` en la consola de Amplify si se quiere habilitar Bedrock. Sin ellas el frontend publicado funciona en modo local.
 
 ### Backend con AWS SAM

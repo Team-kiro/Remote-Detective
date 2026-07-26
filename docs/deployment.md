@@ -25,8 +25,8 @@ Frontend y backend se despliegan de forma **completamente independiente**. El fr
    - Raíz de la app (monorepo app root): `frontend`.
    - Instalación: `npm ci`.
    - Build: `npm run build` (compila TypeScript y genera el bundle).
-   - Directorio de artefactos: `frontend/dist` (`dist` si el app root ya es `frontend`).
-   - Caché de `frontend/node_modules` para builds más rápidos.
+   - Directorio de artefactos: `dist` (relativo al app root `frontend`; usar `frontend/dist` solo si no se configura esa raíz).
+   - Caché de `node_modules` (también relativo al app root) para builds más rápidos.
 
 3. **Variables de entorno en Amplify (opcional)**
 
