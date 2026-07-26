@@ -19,10 +19,11 @@ async function askArrivalQuestion(page: Page): Promise<void> {
 }
 
 /**
- * Presenta una evidencia sobre una declaración con el teclado.
+ * Presenta una evidencia sobre una declaración arrastrando con el ratón.
  *
- * El número de pasos hasta la zona de destino depende de la geometría, así que
- * se avanza hasta que la declaración se marque, sin esperas fijas.
+ * El puntero va de un centro al otro: mover el arrastre a ciegas con las
+ * flechas depende de cuántas declaraciones haya registradas y de dónde caiga
+ * cada una. El camino con teclado tiene su propio test de accesibilidad.
  */
 async function presentEvidence(
   page: Page,
@@ -30,21 +31,26 @@ async function presentEvidence(
   statementId: string,
 ): Promise<void> {
   const statement = page.locator(`li[data-statement="${statementId}"]`);
-  await page
+  const evidence = page
     .getByRole('region', { name: 'Evidencias disponibles' })
-    .getByRole('button', { name: evidenceName })
-    .focus();
-  await page.keyboard.press('Space');
+    .getByRole('button', { name: evidenceName });
 
-  for (let step = 0; step < 24; step += 1) {
-    if ((await statement.getAttribute('data-over')) === 'true') {
-      break;
-    }
-    await page.keyboard.press('ArrowDown');
+  await evidence.scrollIntoViewIfNeeded();
+  await statement.scrollIntoViewIfNeeded();
+  const from = await evidence.boundingBox();
+  const to = await statement.boundingBox();
+  if (from === null || to === null) {
+    throw new Error(`Sin geometría para arrastrar «${evidenceName}» sobre ${statementId}`);
   }
+
+  await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+  await page.mouse.down();
+  // dnd-kit activa el sensor con el primer movimiento: un solo salto puede
+  // llegar antes de que haya arrastre que mover.
+  await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 10 });
   await expect(statement).toHaveAttribute('data-over', 'true');
 
-  await page.keyboard.press('Space');
+  await page.mouse.up();
 }
 
 /** Pregunta por el tema sugerido y espera a que se registre su declaración. */
@@ -155,7 +161,22 @@ test.describe('Sistema de llamadas', () => {
     await page.getByRole('button', { name: /Daniel Rivas/ }).click();
     await askArrivalQuestion(page);
 
-    await presentEvidence(page, 'Registro de acceso', 'stmt_daniel_arrival');
+    const statement = page.locator('li[data-statement="stmt_daniel_arrival"]');
+    await page
+      .getByRole('region', { name: 'Evidencias disponibles' })
+      .getByRole('button', { name: 'Registro de acceso' })
+      .focus();
+    await page.keyboard.press('Space');
+
+    // Con una sola declaración registrada basta con bajar hasta marcarla.
+    for (let step = 0; step < 24; step += 1) {
+      if ((await statement.getAttribute('data-over')) === 'true') {
+        break;
+      }
+      await page.keyboard.press('ArrowDown');
+    }
+    await expect(statement).toHaveAttribute('data-over', 'true');
+    await page.keyboard.press('Space');
 
     await expect(page.locator('[data-feedback]')).toHaveAttribute('data-feedback', 'valid');
     await expect(page.getByTestId('hud-score')).toContainText('150');
