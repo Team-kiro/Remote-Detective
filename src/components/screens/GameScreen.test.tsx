@@ -1,12 +1,12 @@
 /**
  * Pruebas mínimas de render y navegación del HUD persistente, el escritorio, el
- * expediente, el panel de evidencias (tarea 4.2) y el formulario de acusación
- * con su confirmación (tarea 4.3).
+ * expediente, el panel de evidencias (tarea 4.2), el formulario de acusación
+ * con su confirmación (tarea 4.3) y el sistema de llamadas (tarea 4.4).
  *
  * Las pruebas exhaustivas de superficie pública y flujos UI pertenecen al grupo
  * 4.7.
  *
- * Requisitos: 3.1-3.3, 4.1-4.3, 5.1-5.5, 10.1-10.2, 12.1-12.9, 13.6
+ * Requisitos: 3.1-3.3, 4.1-4.3, 5.1-5.5, 6.1-6.11, 7.8, 10.1-10.2, 12.1-12.9, 13.6
  */
 
 import { act } from 'react';
@@ -16,6 +16,7 @@ import { GameScreen } from '@/components/screens/GameScreen';
 import { CASE_FILE } from '@/data/case';
 import { EVIDENCE } from '@/data/evidence';
 import { SUSPECTS } from '@/data/suspects';
+import { STATEMENTS } from '@/data/statements';
 import { SOLUTION } from '@/data/solution';
 import { EVIDENCE_VIEWS, SUSPECT_PROFILE_VIEWS } from '@/data/viewModels';
 import { createInitialGameSessionState, useGameStore } from '@/store/gameStore';
@@ -329,6 +330,130 @@ describe('GameScreen: acusación final', () => {
     expect(submit.disabled).toBe(true);
     expect((query(container, '#accusation-suspect') as HTMLSelectElement).disabled).toBe(true);
     expect(query(container, '#accusation-status').textContent).toContain('única acusación');
+  });
+});
+
+describe('GameScreen: sistema de llamadas', () => {
+  /** Escribe en un campo controlado por React disparando el evento nativo. */
+  function typeQuestion(container: HTMLElement, value: string): void {
+    const textarea = query(container, '#call-question') as HTMLTextAreaElement;
+    act(() => {
+      // Un `value` asignado directamente no notifica al rastreador de React.
+      Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')?.set?.call(
+        textarea,
+        value,
+      );
+      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  }
+
+  async function submitQuestion(container: HTMLElement): Promise<void> {
+    const form = query(container, 'form');
+    await act(async () => {
+      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+      await Promise.resolve();
+    });
+  }
+
+  /** Localiza el botón de terminar llamada por su texto visible. */
+  function clickEndCall(container: HTMLElement): HTMLElement {
+    const button = [...container.querySelectorAll('button')].find(
+      (candidate) => candidate.textContent === 'Terminar llamada',
+    );
+    if (button === undefined) {
+      throw new Error('No se encontró el botón de terminar llamada.');
+    }
+
+    return button;
+  }
+
+  it('muestra los cuatro sospechosos y abre la llamada con `startCall`', () => {
+    activateGame(600_000);
+    const container = renderGameScreen();
+    navigate(container, 'call');
+
+    expect(container.querySelectorAll('button[data-call-suspect]')).toHaveLength(4);
+    expect(container.querySelector('[data-testid="call-local-mode"]')).not.toBeNull();
+
+    act(() => {
+      useGameStore.setState({ suspectPressure: { daniel: 40, elena: 0, roberto: 0, sofia: 0 } });
+    });
+    click(query(container, 'button[data-call-suspect="daniel"]'));
+
+    expect(useGameStore.getState().activeView).toBe('call');
+    expect(useGameStore.getState().activeCallSuspect).toBe('daniel');
+
+    const header = query(container, '[data-active-call="daniel"]');
+    expect(header.textContent).toContain('Daniel');
+    expect(query(header, '[data-pressure="daniel"]').textContent).toContain('40');
+  });
+
+  it('mantiene deshabilitado el envío sin texto y con solo espacios', () => {
+    activateGame(600_000);
+    const container = renderGameScreen();
+    navigate(container, 'call');
+    click(query(container, 'button[data-call-suspect="daniel"]'));
+
+    const send = (): HTMLButtonElement =>
+      query(container, '[data-testid="call-send"]') as HTMLButtonElement;
+    expect(send().disabled).toBe(true);
+    expect(query(container, '#call-question-status').textContent).toContain('Escribe una pregunta');
+
+    typeQuestion(container, '    ');
+    expect(send().disabled).toBe(true);
+
+    typeQuestion(container, '¿Dónde estabas?');
+    expect(send().disabled).toBe(false);
+    expect((query(container, '#call-question') as HTMLTextAreaElement).maxLength).toBe(300);
+  });
+
+  it('registra la pregunta, la respuesta y la declaración canónica del store', async () => {
+    activateGame(600_000);
+    const container = renderGameScreen();
+    navigate(container, 'call');
+    click(query(container, 'button[data-call-suspect="daniel"]'));
+
+    typeQuestion(container, '¿A qué hora llegaste al edificio?');
+    await submitQuestion(container);
+
+    const state = useGameStore.getState();
+    const history = state.callHistory.daniel;
+    expect(history).toHaveLength(2);
+    expect(state.isInterrogationLoading).toBe(false);
+
+    const rendered = query(container, '[data-testid="call-history"]').textContent;
+    expect(rendered).toContain('¿A qué hora llegaste al edificio?');
+    expect(rendered).toContain(history[1]?.text ?? '');
+
+    expect(state.registeredStatements.has('stmt_daniel_arrival')).toBe(true);
+    expect(query(container, '[data-statement="stmt_daniel_arrival"]').textContent).toContain(
+      STATEMENTS.stmt_daniel_arrival.canonicalText,
+    );
+  });
+
+  it('conserva el historial por sospechoso al terminar y reabrir la llamada', async () => {
+    activateGame(600_000);
+    const container = renderGameScreen();
+    navigate(container, 'call');
+    click(query(container, 'button[data-call-suspect="daniel"]'));
+
+    typeQuestion(container, '¿A qué hora llegaste al edificio?');
+    await submitQuestion(container);
+
+    click(clickEndCall(container));
+
+    expect(useGameStore.getState().activeCallSuspect).toBeNull();
+    expect(useGameStore.getState().activeView).toBe('desktop');
+
+    click(query(container, 'button[data-call-suspect="elena"]'));
+    expect(query(container, '[data-testid="call-history"]').textContent).toBe('');
+
+    click(clickEndCall(container));
+    click(query(container, 'button[data-call-suspect="daniel"]'));
+
+    expect(query(container, '[data-testid="call-history"]').textContent).toContain(
+      '¿A qué hora llegaste al edificio?',
+    );
   });
 });
 
