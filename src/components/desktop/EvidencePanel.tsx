@@ -81,7 +81,7 @@ export function EvidencePanel({ evidence }: EvidencePanelProps): React.JSX.Eleme
                 <img
                   className={styles.image}
                   src={selected.image}
-                  alt={selected.name}
+                  alt=""
                   loading="lazy"
                   decoding="async"
                 />

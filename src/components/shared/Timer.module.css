@@ -23,7 +23,7 @@
 /*
  * El último minuto es el único momento con movimiento en toda la interfaz: un
  * latido lento y sin desplazamiento, para que la cuenta atrás se sienta y no
- * solo se lea. La regla global de `prefers-reduced-motion` lo neutraliza.
+ * solo se lea.
  */
 .timerFinal {
   composes: timerCritical;
@@ -33,6 +33,20 @@
 @keyframes pulse {
   50% {
     opacity: 0.45;
+  }
+}
+
+/*
+ * Sin movimiento el latido desaparecería y el último minuto sería
+ * indistinguible de los treinta segundos anteriores, que ya son óxido. La
+ * placa invierte la relación figura-fondo: el aviso sigue siendo el escalón
+ * más fuerte de la cuenta atrás, solo que quieto.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .timerFinal {
+    padding: 0 var(--space-xs);
+    background: var(--accent-danger);
+    color: var(--text-on-accent);
   }
 }
 

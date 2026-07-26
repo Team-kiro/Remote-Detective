@@ -18,7 +18,7 @@ export function ScoreDisplay({ score }: ScoreDisplayProps): React.JSX.Element {
   return (
     // La puntuación solo cambia tras un acto del jugador, así que anunciarla es
     // confirmación del efecto, no ruido periódico como el reloj.
-    <p className={styles.score} data-testid="hud-score" role="status" aria-live="polite">
+    <p className={styles.score} data-testid="hud-score" role="status">
       <span className={styles.label}>Puntuación</span>
       <span className={styles.value}>{score}</span>
     </p>

@@ -21,9 +21,11 @@ import {
   useDroppable,
   useSensor,
   useSensors,
+  type Announcements,
   type DragEndEvent,
+  type ScreenReaderInstructions,
 } from '@dnd-kit/core';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import styles from '@/components/call/CallPanel.module.css';
 import { resolveDrop } from '@/components/call/contradictionDrop';
 import { config } from '@/config';
@@ -58,6 +60,16 @@ const FEEDBACK_MESSAGES: Record<ContradictionOutcome, string> = {
   incorrect: 'La combinación no demuestra nada: se aplicó la penalización.',
 };
 
+/*
+ * Sin esto @dnd-kit narra el arrastre en inglés y con identificadores internos
+ * («Picked up draggable item ev_access_log»), que es lo único de la partida que
+ * un lector de pantalla no oiría en español ni con nombres del caso.
+ */
+const DRAG_INSTRUCTIONS: ScreenReaderInstructions = {
+  draggable:
+    'Pulsa Espacio para tomar la evidencia, muévete entre las declaraciones con las flechas y pulsa Espacio de nuevo para presentarla. Escape cancela.',
+};
+
 export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Element {
   const activeCallSuspect = useGameStore((state) => state.activeCallSuspect);
   const suspectPressure = useGameStore((state) => state.suspectPressure);
@@ -78,6 +90,41 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
   const questionRef = useRef<HTMLTextAreaElement>(null);
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
+
+  const hasStatements = registeredStatements.size > 0;
+
+  // El anuncio nombra las piezas del caso, no sus claves: el jugador que
+  // escucha necesita «Registro de acceso sobre la declaración de Daniel Rivas»,
+  // no `ev_access_log` sobre `stmt_daniel_arrival`.
+  const announcements = useMemo<Announcements>(() => {
+    const evidenceName = (id: string | number): string =>
+      evidence.find((item) => item.id === id)?.name ?? String(id);
+    const statementLabel = (id: string | number | undefined): string | null => {
+      const statement = STATEMENT_LIST.find((entry) => entry.id === id);
+      if (statement === undefined) {
+        return null;
+      }
+      const author = suspects.find((suspect) => suspect.id === statement.suspectId)?.name;
+      return `la declaración de ${author ?? statement.suspectId}: «${statement.canonicalText}»`;
+    };
+
+    return {
+      onDragStart: ({ active }) => `Has tomado ${evidenceName(active.id)}.`,
+      onDragOver: ({ active, over }) => {
+        const target = statementLabel(over?.id);
+        return target === null
+          ? `${evidenceName(active.id)} fuera de cualquier declaración.`
+          : `${evidenceName(active.id)} sobre ${target}`;
+      },
+      onDragEnd: ({ active, over }) => {
+        const target = statementLabel(over?.id);
+        return target === null
+          ? `Has soltado ${evidenceName(active.id)} sin presentarla.`
+          : `Has presentado ${evidenceName(active.id)} sobre ${target}`;
+      },
+      onDragCancel: ({ active }) => `Has soltado ${evidenceName(active.id)} sin presentarla.`,
+    };
+  }, [evidence, suspects]);
 
   const handleDragStart = useCallback((): void => {
     setIsDragging(true);
@@ -274,6 +321,7 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
 
           <DndContext
             sensors={sensors}
+            accessibility={{ announcements, screenReaderInstructions: DRAG_INSTRUCTIONS }}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             onDragCancel={handleDragCancel}
@@ -282,14 +330,17 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
               <h3 id="call-evidence-heading" className={styles.subtitle}>
                 Evidencias disponibles
               </h3>
+              {/* Ofrecer el arrastre sin declaraciones sería prometer un gesto
+                  que no puede terminar en ningún sitio. */}
               <p className={styles.hint}>
-                Arrastra una evidencia sobre una declaración registrada. Con teclado: enfoca la
-                evidencia, pulsa Espacio, muévete con las flechas y pulsa Espacio para soltarla.
+                {hasStatements
+                  ? 'Arrastra una evidencia sobre una declaración registrada. Con teclado: enfoca la evidencia, pulsa Espacio, muévete con las flechas y pulsa Espacio para soltarla.'
+                  : 'Pregunta a un sospechoso para registrar su primera declaración: hasta entonces no hay dónde presentar una evidencia.'}
               </p>
               <ul className={styles.evidenceList}>
                 {evidence.map((item) => (
                   <li key={item.id}>
-                    <DraggableEvidence evidence={item} />
+                    <DraggableEvidence evidence={item} isEnabled={hasStatements} />
                   </li>
                 ))}
               </ul>
@@ -335,9 +386,17 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
  * Evidencia arrastrable. Su identificador es el `EvidenceId` congelado: la UI no
  * fabrica identificadores ni resultados, solo transporta la pareja al store.
  */
-function DraggableEvidence({ evidence }: { evidence: EvidenceView }): React.JSX.Element {
+function DraggableEvidence({
+  evidence,
+  isEnabled,
+}: {
+  evidence: EvidenceView;
+  isEnabled: boolean;
+}): React.JSX.Element {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: evidence.id,
+    disabled: !isEnabled,
+    attributes: { roleDescription: 'evidencia arrastrable' },
   });
 
   return (
@@ -345,6 +404,7 @@ function DraggableEvidence({ evidence }: { evidence: EvidenceView }): React.JSX.
       type="button"
       ref={setNodeRef}
       className={isDragging ? styles.evidenceChipDragging : styles.evidenceChip}
+      disabled={!isEnabled}
       // El transform sigue al puntero y al teclado; sin él dnd-kit desplaza la
       // página para mantener visible una evidencia que nunca se mueve.
       style={
@@ -401,12 +461,7 @@ function Feedback({
   onDismiss: () => void;
 }): React.JSX.Element {
   return (
-    <div
-      className={styles.feedback}
-      data-feedback={feedback.type}
-      role="status"
-      aria-live="polite"
-    >
+    <div className={styles.feedback} data-feedback={feedback.type} role="status">
       <p className={styles.feedbackMessage}>{FEEDBACK_MESSAGES[feedback.type]}</p>
       {feedback.explanation === undefined ? null : (
         <p className={styles.feedbackExplanation}>{feedback.explanation}</p>
@@ -435,7 +490,7 @@ function Portrait({ suspect }: { suspect: SuspectProfileView }): React.JSX.Eleme
     <img
       className={styles.portrait}
       src={suspect.portrait}
-      alt={suspect.name}
+      alt=""
       loading="lazy"
       decoding="async"
     />

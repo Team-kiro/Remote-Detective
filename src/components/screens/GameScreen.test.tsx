@@ -250,11 +250,10 @@ describe('GameScreen: escritorio, expediente y evidencias', () => {
     expect(detail.textContent).toContain(first.description);
     expect(detail.textContent).toContain(first.observableInfo);
     // Con recurso disponible se renderiza la fotografía; sin él, el placeholder
-    // accesible. Ninguna de las dos ramas puede quedar vacía o rota.
+    // accesible. La foto es decorativa: el nombre ya está en el detalle, así
+    // que un `alt` con el mismo texto solo lo anunciaría dos veces.
     const visual = query(detail, 'img, [role="img"]');
-    const description =
-      visual.getAttribute('alt') ?? visual.getAttribute('aria-label') ?? '';
-    expect(description).toContain(first.name);
+    expect(visual.getAttribute('alt') ?? visual.getAttribute('aria-label') ?? '').toBe('');
     expect(query(container, `button[data-evidence="${first.id}"]`).getAttribute('aria-pressed')).toBe(
       'true',
     );
@@ -279,10 +278,11 @@ describe('GameScreen: escritorio, expediente y evidencias', () => {
 
     for (const suspect of SUSPECT_PROFILE_VIEWS) {
       const card = query(container, `[data-suspect="${suspect.id}"]`);
+      // El retrato es decorativo: el nombre ya está en la ficha, así que
+      // describirlo otra vez en el `alt` solo duplica el anuncio.
       const visual = query(card, 'img, [role="img"]');
-      const description =
-        visual.getAttribute('alt') ?? visual.getAttribute('aria-label') ?? '';
-      expect(description).toContain(suspect.name);
+      expect(visual.getAttribute('alt') ?? visual.getAttribute('aria-label') ?? '').toBe('');
+      expect(card.textContent).toContain(suspect.name);
     }
   });
 });

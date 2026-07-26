@@ -241,11 +241,12 @@
   opacity: 0.55;
 }
 
-/* El acta que el jugador va a firmar, legible antes de pulsar nada. */
+/* El acta que el jugador va a firmar: mismo contorno de óxido que el diálogo
+   de confirmación, porque son la misma decisión en dos momentos. */
 .summary {
   margin: 0;
   padding: var(--space-sm) var(--space-md);
-  border-left: 2px solid var(--accent-danger);
+  border: 1px solid var(--accent-danger);
   background: var(--bg-inset);
   color: var(--text-secondary);
   font-size: var(--text-lg);

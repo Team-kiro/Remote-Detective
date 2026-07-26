@@ -41,10 +41,9 @@ export function GameScreen(): React.JSX.Element {
   const submitAccusation = useGameStore((state) => state.submitAccusation);
   const accusationUsed = useGameStore((state) => state.accusationUsed);
 
-  // El sistema de llamadas se abre desde la navegación, pero la vista `call`
-  // del store exige `startCall(suspectId)`. Hasta que la tarea 4.4 monte el
-  // selector de sospechosos, esta bandera local solo indica que el área de
-  // llamadas está visible sobre el escritorio.
+  // La vista `call` del store exige `startCall(suspectId)`, pero la navegación
+  // abre el área de llamadas antes de que haya sospechoso elegido: esta bandera
+  // local solo indica que el selector está visible sobre el escritorio.
   const [isCallAreaOpen, setIsCallAreaOpen] = useState(false);
 
   const handleNavigate = useCallback(

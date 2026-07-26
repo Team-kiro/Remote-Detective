@@ -353,6 +353,16 @@
   cursor: grabbing;
 }
 
+/* Sin declaraciones no hay destino: la evidencia se ve, pero no se ofrece.
+   No se usa borde discontinuo porque ese trazo ya significa «pulsable» en los
+   temas de pregunta que están unos centímetros más arriba. */
+.evidenceChip:disabled {
+  border-color: var(--border-muted);
+  background: none;
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
 /* Zonas de destino válidas resaltadas solo mientras dura el arrastre. */
 .statementCardAvailable {
   border-style: solid;
