@@ -133,7 +133,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - **Propiedades cubiertas: 5, 11-15, 20, 22-31.**
     - _Requirements: 6.3-6.11, 7.6-7.9, 9.3, 10.3-10.4, 11.6, 13.2, 13.5, 13.7, 14.1, 14.4, 15.5, 16.1-16.5_
 
-- [ ] 4. Implementar y probar la experiencia frontend y drag-and-drop
+- [x] 4. Implementar y probar la experiencia frontend y drag-and-drop
   - [x] 4.1 Implementar pantallas de título, instrucciones y composición principal
     - Crear título/subtítulo exactos, acción de inicio, instrucciones completas y retorno visible.
     - Componer `App`, `TitleScreen`, `InstructionsScreen`, `GameScreen` y `EndScreen` según `phase`, sin duplicar estado global.
@@ -172,7 +172,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - Mantener header, timer y score visibles y legibles sin implementar drag-and-drop táctil avanzado.
     - _Requirements: 3.2, 5.4, 20.1-20.6_
 
-  - [ ] 4.7 Grupo de pruebas (f): superficie pública y flujos críticos UI
+  - [x] 4.7 Grupo de pruebas (f): superficie pública y flujos críticos UI
     - Automatizar título e instrucciones, inicio de partida, navegación entre todos los paneles sin pérdida de estado, retorno al escritorio, inicio/fin de llamadas y render de resultado/reinicio.
     - Verificar timer y score permanentes en expediente, evidencias, llamada y acusación; expediente completo; seis evidencias con visual/placeholder; ausencia de metadatos internos en la superficie renderizada.
     - Cubrir campo de pregunta vacío, espacios y límite de 300; loading, historial por sospechoso, texto canónico de declaraciones y distintivo local no intrusivo.
@@ -183,7 +183,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - **Propiedades de superficie pública cubiertas: 5, 7, 15, 17, 20, 21 y 31.**
     - _Requirements: 2.1-2.5, 3.1-3.3, 4.1-4.3, 5.1-5.5, 6.1-6.11, 8.1, 8.9-8.10, 9.1-9.5, 10.2-10.4, 12.1-12.9, 13.2-13.11, 14.1, 14.4, 15.2-15.6, 20.1-20.6_
 
-- [ ] 5. Checkpoint MVP local - Ensure all tests pass
+- [x] 5. Checkpoint MVP local - Ensure all tests pass
   - Ejecutar en modo no interactivo todas las pruebas deterministas frontend y el build TypeScript/Vite del MVP local conectado: datos, motores, store, persistencia, interrogación local, pantallas, flujo UI y `@dnd-kit/core`.
   - Verificar explícitamente mediante pruebas automatizadas una partida completa offline con victoria por confesión, victoria por acusación, derrota por tiempo y derrota por acusación incorrecta, sin backend, API Gateway ni Bedrock.
   - Confirmar que el fallback local permite continuar y finalizar la partida si el endpoint falta, falla o se retrasa.
