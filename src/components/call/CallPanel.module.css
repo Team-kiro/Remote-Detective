@@ -376,13 +376,38 @@
 
 /* El resultado se distingue por el color del contorno completo, igual que las
    demás piezas del sistema (activo, seleccionado, zona de drop). */
+/*
+ * El resultado de una contradicción es un aviso, no contenido del panel: en el
+ * flujo empujaba las declaraciones justo después de soltar, y quedaba fuera de
+ * la vista cuando la lista era larga. Fijado arriba a la derecha se lee sin
+ * mover nada. Va por debajo del encabezado (z-index 10) para que la cuenta
+ * atrás nunca quede tapada si el encabezado se parte en dos líneas.
+ */
 .feedback {
+  position: fixed;
+  top: calc(var(--header-height) + var(--space-md));
+  right: var(--space-md);
+  z-index: 9;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  max-width: min(22rem, calc(100vw - 2 * var(--space-md)));
   padding: 0.6rem 0.85rem;
   border: 1px solid var(--border-default);
   background: var(--bg-inset);
+  box-shadow: var(--shadow-screen);
+}
+
+/* Con el encabezado partido en dos líneas no hay hueco arriba: el aviso baja
+   al pie, que es donde el pulgar ya está. */
+@media (width <= 40rem) {
+  .feedback {
+    top: auto;
+    right: var(--space-md);
+    bottom: var(--space-md);
+    left: var(--space-md);
+    max-width: none;
+  }
 }
 
 .feedback[data-feedback='valid'] {

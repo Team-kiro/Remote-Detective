@@ -66,6 +66,10 @@
   --space-lg: 1.5rem;
   --space-xl: 2rem;
 
+  /* Altura del encabezado pegajoso: contrato entre él y lo que debe quedar
+     por debajo, como el aviso de contradicción. */
+  --header-height: 4.75rem;
+
   /* Profundidad: plana por defecto, sombra solo bajo pantallas de estado */
   --shadow-screen: 0 1.5rem 4rem rgb(0 0 0 / 45%);
 

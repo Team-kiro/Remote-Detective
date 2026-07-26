@@ -7,6 +7,7 @@
   gap: var(--space-md);
   align-items: center;
   justify-content: space-between;
+  min-height: var(--header-height);
   padding: var(--space-md) var(--space-lg);
   border-bottom: 1px solid var(--border-default);
   background: var(--bg-header);

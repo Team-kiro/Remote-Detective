@@ -371,8 +371,8 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
                   )}
                 </ul>
               )}
-              {/* El aviso va al final: si apareciera encima, desplazaría las
-                  zonas de drop justo después de cada intento. */}
+              {/* Fijado sobre el escritorio: el aviso no forma parte del flujo,
+                  así que soltar una evidencia no desplaza las zonas de drop. */}
               {feedback === null ? null : <Feedback feedback={feedback} onDismiss={clearFeedback} />}
             </section>
           </DndContext>
