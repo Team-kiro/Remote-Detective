@@ -65,8 +65,9 @@ export async function invokeBedrock(
     body: JSON.stringify(requestBody),
   };
 
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
   const timeoutPromise = new Promise<never>((_, reject) => {
-    setTimeout(() => {
+    timeoutId = setTimeout(() => {
       reject(new BedrockTimeoutError());
     }, BEDROCK_TIMEOUT_MS);
   });
@@ -83,6 +84,10 @@ export async function invokeBedrock(
     throw new BedrockProviderError(
       err instanceof Error ? err.message : 'Error desconocido del proveedor',
     );
+  } finally {
+    // Sin esto el temporizador mantiene vivo el event loop de Lambda hasta 10 s
+    // después de cada invocación correcta, facturando tiempo inactivo.
+    clearTimeout(timeoutId);
   }
 
   const responseText = new TextDecoder().decode(rawBody);

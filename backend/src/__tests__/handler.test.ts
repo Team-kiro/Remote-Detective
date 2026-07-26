@@ -105,11 +105,24 @@ describe('handler — request válido', () => {
     expect(result.headers?.['Access-Control-Allow-Origin']).toBe('http://localhost:5173');
   });
 
-  it('no incluye cabeceras CORS cuando el origen no está permitido', async () => {
+  it('rechaza con 403 y sin cabeceras CORS cuando el origen no está permitido', async () => {
     mockInvokeBedrock.mockResolvedValue(VALID_MODEL_RESPONSE);
 
     const result = await handler(buildEvent(VALID_REQUEST_BODY, 'https://other.test'));
 
+    expect(result.statusCode).toBe(403);
+    expect(result.headers?.['Access-Control-Allow-Origin']).toBeUndefined();
+    expect(mockInvokeBedrock).not.toHaveBeenCalled();
+  });
+
+  it('procesa la solicitud cuando no hay cabecera Origin (cliente no navegador)', async () => {
+    mockInvokeBedrock.mockResolvedValue(VALID_MODEL_RESPONSE);
+
+    const event = buildEvent(VALID_REQUEST_BODY);
+    event.headers = {};
+    const result = await handler(event);
+
+    expect(result.statusCode).toBe(200);
     expect(result.headers?.['Access-Control-Allow-Origin']).toBeUndefined();
   });
 
@@ -136,10 +149,10 @@ describe('handler — preflight OPTIONS', () => {
     expect(result.headers?.['Access-Control-Allow-Methods']).toContain('POST');
   });
 
-  it('devuelve 200 al recibir OPTIONS con origen no permitido (sin cabeceras CORS)', async () => {
+  it('devuelve 403 al recibir OPTIONS con origen no permitido', async () => {
     const result = await handler(buildEvent(null, 'https://otro.com', 'OPTIONS'));
 
-    expect(result.statusCode).toBe(200);
+    expect(result.statusCode).toBe(403);
     expect(result.headers?.['Access-Control-Allow-Origin']).toBeUndefined();
   });
 });

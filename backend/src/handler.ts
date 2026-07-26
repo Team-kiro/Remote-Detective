@@ -2,22 +2,22 @@
  * Lambda handler del endpoint POST /interrogate.
  *
  * Flujo:
- *   1. Gestión del preflight OPTIONS con cabeceras CORS.
- *   2. Validación de tamaño y campos del cuerpo → 400 con campo inválido.
- *   3. Construcción del prompt por sospechoso.
- *   4. Invocación de Bedrock con timeout de 10 s → 504 al agotar, 502 ante error
+ *   1. Rechazo 403 de orígenes presentes fuera de la lista permitida.
+ *   2. Gestión del preflight OPTIONS con cabeceras CORS.
+ *   3. Validación de tamaño y campos del cuerpo → 400 con campo inválido.
+ *   4. Construcción del prompt por sospechoso.
+ *   5. Invocación de Bedrock con timeout de 10 s → 504 al agotar, 502 ante error
  *      del proveedor (sin detalles internos).
- *   5. Validación de la respuesta del modelo → descarte completo si no cumple
+ *   6. Validación de la respuesta del modelo → descarte completo si no cumple
  *      el contrato; nunca se devuelve texto parcial.
- *   6. Respuesta 200 con el objeto InterrogationResponse.
+ *   7. Respuesta 200 con el objeto InterrogationResponse.
  *
  * Requisitos: 15.7, 16.1-16.6, 17.1-17.7
  */
 
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { getAllowedOrigins, buildCorsHeaders } from './cors';
-import { validateRequest } from './validator';
-import { validateResponse } from './validator';
+import { getAllowedOrigins, buildCorsHeaders, isOriginAllowed } from './cors';
+import { validateRequest, validateResponse } from './validator';
 import { buildPromptForSuspect } from './promptBuilder';
 import { invokeBedrock, BedrockTimeoutError } from './bedrockClient';
 
@@ -37,9 +37,17 @@ function jsonResult(
 }
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  const origin = event.headers['origin'] ?? event.headers['Origin'];
+  // API Gateway puede entregar `headers` nulo en invocaciones sin cabeceras.
+  const headers: Record<string, string | undefined> = event.headers ?? {};
+  const origin = headers['origin'] ?? headers['Origin'];
   const allowedOrigins = getAllowedOrigins();
   const corsHeaders = buildCorsHeaders(origin, allowedOrigins);
+
+  // Un origen presente y no permitido se rechaza antes de gastar una invocación
+  // de Bedrock. La ausencia de `Origin` (clientes no navegador) no se bloquea.
+  if (origin !== undefined && !isOriginAllowed(origin, allowedOrigins)) {
+    return jsonResult(403, { error: 'Origen no permitido' });
+  }
 
   // Responder preflight OPTIONS
   if (event.httpMethod === 'OPTIONS') {

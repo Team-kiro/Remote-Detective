@@ -14,10 +14,15 @@ Parameters:
 Globals:
   Function:
     Runtime: nodejs20.x
-    Timeout: 30
+    # Por debajo del tope de 29 s de API Gateway REST, y por encima del timeout
+    # de 10 s de Bedrock: así el 504 que emite el handler llega al cliente en
+    # lugar de que el gateway corte antes con su propio error.
+    Timeout: 15
     MemorySize: 256
     Environment:
       Variables:
+        # AWS_REGION la inyecta el runtime de Lambda y es reservada: declararla
+        # aquí hace fallar el despliegue. bedrockClient.ts la lee de process.env.
         ALLOWED_ORIGINS: !Ref AllowedOrigins
         BEDROCK_MODEL_ID: !Ref BedrockModelId
 
