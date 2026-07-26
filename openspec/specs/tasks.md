@@ -223,7 +223,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - Mantener la configuración compatible con conexión de la rama principal y publicación HTTPS, sin incluir credenciales ni convertir Lambda/Bedrock en dependencia del build.
     - _Requirements: 19.1-19.4, 16.5-16.6, 17.7_
 
-  - [ ] 7.2 Crear la documentación técnica y de Spec-Driven Development
+  - [x] 7.2 Crear la documentación técnica y de Spec-Driven Development
     - Crear `README.md` y los documentos aprobados de arquitectura, setup local, despliegue Amplify/SAM, uso de Kiro y estructura narrativa.
     - Documentar comandos, variables, modo local predeterminado, fallback obligatorio, separación datos/lógica/UI, decisiones tomadas con Kiro y trazabilidad a `requirements.md`, `design.md` y `tasks.md`.
     - Explicar la secuencia lógica del caso, organización de módulos, ejecución independiente de frontend/backend y alcance de tres integrantes/tres días sin revelar metadatos internos en la UI ni añadir funcionalidad fuera de alcance.
