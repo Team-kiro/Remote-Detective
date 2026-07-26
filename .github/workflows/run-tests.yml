@@ -121,3 +121,33 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+
+  # Trabajo independiente: el backend es un requisito importante pero no
+  # bloqueante, por lo que no comparte instalación ni artefactos con el frontend.
+  backend:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+          cache-dependency-path: "./backend/package-lock.json"
+
+      - name: Install backend dependencies
+        run: npm ci
+
+      - name: Build backend
+        run: npm run build
+
+      - name: Run backend tests
+        run: npm test
