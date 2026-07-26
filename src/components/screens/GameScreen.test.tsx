@@ -428,7 +428,7 @@ describe('GameScreen: sistema de llamadas', () => {
     const send = (): HTMLButtonElement =>
       query(container, '[data-testid="call-send"]') as HTMLButtonElement;
     expect(send().disabled).toBe(true);
-    expect(query(container, '#call-question-status').textContent).toContain('Escribe una pregunta');
+    expect(query(container, '#call-question-status').textContent).toContain('Elige un tema');
 
     typeQuestion(container, '    ');
     expect(send().disabled).toBe(true);

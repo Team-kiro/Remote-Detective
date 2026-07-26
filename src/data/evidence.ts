@@ -1,9 +1,9 @@
-import accessLogImage from '@/assets/evidence/access-log.png';
-import bottleImage from '@/assets/evidence/bottle.png';
-import emailImage from '@/assets/evidence/email.png';
-import receiptImage from '@/assets/evidence/receipt.png';
-import cameraImage from '@/assets/evidence/security-camera.png';
-import toxicologyImage from '@/assets/evidence/toxicology-report.png';
+import accessLogImage from '@/assets/evidence/access-log.webp';
+import bottleImage from '@/assets/evidence/bottle.webp';
+import emailImage from '@/assets/evidence/email.webp';
+import receiptImage from '@/assets/evidence/receipt.webp';
+import cameraImage from '@/assets/evidence/security-camera.webp';
+import toxicologyImage from '@/assets/evidence/toxicology-report.webp';
 import type { EvidenceDef } from '@/data/types';
 
 /** Las seis evidencias, todas disponibles desde el inicio de la partida. */

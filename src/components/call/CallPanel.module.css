@@ -6,7 +6,7 @@
   border: 1px solid var(--border-muted);
   background:
     var(--scrim-panel),
-    url('../../assets/backgrounds/call-background.png') center / cover no-repeat,
+    url('../../assets/backgrounds/call-background.webp') center / cover no-repeat,
     var(--bg-surface);
   color: var(--text-secondary);
 }
@@ -19,18 +19,30 @@
 }
 
 .title {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
   margin: 0;
-  color: var(--accent-danger);
-  font-size: 1rem;
-  letter-spacing: 0.14em;
+  color: var(--text-primary);
+  font-size: var(--text-md);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
+}
+
+/* Regla de óxido: el acento marca la sección sin tener que teñir el texto. */
+.title::before {
+  content: '';
+  flex: none;
+  width: 1.5rem;
+  height: 2px;
+  background: var(--accent-danger);
 }
 
 .subtitle {
   display: block;
   margin: 0 0 0.5rem;
   color: var(--text-primary);
-  font-size: 0.85rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -39,7 +51,7 @@
   padding: 0.15rem 0.5rem;
   border: 1px solid var(--border-default);
   color: var(--text-muted);
-  font-size: 0.65rem;
+  font-size: var(--text-2xs);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -48,7 +60,7 @@
 .status {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: var(--text-xs);
 }
 
 .suspectList {
@@ -107,7 +119,7 @@
     var(--bg-surface) 12px
   );
   color: var(--text-muted);
-  font-size: 0.6rem;
+  font-size: var(--text-2xs);
   letter-spacing: 0.12em;
   text-align: center;
 }
@@ -120,7 +132,7 @@
 .suspectName {
   margin: 0;
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: var(--text-md);
   font-weight: 700;
   letter-spacing: 0.04em;
 }
@@ -128,7 +140,7 @@
 .suspectRole {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -138,7 +150,7 @@
   gap: 0.5rem;
   align-items: center;
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.08em;
 }
 
@@ -147,15 +159,22 @@
   height: 0.5rem;
 }
 
+/* Salir de la llamada es reversible: se lee, pero no compite con Enviar. */
 .endCall {
   align-self: start;
+  min-height: 2.75rem;
   padding: 0.6rem 1rem;
-  border: 1px solid var(--accent-danger);
-  background: var(--bg-active);
-  color: var(--text-primary);
-  letter-spacing: 0.1em;
+  border: 1px solid var(--border-muted);
+  background: transparent;
+  color: var(--text-muted);
+  letter-spacing: var(--tracking-control);
   text-transform: uppercase;
   cursor: pointer;
+}
+
+.endCall:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
 }
 
 .history {
@@ -191,7 +210,7 @@
 
 .messageAuthor {
   color: var(--text-muted);
-  font-size: 0.7rem;
+  font-size: var(--text-2xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -203,7 +222,7 @@
 .loading {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.1em;
 }
 
@@ -211,6 +230,42 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+/*
+ * Temas sugeridos: el catálogo local solo reconoce ciertas preguntas y sin
+ * pistas el jugador agota el reloj adivinando. El chip escribe la pregunta en
+ * el área de texto; no la envía ni la responde.
+ */
+.promptList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.promptChip {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px dashed var(--border-default);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.promptChip:hover:not(:disabled) {
+  border-style: solid;
+  border-color: var(--accent-danger);
+  color: var(--text-primary);
+}
+
+.promptChip:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
 }
 
 .input {
@@ -222,26 +277,30 @@
   resize: vertical;
 }
 
+/* Verbo del bucle de juego: el control con más peso dentro de la llamada. */
 .send {
   align-self: start;
+  min-height: 2.75rem;
   padding: 0.6rem 1.2rem;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-strong);
   background: var(--bg-raised);
   color: var(--text-primary);
-  letter-spacing: 0.1em;
+  font-weight: 700;
+  letter-spacing: var(--tracking-control);
   text-transform: uppercase;
   cursor: pointer;
 }
 
 .send:disabled {
+  border-color: var(--border-muted);
   color: var(--text-muted);
   cursor: not-allowed;
 }
 
 .error {
   margin: 0;
-  color: var(--accent-danger);
-  font-size: 0.85rem;
+  color: var(--accent-danger-text);
+  font-size: var(--text-xs);
 }
 
 .statementList {
@@ -282,7 +341,7 @@
   border: 1px solid var(--border-default);
   background: var(--bg-raised);
   color: var(--text-primary);
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.08em;
   text-align: left;
   cursor: grab;
@@ -336,13 +395,13 @@
 .feedbackMessage {
   margin: 0;
   color: var(--text-primary);
-  font-size: 0.85rem;
+  font-size: var(--text-xs);
 }
 
 .feedbackExplanation {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   line-height: 1.5;
 }
 
@@ -352,7 +411,7 @@
   border: 1px solid var(--border-default);
   background: var(--bg-raised);
   color: var(--text-muted);
-  font-size: 0.7rem;
+  font-size: var(--text-2xs);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
@@ -360,7 +419,7 @@
 
 .statementAuthor {
   color: var(--text-muted);
-  font-size: 0.7rem;
+  font-size: var(--text-2xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -386,5 +445,23 @@
 
   .suspectList {
     grid-template-columns: 1fr;
+  }
+
+  /*
+   * En una sola columna el retrato cuadrado ocupaba una pantalla por sospechoso
+   * y elegir exigía recorrer cuatro fotos a tamaño completo. En horizontal los
+   * cuatro caben de una vez sin renunciar al retrato.
+   */
+  .suspectButton {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    column-gap: var(--space-md);
+    align-items: center;
+  }
+
+  .suspectButton .portrait,
+  .suspectButton .portraitPlaceholder {
+    grid-row: 1 / -1;
+    width: 4.5rem;
   }
 }

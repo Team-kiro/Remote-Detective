@@ -9,11 +9,23 @@
 }
 
 .title {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
   margin: 0;
-  color: var(--accent-danger);
-  font-size: 1rem;
-  letter-spacing: 0.14em;
+  color: var(--text-primary);
+  font-size: var(--text-md);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
+}
+
+/* Regla de óxido: el acento marca la sección sin tener que teñir el texto. */
+.title::before {
+  content: '';
+  flex: none;
+  width: 1.5rem;
+  height: 2px;
+  background: var(--accent-danger);
 }
 
 .warning {
@@ -31,15 +43,17 @@
 
 .label {
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .select {
+  min-height: 2.75rem;
   padding: 0.6rem 0.75rem;
   border: 1px solid var(--border-default);
-  background: var(--bg-inset);
+  /* Solo el color: el caret propio vive en la regla global de `select`. */
+  background-color: var(--bg-inset);
   color: var(--text-primary);
   font: inherit;
 }
@@ -66,11 +80,13 @@
   list-style: none;
 }
 
+/* La etiqueta es el objetivo real del puntero: el checkbox nativo mide 1.15rem. */
 .checkbox {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-sm);
   align-items: center;
-  padding: 0.4rem 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.4rem var(--space-sm);
   border: 1px solid var(--border-muted);
   color: var(--text-secondary);
   cursor: pointer;
@@ -82,12 +98,17 @@
   line-height: 1.6;
 }
 
+/*
+ * El peso visual sigue a la consecuencia: la acusación es el único acto
+ * irreversible del juego, así que es la única pieza con el óxido en relleno.
+ */
 .submit {
   align-self: flex-start;
+  min-height: 2.75rem;
   padding: 0.7rem 1.5rem;
   border: 1px solid var(--accent-danger);
-  background: var(--bg-active);
-  color: var(--text-primary);
+  background: var(--accent-danger);
+  color: var(--text-on-accent);
   font: inherit;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -105,6 +126,7 @@
   composes: submit;
   border-color: var(--border-strong);
   background: transparent;
+  color: var(--text-primary);
 }
 
 .submit:not(:disabled):hover,
@@ -123,8 +145,8 @@
 
 .dialogTitle {
   margin: 0;
-  color: var(--accent-danger);
-  font-size: 0.9rem;
+  color: var(--accent-danger-text);
+  font-size: var(--text-sm);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }

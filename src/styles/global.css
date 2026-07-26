@@ -35,13 +35,29 @@
 
   /* Acentos: rojo para acción y riesgo, ámbar reservado a la victoria */
   --accent-danger: #b44a42;
-  --accent-danger-strong: #d9584f;
   --accent-victory: #c9b672;
+
+  /*
+   * El óxido base rinde 3.46:1 sobre panel: suficiente para un borde o un
+   * relleno, insuficiente para texto. Todo texto en acento usa esta variante,
+   * que alcanza 4.75:1 sin añadir un color nuevo a la paleta.
+   */
+  --accent-danger-text: #d9584f;
 
   /* Tipografía */
   --font-serif: Cambria, 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   --tracking-label: 0.14em;
   --tracking-control: 0.1em;
+
+  /* Escala tipográfica: seis pasos, ningún tamaño suelto fuera de ellos */
+  --text-2xs: 0.7rem;
+  --text-xs: 0.8rem;
+  --text-sm: 0.9rem;
+  --text-md: 1rem;
+  --text-lg: 1.15rem;
+  --text-xl: 1.5rem;
+  --text-title: clamp(1.6rem, 4vw, 2.75rem);
+  --text-display: clamp(2rem, 7vw, 4.25rem);
 
   /* Espaciado */
   --space-xs: 0.5rem;
@@ -79,7 +95,7 @@ body {
 }
 
 /*
- * Grano y viñeta de película: la textura que separa "fondo oscuro" de "noir".
+ * Viñeta de sala oscura: concentra la mirada en el centro del expediente.
  * Capa fija, inerte al puntero y sin coste de layout.
  */
 body::after {
@@ -88,10 +104,23 @@ body::after {
   inset: 0;
   z-index: 100;
   pointer-events: none;
-  opacity: 0.55;
-  background:
-    radial-gradient(ellipse at center, transparent 45%, rgb(0 0 0 / 55%) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
+  background: radial-gradient(ellipse at center, transparent 45%, rgb(0 0 0 / 40%) 100%);
+}
+
+/*
+ * Solo para lectores de pantalla: anuncios de estado que no deben ocupar
+ * espacio ni competir con la información ya visible en pantalla.
+ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 button,
@@ -99,6 +128,28 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+/*
+ * Controles nativos vestidos con el sistema: el caret propio y `accent-color`
+ * evitan reimplementar un select o un checkbox solo para que dejen de parecer
+ * piezas del sistema operativo dentro del expediente.
+ */
+select {
+  appearance: none;
+  padding-right: 2.25rem;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-muted) 50%),
+    linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+  background-repeat: no-repeat;
+  background-position: right 1.1rem center, right 0.75rem center;
+  background-size: 0.35rem 0.35rem;
+}
+
+input[type='checkbox'] {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0;
+  accent-color: var(--accent-danger);
 }
 
 /* Un anillo visible es el único indicador de foco admitido; el brillo no basta. */

@@ -38,7 +38,7 @@ test.describe('Acusación final', () => {
   });
 
   test('Acusación - el envío exige los cuatro campos', async ({ page }) => {
-    await expect(page.getByRole('status')).toContainText(
+    await expect(page.locator('#accusation-status')).toContainText(
       'Faltan campos por completar: sospechoso, motivo, método, al menos una evidencia.',
     );
     await expect(page.getByTestId('accusation-submit')).toBeDisabled();
@@ -49,7 +49,7 @@ test.describe('Acusación final', () => {
       method: 'Agresión física directa',
     });
 
-    await expect(page.getByRole('status')).toContainText('Acusación completa.');
+    await expect(page.locator('#accusation-status')).toContainText('Acusación completa.');
     await expect(page.getByTestId('accusation-submit')).toBeEnabled();
   });
 
@@ -67,7 +67,7 @@ test.describe('Acusación final', () => {
     await expect(page.getByRole('heading', { level: 2, name: 'Escritorio' })).toBeVisible();
 
     await openAccusation(page);
-    await expect(page.getByRole('status')).not.toContainText('Ya presentaste');
+    await expect(page.locator('#accusation-status')).not.toContainText('Ya presentaste');
   });
 
   test('Acusación - la acusación correcta termina en victoria', async ({ page }) => {

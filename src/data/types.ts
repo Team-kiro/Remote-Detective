@@ -229,6 +229,12 @@ export interface LocalResponseDef {
   /** Intención cubierta por la respuesta, solo para documentación interna. */
   intent: string;
   /**
+   * Pregunta sugerida que la UI ofrece como atajo. Presente solo en los temas
+   * que se proponen al jugador; el motor la resuelve como cualquier otra
+   * entrada de texto, sin trato especial.
+   */
+  prompt?: string;
+  /**
    * Grupos de palabras clave normalizadas. Todos los términos de un grupo
    * deben coincidir; basta un grupo para seleccionar la respuesta.
    */

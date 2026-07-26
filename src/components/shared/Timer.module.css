@@ -6,24 +6,34 @@
   color: var(--text-primary);
 }
 
+/*
+ * La cuenta atrás sube en tres escalones en lugar de saltar de inerte a rojo:
+ * el aviso llega cuando aún se puede reaccionar.
+ */
+.timerCaution {
+  composes: timer;
+  color: var(--accent-victory);
+}
+
 .timerCritical {
   composes: timer;
-  color: var(--accent-danger-strong);
+  color: var(--accent-danger-text);
 }
 
 .label {
-  font-size: 0.7rem;
+  font-size: var(--text-2xs);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
+.timerCaution .label,
 .timerCritical .label {
-  color: var(--accent-danger-strong);
+  color: inherit;
 }
 
 .value {
-  font-size: 1.5rem;
+  font-size: var(--text-xl);
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   letter-spacing: 0.08em;

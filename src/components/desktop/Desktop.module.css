@@ -9,17 +9,29 @@
 }
 
 .title {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
   margin: 0;
-  color: var(--accent-danger);
-  font-size: 1rem;
+  color: var(--text-primary);
+  font-size: var(--text-md);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
+}
+
+/* Regla de óxido: el acento marca la sección sin tener que teñir el texto. */
+.title::before {
+  content: '';
+  flex: none;
+  width: 1.5rem;
+  height: 2px;
+  background: var(--accent-danger);
 }
 
 .caseTitle {
   margin: 0;
   color: var(--text-primary);
-  font-size: 1.4rem;
+  font-size: var(--text-xl);
   letter-spacing: 0.04em;
 }
 
@@ -37,7 +49,7 @@
 
 .row dt {
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }

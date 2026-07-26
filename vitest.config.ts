@@ -17,5 +17,15 @@ export default defineConfig({
     globals: true,
     passWithNoTests: false,
     clearMocks: true,
+    coverage: {
+      provider: 'v8',
+      thresholds: {
+        lines: 90,
+        branches: 85,
+        functions: 90,
+        statements: 90,
+      },
+      reporter: ['text', 'html'],
+    },
   },
 });

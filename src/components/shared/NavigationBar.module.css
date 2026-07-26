@@ -1,4 +1,5 @@
 .nav {
+  min-width: 0;
   padding: 1.25rem var(--space-md);
   border-right: 1px solid var(--border-default);
   background: var(--bg-surface-2);
@@ -43,7 +44,7 @@
 
 /* Los iconos son marcas de sección, no color: la paleta solo admite dos acentos. */
 .icon {
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   filter: grayscale(1);
   opacity: 0.8;
 }

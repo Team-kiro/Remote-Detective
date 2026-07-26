@@ -28,7 +28,7 @@ test.describe('Sistema de llamadas', () => {
 
     await expect(panel.getByRole('listitem')).toHaveCount(4);
     await expect(panel.getByRole('button', { name: /Daniel Rivas/ })).toBeVisible();
-    await expect(panel.getByText('Modo local')).toBeVisible();
+    await expect(panel.getByText('Línea segura')).toBeVisible();
   });
 
   test('Llamadas - el envío exige texto y respeta el límite de 300 caracteres', async ({ page }) => {
@@ -39,7 +39,7 @@ test.describe('Sistema de llamadas', () => {
 
     await expect(question).toHaveAttribute('maxlength', '300');
     await expect(send).toBeDisabled();
-    await expect(page.getByText('Escribe una pregunta para poder enviarla.')).toBeVisible();
+    await expect(page.getByText('Elige un tema o escribe tu propia pregunta.')).toBeVisible();
 
     await question.fill('     ');
     await expect(send).toBeDisabled();

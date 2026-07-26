@@ -157,6 +157,22 @@ describe('getLocalResponse', () => {
     getLocalResponse('elena', '¿Por qué discutiste el jueves?');
     expect(JSON.stringify(LOCAL_RESPONSES)).toBe(snapshot);
   });
+
+  // Los temas sugeridos de la UI son texto libre como cualquier otro: si un
+  // `prompt` deja de resolver a su propia respuesta, el atajo caería en la
+  // respuesta genérica y el jugador perdería la pista sin aviso.
+  it('cada tema sugerido resuelve a su propia respuesta', () => {
+    const catalog: readonly LocalResponseDef[] = LOCAL_RESPONSES;
+    const suggested = catalog.filter((response) => response.prompt !== undefined);
+
+    expect(suggested.length).toBeGreaterThan(0);
+
+    for (const response of suggested) {
+      const resolved = getLocalResponse(response.suspectId, response.prompt ?? '');
+      expect(resolved.id).toBe(response.id);
+      expect(resolved.isGeneric).toBe(false);
+    }
+  });
 });
 
 /** Dos formulaciones razonables distintas por declaración canónica necesaria. */

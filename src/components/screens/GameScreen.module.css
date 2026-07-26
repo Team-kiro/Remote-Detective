@@ -4,14 +4,19 @@
   min-height: 100vh;
   background:
     var(--scrim-screen),
-    url('../../assets/backgrounds/desktop.png') center / cover no-repeat fixed,
+    url('../../assets/backgrounds/desktop.webp') center / cover no-repeat fixed,
     var(--bg-root);
 }
 
 .body {
   flex: 1;
   display: grid;
-  grid-template-columns: minmax(12rem, 16rem) 1fr;
+  /*
+   * `minmax(0, …)` en ambas columnas: una pista `1fr` no baja del ancho mínimo
+   * de su contenido, y sin esto el escritorio desborda en horizontal por debajo
+   * de ~400px en lugar de apilarse.
+   */
+  grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
   align-items: stretch;
 }
 
@@ -20,6 +25,7 @@
   flex-direction: column;
   gap: var(--space-md);
   align-items: flex-start;
+  min-width: 0;
   padding: var(--space-lg);
 }
 
@@ -28,6 +34,7 @@
 }
 
 .backAction {
+  min-height: 2.75rem;
   padding: 0.6rem 1.25rem;
   border: 1px solid var(--border-strong);
   background: transparent;
@@ -53,7 +60,7 @@
 
 @media (width < 1024px) {
   .body {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .panel {
@@ -67,7 +74,7 @@
     border-bottom: 1px solid var(--accent-danger);
     background: var(--bg-active);
     color: var(--text-primary);
-    font-size: 0.85rem;
+    font-size: var(--text-xs);
     line-height: 1.5;
   }
 }

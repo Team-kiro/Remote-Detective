@@ -12,15 +12,24 @@
 
 import { CASE_FILE } from '@/data/case';
 import { EVIDENCE } from '@/data/evidence';
+import { LOCAL_RESPONSES } from '@/data/localResponses';
 import { SUSPECTS } from '@/data/suspects';
 import type {
   CaseFileView,
   EvidenceCategory,
   EvidenceDef,
   EvidenceView,
+  LocalResponseDef,
   SuspectDef,
+  SuspectId,
   SuspectProfileView,
 } from '@/data/types';
+
+/** Tema sugerido al jugador: etiqueta corta y la pregunta que la UI escribe. */
+export interface SuggestedQuestionView {
+  intent: string;
+  prompt: string;
+}
 
 /** Resumen del caso mostrado en el escritorio virtual. */
 export interface CaseSummaryView {
@@ -98,3 +107,24 @@ export const CASE_SUMMARY_VIEW: CaseSummaryView = {
   suspectCount: SUSPECT_PROFILE_VIEWS.length,
   evidenceCount: EVIDENCE_VIEWS.length,
 };
+
+/**
+ * Temas sugeridos para un sospechoso.
+ *
+ * Son atajos de escritura, no respuestas: la pregunta viaja por la misma vía
+ * que cualquier texto libre y el motor decide qué contesta el sospechoso. Su
+ * razón de existir es que el jugador descubra qué se puede preguntar; cuando la
+ * interrogación pase por Bedrock y admita lenguaje natural abierto, el andamio
+ * puede retirarse sin tocar el motor.
+ */
+export function getSuggestedQuestions(suspectId: SuspectId): readonly SuggestedQuestionView[] {
+  // El `as const` del catálogo hace que `prompt` no exista en las entradas sin
+  // sugerencia; se lee por la interfaz común para poder consultarlo.
+  const responses: readonly LocalResponseDef[] = LOCAL_RESPONSES;
+
+  return responses.flatMap((response) =>
+    response.suspectId === suspectId && response.prompt !== undefined
+      ? [{ intent: response.intent, prompt: response.prompt }]
+      : [],
+  );
+}

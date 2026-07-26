@@ -5,7 +5,7 @@
   padding: var(--space-xl);
   background:
     var(--scrim-screen),
-    url('../../assets/backgrounds/office.png') center / cover no-repeat fixed,
+    url('../../assets/backgrounds/office.webp') center / cover no-repeat fixed,
     var(--bg-root);
 }
 
@@ -16,17 +16,37 @@
   background: var(--bg-surface-veiled);
   box-shadow: var(--shadow-screen);
   color: var(--text-secondary);
+  counter-reset: instruction;
 }
 
 .title {
   margin: 0 0 var(--space-xl);
   color: var(--text-primary);
-  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-size: var(--text-title);
   letter-spacing: 0.06em;
 }
 
+/*
+ * Cinco bloques de prosa seguidos se leen como un muro. La numeración en el
+ * margen y la línea de separación dan al texto la cadencia de un expediente:
+ * el jugador puede saltar al paso que le falta sin releer.
+ */
 .block {
-  margin-bottom: 1.75rem;
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  column-gap: var(--space-sm);
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--border-default);
+}
+
+.block::before {
+  counter-increment: instruction;
+  content: counter(instruction, decimal-leading-zero);
+  grid-row: 1 / span 2;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-sm);
+  letter-spacing: 0.08em;
 }
 
 .block p {
@@ -36,14 +56,15 @@
 
 .blockTitle {
   margin: 0 0 var(--space-xs);
-  color: var(--accent-danger);
-  font-size: 1rem;
+  color: var(--text-primary);
+  font-size: var(--text-md);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .backAction {
-  margin-top: var(--space-xs);
+  margin-top: var(--space-lg);
+  min-height: 2.75rem;
   padding: 0.85rem 1.75rem;
   border: 1px solid var(--border-strong);
   background: transparent;

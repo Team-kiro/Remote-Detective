@@ -5,7 +5,7 @@
   padding: var(--space-xl);
   background:
     var(--scrim-screen),
-    url('../../assets/backgrounds/office.png') center / cover no-repeat fixed,
+    url('../../assets/backgrounds/office.webp') center / cover no-repeat fixed,
     var(--bg-root);
 }
 
@@ -20,8 +20,8 @@
 
 .classification {
   margin: 0;
-  color: var(--accent-danger);
-  font-size: 0.8rem;
+  color: var(--accent-danger-text);
+  font-size: var(--text-xs);
   font-weight: 700;
   letter-spacing: 0.16em;
 }
@@ -29,14 +29,14 @@
 .title {
   margin: 0.75rem 0 var(--space-md);
   color: var(--text-primary);
-  font-size: clamp(2rem, 7vw, 4.25rem);
+  font-size: var(--text-display);
   letter-spacing: 0.08em;
 }
 
 .subtitle {
   margin: 0 0 2.5rem;
   color: var(--text-muted);
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  font-size: var(--text-lg);
   letter-spacing: 0.04em;
 }
 

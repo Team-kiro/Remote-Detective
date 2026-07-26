@@ -1,7 +1,7 @@
-import danielPortrait from '@/assets/suspects/daniel-rivas.png';
-import elenaPortrait from '@/assets/suspects/elena-vargas.png';
-import robertoPortrait from '@/assets/suspects/roberto-mendoza.png';
-import sofiaPortrait from '@/assets/suspects/sofia-castillo.png';
+import danielPortrait from '@/assets/suspects/daniel-rivas.webp';
+import elenaPortrait from '@/assets/suspects/elena-vargas.webp';
+import robertoPortrait from '@/assets/suspects/roberto-mendoza.webp';
+import sofiaPortrait from '@/assets/suspects/sofia-castillo.webp';
 import type { SuspectDef } from '@/data/types';
 
 /** Los cuatro perfiles aprobados del caso, en orden de presentación. */

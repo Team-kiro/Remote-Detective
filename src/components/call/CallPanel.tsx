@@ -23,7 +23,7 @@ import {
   useSensors,
   type DragEndEvent,
 } from '@dnd-kit/core';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import styles from '@/components/call/CallPanel.module.css';
 import { resolveDrop } from '@/components/call/contradictionDrop';
 import { config } from '@/config';
@@ -36,6 +36,7 @@ import type {
   SuspectId,
   SuspectProfileView,
 } from '@/data/types';
+import { getSuggestedQuestions } from '@/data/viewModels';
 import { MAX_QUESTION_LENGTH } from '@/logic/localResponseEngine';
 import { useGameStore } from '@/store/gameStore';
 
@@ -74,6 +75,7 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
   const [error, setError] = useState<string | null>(null);
   // Solo presentación: resalta las zonas de drop mientras dura el arrastre.
   const [isDragging, setIsDragging] = useState(false);
+  const questionRef = useRef<HTMLTextAreaElement>(null);
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
@@ -118,6 +120,18 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
     [askQuestion, draft, isLoading],
   );
 
+  // La llamada se juega contra el reloj: Enter envía, como en un chat, y
+  // Shift+Enter conserva el salto de línea nativo del área de texto.
+  const handleShortcut = useCallback(
+    (event: React.KeyboardEvent<HTMLTextAreaElement>): void => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        event.currentTarget.form?.requestSubmit();
+      }
+    },
+    [],
+  );
+
   const active = suspects.find((suspect) => suspect.id === activeCallSuspect) ?? null;
 
   return (
@@ -128,7 +142,7 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
         </h2>
         {config.interrogationMode === 'local' ? (
           <span className={styles.modeBadge} data-testid="call-local-mode">
-            Modo local
+            Línea segura
           </span>
         ) : null}
       </div>
@@ -206,20 +220,41 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
             <label className={styles.subtitle} htmlFor="call-question">
               Tu pregunta
             </label>
+            <ul className={styles.promptList} data-testid="call-prompts">
+              {getSuggestedQuestions(active.id).map((suggestion) => (
+                <li key={suggestion.intent}>
+                  <button
+                    type="button"
+                    className={styles.promptChip}
+                    disabled={isLoading}
+                    onClick={() => {
+                      setDraft(suggestion.prompt);
+                      // El tema es un borrador editable: devolver el foco al
+                      // área deja al jugador matizar la pregunta y enviarla.
+                      questionRef.current?.focus();
+                    }}
+                  >
+                    {suggestion.intent}
+                  </button>
+                </li>
+              ))}
+            </ul>
             <textarea
               id="call-question"
+              ref={questionRef}
               className={styles.input}
               value={draft}
               maxLength={MAX_QUESTION_LENGTH}
               rows={3}
               aria-describedby="call-question-status"
+              onKeyDown={handleShortcut}
               onChange={(event) => {
                 setDraft(event.currentTarget.value);
               }}
             />
             <p id="call-question-status" className={styles.status} role="status">
               {draft.trim().length === 0
-                ? 'Escribe una pregunta para poder enviarla.'
+                ? 'Elige un tema o escribe tu propia pregunta. Enter la envía, Shift+Enter salta de línea.'
                 : `${String(draft.length)} de ${String(MAX_QUESTION_LENGTH)} caracteres.`}
             </p>
             <button
@@ -411,12 +446,8 @@ function Pressure({ suspectId, value }: { suspectId: SuspectId; value: number })
   return (
     <span className={styles.pressure} data-pressure={suspectId}>
       Presión: {value}%
-      <progress
-        className={styles.pressureBar}
-        max={100}
-        value={value}
-        aria-label={`Presión acumulada: ${String(value)} por ciento`}
-      />
+      {/* El texto visible ya da el valor; la barra solo lo dibuja. */}
+      <progress className={styles.pressureBar} max={100} value={value} aria-hidden="true" />
     </span>
   );
 }

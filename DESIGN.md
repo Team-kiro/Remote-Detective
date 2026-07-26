@@ -17,7 +17,7 @@ colors:
   text-secondary: "#d4cfc2"
   text-muted: "#b9b4a8"
   accent-danger: "#b44a42"
-  accent-danger-strong: "#d9584f"
+  accent-danger-text: "#d9584f"
   accent-victory: "#c9b672"
   text-on-accent: "#f5f2ea"
 typography:
@@ -31,11 +31,27 @@ typography:
     fontSize: "clamp(1.6rem, 4vw, 2.75rem)"
     fontWeight: 700
     letterSpacing: "0.05em"
+  xl:
+    fontFamily: "Cambria, Palatino Linotype, Book Antiqua, Georgia, serif"
+    fontSize: "1.5rem"
+    fontWeight: 700
+  lg:
+    fontFamily: "Cambria, Palatino Linotype, Book Antiqua, Georgia, serif"
+    fontSize: "1.15rem"
+    fontWeight: 700
   body:
     fontFamily: "Cambria, Palatino Linotype, Book Antiqua, Georgia, serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.6
+  sm:
+    fontFamily: "Cambria, Palatino Linotype, Book Antiqua, Georgia, serif"
+    fontSize: "0.9rem"
+    fontWeight: 400
+  xs:
+    fontFamily: "Cambria, Palatino Linotype, Book Antiqua, Georgia, serif"
+    fontSize: "0.8rem"
+    fontWeight: 400
   label:
     fontFamily: "Cambria, Palatino Linotype, Book Antiqua, Georgia, serif"
     fontSize: "0.7rem"
@@ -87,7 +103,8 @@ Interfaz de escritorio noir, sobria y de alto contraste, donde la jerarquia la c
 La base visual se apoya en negros y grises calidos con acentos funcionales de riesgo y victoria.
 
 ### Primary
-- **Oxido de Alerta** (`#b44a42`): CTA principal, titulos de seccion y estados de riesgo.
+- **Oxido de Alerta** (`#b44a42`): CTA principal, bordes y rellenos de riesgo. Rinde 3.46:1 sobre panel: sirve para superficie y contorno, nunca para texto.
+- **Oxido Legible** (`#d9584f`, `accent-danger-text`): la unica variante admitida para texto en acento (4.75:1 sobre panel).
 
 ### Tertiary
 - **Ambar de Cierre Exitoso** (`#c9b672`): resultado de victoria.
@@ -106,9 +123,15 @@ La base visual se apoya en negros y grises calidos con acentos funcionales de ri
 **Character:** tipografia de expediente editorial: sobria, legible en oscuro y con un tono mas distintivo que una sans generica.
 
 ### Hierarchy
+Seis pasos y dos escalas fluidas. Ningun `font-size` fuera de esta rampa.
+
 - **Display** (700, `clamp(2rem, 7vw, 4.25rem)`, tracking `0.08em`): identidad de pantalla inicial.
 - **Title** (700, `clamp(1.6rem, 4vw, 2.75rem)`, tracking `0.05em`): encabezados de pantallas clave.
+- **XL** (700, `1.5rem`): temporizador, marcador y cifras de resultado.
+- **LG** (700, `1.15rem`): encabezados de panel y nombres de sospechoso.
 - **Body** (400, `1rem`, line-height `1.6`): descripciones e instrucciones largas.
+- **SM** (400, `0.9rem`): texto de apoyo dentro de paneles densos.
+- **XS** (400, `0.8rem`): metadatos, ayudas en linea y chips.
 - **Label** (700, `0.7rem`, tracking `0.14em`, uppercase): timer, score, metadata, controles.
 
 ## Layout
