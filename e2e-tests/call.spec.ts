@@ -242,6 +242,10 @@ test.describe('Sistema de llamadas', () => {
     await askArrivalQuestion(page);
     await presentEvidence(page, 'Registro de acceso', 'stmt_daniel_arrival');
     await expect(page.getByTestId('hud-score')).toContainText('150');
+    // El aviso es fijo y dnd-kit se traga el clic que sigue a un arrastre:
+    // cerrarlo deja la barra de navegación despejada, como haría el jugador.
+    await page.getByRole('button', { name: 'Cerrar aviso' }).click();
+    await expect(page.locator('[data-feedback]')).toHaveCount(0);
 
     const nav = page.getByRole('navigation', { name: 'Navegación de la partida' });
     await nav.getByRole('button', { name: 'Expediente' }).click();
