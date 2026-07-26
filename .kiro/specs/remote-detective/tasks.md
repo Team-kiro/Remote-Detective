@@ -146,7 +146,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - Usar view models que omitan relevancia, sospechosos relacionados y contradicción resuelta.
     - _Requirements: 3.1-3.3, 4.1-4.3, 5.1-5.5, 10.1-10.2_
 
-  - [ ] 4.3 Implementar formulario y confirmación de acusación
+  - [x] 4.3 Implementar formulario y confirmación de acusación
     - Crear selecciones para sospechoso, motivo, método y una o más de las seis evidencias, con validación de campos faltantes.
     - Mostrar confirmación antes de llamar a `submitAccusation`; cancelar debe volver al escritorio sin consumir el intento.
     - Deshabilitar nuevos envíos después de una acusación confirmada y dejar que el store determine victoria o derrota.
