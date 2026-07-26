@@ -99,12 +99,19 @@ test.describe('Sistema de llamadas', () => {
 
     const tray = page.getByRole('region', { name: 'Evidencias disponibles' });
     await expect(tray).toContainText('no hay dónde presentar una evidencia');
-    await expect(tray.getByRole('button', { name: 'Registro de acceso' })).toBeDisabled();
+    // Sigue siendo alcanzable con el tabulador: solo se anuncia inoperable.
+    await expect(tray.getByRole('button', { name: 'Registro de acceso' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
 
     await askArrivalQuestion(page);
 
     await expect(tray).toContainText('Arrastra una evidencia sobre una declaración registrada');
-    await expect(tray.getByRole('button', { name: 'Registro de acceso' })).toBeEnabled();
+    await expect(tray.getByRole('button', { name: 'Registro de acceso' })).toHaveAttribute(
+      'aria-disabled',
+      'false',
+    );
   });
 
   test('Contradicciones - presentar la evidencia con teclado la demuestra', async ({ page }) => {

@@ -337,6 +337,11 @@
 
 .evidenceChip,
 .evidenceChipDragging {
+  display: inline-flex;
+  align-items: center;
+  /* Son las asas del gesto central del juego: fallar el agarre no cuesta un
+     clic, cuesta una evidencia soltada en el vacío. */
+  min-height: 2.75rem;
   padding: 0.5rem 0.85rem;
   border: 1px solid var(--border-default);
   background: var(--bg-raised);
@@ -354,9 +359,11 @@
 }
 
 /* Sin declaraciones no hay destino: la evidencia se ve, pero no se ofrece.
+   `aria-disabled` en vez de `disabled` para que siga en el orden de tabulación:
+   una bandeja que desaparece del teclado no puede explicar por qué está vacía.
    No se usa borde discontinuo porque ese trazo ya significa «pulsable» en los
    temas de pregunta que están unos centímetros más arriba. */
-.evidenceChip:disabled {
+.evidenceChip[aria-disabled='true'] {
   border-color: var(--border-muted);
   background: none;
   color: var(--text-muted);
@@ -388,6 +395,9 @@
   top: calc(var(--header-height) + var(--space-md));
   right: var(--space-md);
   z-index: 9;
+  /* Al desplazar la página el aviso queda sobre lo que pase por debajo. No
+     puede robar el clic de lo que tapa, así que solo su botón lo recibe. */
+  pointer-events: none;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -442,7 +452,12 @@
 
 .feedbackDismiss {
   align-self: start;
-  padding: 0.3rem 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  pointer-events: auto;
+  /* Único camino para quitar el aviso, y con él lo que quede debajo. */
+  min-height: 2.75rem;
+  padding: 0 var(--space-md);
   border: 1px solid var(--border-default);
   background: var(--bg-raised);
   color: var(--text-muted);

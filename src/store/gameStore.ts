@@ -281,13 +281,18 @@ export function createHydratedGameSessionState(): GameSessionState {
   };
 }
 
-/** Limpieza compartida al cerrar una llamada y volver al escritorio. */
+/**
+ * Limpieza compartida al cerrar una llamada y volver al escritorio. El aviso de
+ * contradicción muere con la llamada que lo produjo: si sobreviviera, volvería a
+ * aparecer al llamar a otro sospechoso y culparía a la conversación equivocada.
+ */
 const CLOSED_CALL_STATE = {
   activeView: 'desktop',
   activeCallSuspect: null,
   callSessionId: null,
   currentRequestId: null,
   isInterrogationLoading: false,
+  lastContradictionFeedback: null,
 } as const satisfies Partial<GameSessionState>;
 
 /** Tipo de victoria asociado a cada fase terminal; una derrota no otorga bonus. */
@@ -443,6 +448,7 @@ export const useGameStore = create<GameState>((set, get) => {
         callSessionId: createCallSessionId(),
         currentRequestId: null,
         isInterrogationLoading: false,
+        lastContradictionFeedback: null,
       });
 
       // Si la presión y las contradicciones obligatorias ya se cumplían antes

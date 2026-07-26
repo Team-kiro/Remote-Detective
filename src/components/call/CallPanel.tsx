@@ -25,7 +25,7 @@ import {
   type DragEndEvent,
   type ScreenReaderInstructions,
 } from '@dnd-kit/core';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from '@/components/call/CallPanel.module.css';
 import { resolveDrop } from '@/components/call/contradictionDrop';
 import { config } from '@/config';
@@ -233,6 +233,12 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
             </button>
           </article>
 
+          {/* Fijado sobre el escritorio: el aviso no forma parte del flujo, así
+              que soltar una evidencia no desplaza las zonas de drop. Va aquí en
+              el DOM, y no al final, para que su orden de tabulación coincida con
+              el sitio donde el jugador lo ve. */}
+          {feedback === null ? null : <Feedback feedback={feedback} onDismiss={clearFeedback} />}
+
           <section className={styles.history} aria-labelledby="call-history-heading">
             <h3 id="call-history-heading" className={styles.subtitle}>
               Historial de la llamada
@@ -371,9 +377,6 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
                   )}
                 </ul>
               )}
-              {/* Fijado sobre el escritorio: el aviso no forma parte del flujo,
-                  así que soltar una evidencia no desplaza las zonas de drop. */}
-              {feedback === null ? null : <Feedback feedback={feedback} onDismiss={clearFeedback} />}
             </section>
           </DndContext>
         </>
@@ -404,7 +407,9 @@ function DraggableEvidence({
       type="button"
       ref={setNodeRef}
       className={isDragging ? styles.evidenceChipDragging : styles.evidenceChip}
-      disabled={!isEnabled}
+      // Sin `disabled`: dnd-kit ya emite `aria-disabled` en `attributes`, y así
+      // la evidencia sigue siendo alcanzable con el tabulador, que es donde el
+      // jugador lee por qué todavía no puede presentarla.
       // El transform sigue al puntero y al teclado; sin él dnd-kit desplaza la
       // página para mantener visible una evidencia que nunca se mueve.
       style={
@@ -460,6 +465,20 @@ function Feedback({
   feedback: ContradictionFeedbackState;
   onDismiss: () => void;
 }): React.JSX.Element {
+  // El resto de la interfaz se cierra con Escape (el diálogo de acusación, el
+  // arrastre en curso); un aviso que ignorase la tecla rompería la convención.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') {
+        onDismiss();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [onDismiss]);
+
   return (
     <div className={styles.feedback} data-feedback={feedback.type} role="status">
       <p className={styles.feedbackMessage}>{FEEDBACK_MESSAGES[feedback.type]}</p>
