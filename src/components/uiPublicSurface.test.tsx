@@ -171,7 +171,11 @@ function fillAccusation(container: HTMLElement, accusation: AccusationInput): vo
  */
 function pointerEvent(type: string, x: number, y: number): MouseEvent {
   const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientX: x, clientY: y });
-  Object.defineProperty(event, 'isPrimary', { value: true });
+  Object.defineProperties(event, {
+    isPrimary: { value: true },
+    pointerId: { value: 1 },
+    pointerType: { value: 'mouse' },
+  });
 
   return event;
 }
