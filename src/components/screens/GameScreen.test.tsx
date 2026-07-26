@@ -291,7 +291,10 @@ describe('GameScreen: acusación final', () => {
       ...SOLUTION.requiredEvidenceIds,
     ]);
     click(query(container, '[data-testid="accusation-submit"]'));
-    expect(container.querySelector('[data-testid="accusation-confirm"]')).not.toBeNull();
+    const confirmation = query(container, '[data-testid="accusation-confirm"]');
+    const description = query(container, `#${confirmation.getAttribute('aria-describedby') ?? ''}`);
+    expect(confirmation.hasAttribute('aria-modal')).toBe(false);
+    expect(description.textContent).toContain('Esta decisión es definitiva.');
 
     click(query(container, '[data-testid="accusation-cancel"]'));
 

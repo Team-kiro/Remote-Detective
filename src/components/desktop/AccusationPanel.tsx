@@ -207,14 +207,14 @@ export function AccusationPanel({
         <div
           className={styles.dialog}
           role="dialog"
-          aria-modal="true"
           aria-labelledby="accusation-confirm-heading"
+          aria-describedby="accusation-confirm-description"
           data-testid="accusation-confirm"
         >
           <h3 id="accusation-confirm-heading" className={styles.dialogTitle}>
             Confirmar acusación
           </h3>
-          <p className={styles.dialogText}>
+          <p id="accusation-confirm-description" className={styles.dialogText}>
             Acusas a {suspects.find((suspect) => suspect.id === suspectId)?.name ?? suspectId} por{' '}
             {MOTIVE_OPTIONS.find((option) => option.id === motiveId)?.text ?? motiveId}, mediante{' '}
             {METHOD_OPTIONS.find((option) => option.id === methodId)?.text ?? methodId}, con{' '}
