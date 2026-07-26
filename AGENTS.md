@@ -88,12 +88,15 @@ All scripts run from the repository root:
 - `npm run typecheck` — type-check without emitting
 - `npm run lint` — ESLint with `--max-warnings 0`
 
+CI (`.github/workflows/run-tests.yml`) runs lint, type-check, unit tests, and the E2E suite as four parallel jobs on pull requests to `main` and pushes to `main`. `copilot-setup-steps.yml` preinstalls dependencies and the Chromium binary for the coding agent.
+
 ## Repository structure
 
 ```
 Remote-Detective/
 ├── AGENTS.md, PRODUCT.md, DESIGN.md   # agent, product, and visual design context
 ├── .github/instructions/              # path-scoped agent instruction files
+├── .github/workflows/                 # CI: lint, type-check, unit tests, E2E
 ├── .kiro/specs/remote-detective/      # requirements.md, design.md, tasks.md
 ├── .kiro/steering/                    # Kiro mirror of the instruction files
 ├── openspec/specs/                    # OpenSpec mirror of the same specs
