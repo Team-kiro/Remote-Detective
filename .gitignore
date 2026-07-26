@@ -1,0 +1,6 @@
+node_modules/
+dist/
+
+# Ephemeral agent/tooling artifacts
+.impeccable/
+.playwright-mcp/

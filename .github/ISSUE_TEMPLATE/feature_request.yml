@@ -1,0 +1,39 @@
+name: Feature request
+description: Propose a change or track a specification task
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: input
+    id: spec-task
+    attributes:
+      label: Spec task
+      description: The task number from .kiro/specs/remote-detective/tasks.md, if this tracks one.
+      placeholder: "4.3"
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What should exist, and why.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Concrete, checkable outcomes.
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+  - type: input
+    id: requirements
+    attributes:
+      label: Requirements
+      description: The requirement numbers from requirements.md this satisfies.
+      placeholder: "8.1-8.5, 20.1"
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Anything in AGENTS.md, DESIGN.md, or the correctness properties this must respect.

@@ -1,0 +1,53 @@
+name: Bug report
+description: Report incorrect behavior in the game
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting. Please include enough detail to reproduce the problem deterministically.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the incorrect behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened? Reference a requirement or correctness property if you know it.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Start a game
+        2. Call Daniel Rivas
+        3. Drag evidence X onto statement Y
+        4. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Narrative data
+        - Logic engines
+        - Game store / state
+        - UI / components
+        - Styling
+        - Persistence
+        - Backend / Bedrock
+        - Build or tooling
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and viewport
+      placeholder: Chrome 131, 1920x1080
