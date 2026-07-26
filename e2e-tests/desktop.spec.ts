@@ -4,7 +4,20 @@
  * Requisitos: 3.1-3.3, 4.1-4.3, 5.1-5.5, 13.2-13.6
  */
 
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
+
+/**
+ * Marcas de los metadatos `_internal` del caso, los sospechosos y las
+ * evidencias. Ninguna puede aparecer en el HTML renderizado: la palabra
+ * "culpable" no basta como aserción negativa porque los metadatos internos se
+ * filtrarían por sus claves, sus identificadores o el motivo real.
+ */
+const INTERNAL_MARKERS =
+  /_internal|culpritId|realMotive|relatedSuspects|doesNotKnow|motive_silence|method_poison|desfalco de 2 millones/i;
+
+async function expectNoInternalMetadata(locator: Locator): Promise<void> {
+  await expect.poll(async () => locator.innerHTML()).not.toMatch(INTERNAL_MARKERS);
+}
 
 test.describe('Escritorio de la partida', () => {
   test.beforeEach(async ({ page }) => {
@@ -19,8 +32,7 @@ test.describe('Escritorio de la partida', () => {
     await expect(desktop).toContainText('Marcos Linares');
     await expect(desktop.getByRole('definition').filter({ hasText: /^4$/ })).toHaveCount(1);
     await expect(desktop.getByRole('definition').filter({ hasText: /^6$/ })).toHaveCount(1);
-    // El culpable y el motivo real son metadatos internos: no pueden llegar al DOM.
-    await expect(desktop).not.toContainText('culpable');
+    await expectNoInternalMetadata(desktop);
   });
 
   test('Escritorio - navega entre expediente, llamadas y acusación', async ({ page }) => {
@@ -62,5 +74,6 @@ test.describe('Escritorio de la partida', () => {
     await expect(firstEvidence).toHaveAttribute('aria-pressed', 'true');
     await expect(detail).toContainText(evidenceName);
     await expect(detail).toContainText('Información observable');
+    await expectNoInternalMetadata(detail);
   });
 });
