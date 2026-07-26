@@ -93,16 +93,15 @@ function navigate(container: HTMLElement, view: string): void {
   click(query(container, `nav button[data-view="${view}"]`));
 }
 
-/** Selecciona un valor en un `select` nativo del formulario de acusación. */
-function selectOption(container: HTMLElement, selector: string, value: string): void {
-  const select = query(container, selector) as HTMLSelectElement;
+/** Marca una opción del tablero de caso disparando el evento nativo. */
+function choose(container: HTMLElement, selector: string): void {
+  const input = query(container, selector) as HTMLInputElement;
   act(() => {
-    select.value = value;
-    select.dispatchEvent(new Event('change', { bubbles: true }));
+    input.click();
   });
 }
 
-/** Completa el formulario con la acusación indicada. */
+/** Completa el tablero con la acusación indicada. */
 function fillAccusation(
   container: HTMLElement,
   suspectId: string,
@@ -110,11 +109,11 @@ function fillAccusation(
   methodId: string,
   evidenceIds: readonly string[],
 ): void {
-  selectOption(container, '#accusation-suspect', suspectId);
-  selectOption(container, '#accusation-motive', motiveId);
-  selectOption(container, '#accusation-method', methodId);
+  choose(container, `input[data-suspect-choice="${suspectId}"]`);
+  choose(container, `input[data-motive-choice="${motiveId}"]`);
+  choose(container, `input[data-method-choice="${methodId}"]`);
   for (const evidenceId of evidenceIds) {
-    click(query(container, `input[data-evidence-choice="${evidenceId}"]`));
+    choose(container, `input[data-evidence-choice="${evidenceId}"]`);
   }
 }
 
@@ -299,7 +298,7 @@ describe('GameScreen: acusación final', () => {
     expect(query(container, '#accusation-status').textContent).toContain('sospechoso');
     expect(container.querySelectorAll('input[data-evidence-choice]')).toHaveLength(6);
 
-    selectOption(container, '#accusation-suspect', SOLUTION.culpritId);
+    choose(container, `input[data-suspect-choice="${SOLUTION.culpritId}"]`);
     expect(query(container, '#accusation-status').textContent).not.toContain('sospechoso');
     expect(
       (query(container, '[data-testid="accusation-submit"]') as HTMLButtonElement).disabled,
@@ -359,7 +358,14 @@ describe('GameScreen: acusación final', () => {
 
     const submit = query(container, '[data-testid="accusation-submit"]') as HTMLButtonElement;
     expect(submit.disabled).toBe(true);
-    expect((query(container, '#accusation-suspect') as HTMLSelectElement).disabled).toBe(true);
+    expect(
+      (
+        query(
+          container,
+          `input[data-suspect-choice="${SOLUTION.culpritId}"]`,
+        ) as HTMLInputElement
+      ).closest('fieldset')?.disabled,
+    ).toBe(true);
     expect(query(container, '#accusation-status').textContent).toContain('única acusación');
   });
 });

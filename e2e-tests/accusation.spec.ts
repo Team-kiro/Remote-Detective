@@ -19,14 +19,16 @@ async function fillAccusation(
   page: Page,
   options: { suspect: string; motive: string; method: string },
 ): Promise<void> {
-  await page.getByLabel('Sospechoso').selectOption({ label: options.suspect });
-  await page.getByLabel('Motivo').selectOption({ label: options.motive });
-  await page.getByLabel('Método').selectOption({ label: options.method });
+  // Los controles del tablero son radios y casillas nativas ocultas dentro de
+  // su ficha: `force` evita depender del punto de impacto de la etiqueta.
+  await page.getByRole('radio', { name: options.suspect }).check({ force: true });
+  await page.getByRole('radio', { name: options.motive, exact: true }).check({ force: true });
+  await page.getByRole('radio', { name: options.method, exact: true }).check({ force: true });
 
   // Se marcan las seis evidencias: la solución admite extras y así el caso de
   // victoria no depende del orden del catálogo.
   for (const checkbox of await page.getByRole('checkbox').all()) {
-    await checkbox.check();
+    await checkbox.check({ force: true });
   }
 }
 
