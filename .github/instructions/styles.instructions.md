@@ -1,6 +1,6 @@
 ---
 description: 'CSS Modules and the noir visual system'
-applyTo: 'src/**/*.css'
+applyTo: 'frontend/src/**/*.css'
 ---
 
 # Styling Instructions

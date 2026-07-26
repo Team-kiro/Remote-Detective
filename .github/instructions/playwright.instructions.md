@@ -1,6 +1,6 @@
 ---
 description: 'Playwright end-to-end tests for the detective desktop flows'
-applyTo: '**/*.spec.ts'
+applyTo: 'frontend/e2e-tests/**/*.spec.ts'
 ---
 
 # End-to-End Testing Guidelines (Playwright)
