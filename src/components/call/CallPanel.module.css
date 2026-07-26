@@ -254,6 +254,107 @@
   background: #141414;
 }
 
+.evidenceTray {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.evidenceList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.evidenceChip,
+.evidenceChipDragging {
+  padding: 0.5rem 0.85rem;
+  border: 1px solid #545454;
+  background: #1d1d1d;
+  color: #e7e2d5;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-align: left;
+  cursor: grab;
+  touch-action: none;
+}
+
+.evidenceChipDragging {
+  border-color: #b44a42;
+  cursor: grabbing;
+}
+
+.evidenceChip:focus-visible,
+.evidenceChipDragging:focus-visible,
+.feedbackDismiss:focus-visible {
+  outline: 3px solid #e7e2d5;
+  outline-offset: 2px;
+}
+
+/* Zonas de destino válidas resaltadas solo mientras dura el arrastre. */
+.statementCardAvailable {
+  border-style: solid;
+  border-color: #b9b4a8;
+}
+
+.statementCardOver {
+  border-color: #b44a42;
+  background: #221515;
+}
+
+.feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.6rem 0.85rem;
+  border-left: 4px solid #545454;
+  background: #141414;
+}
+
+.feedback[data-feedback='valid'] {
+  border-left-color: #c9b672;
+}
+
+.feedback[data-feedback='incorrect'] {
+  border-left-color: #b44a42;
+}
+
+.feedback[data-feedback='related_insufficient'] {
+  border-left-color: #b9b4a8;
+}
+
+.feedback[data-feedback='already_discovered'] {
+  border-left-color: #545454;
+}
+
+.feedbackMessage {
+  margin: 0;
+  color: #e7e2d5;
+  font-size: 0.85rem;
+}
+
+.feedbackExplanation {
+  margin: 0;
+  color: #b9b4a8;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.feedbackDismiss {
+  align-self: start;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid #545454;
+  background: #1d1d1d;
+  color: #b9b4a8;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
 .statementAuthor {
   color: #b9b4a8;
   font-size: 0.7rem;
