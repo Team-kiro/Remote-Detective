@@ -10,6 +10,9 @@ export default defineConfig({
     },
   },
   test: {
+    // Vitest solo posee las pruebas unitarias co-localizadas; las specs de
+    // `e2e-tests/` pertenecen a Playwright.
+    include: ['src/**/*.test.{ts,tsx}'],
     environment: 'jsdom',
     globals: true,
     passWithNoTests: false,

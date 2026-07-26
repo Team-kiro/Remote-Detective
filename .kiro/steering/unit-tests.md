@@ -7,6 +7,7 @@ inclusion: always
 Source: `.github/instructions/unit-tests.instructions.md`
 
 - Test stack: Vitest via `npm run test` from repo root.
+- Vitest owns `src/**/*.test.{ts,tsx}`; player-visible flows belong to Playwright in `e2e-tests/`.
 - Keep tests deterministic with concrete values; no property-based generators.
 - Co-locate tests and use `<module>.test.ts` / `<Component>.test.tsx`.
 - Maintain explicit typing in test helpers/fixtures; no `any`.

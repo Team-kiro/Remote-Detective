@@ -7,6 +7,8 @@ applyTo: '**/*.test.{ts,tsx}'
 
 Tests run with `npm run test` from the repository root (Vitest, single non-interactive run). They are the mechanism that keeps the 31 Correctness Properties in `design.md` honest.
 
+Vitest owns `src/**/*.test.{ts,tsx}` only. Player-visible flows over the built app belong to the Playwright suite in `e2e-tests/` — see `playwright.instructions.md`.
+
 > [!IMPORTANT]
 > Tests are **deterministic cases with concrete values**. `fast-check` and property-based generation are explicitly rejected by the design. Pin time, pin IDs, pin expected numbers.
 

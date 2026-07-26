@@ -10,6 +10,10 @@ npm-debug.log*
 
 # Ephemeral agent/tooling artifacts
 .playwright-mcp/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
 
 # impeccable-ignore-start
 # Ephemeral output, runtime state, and per-dev overrides.
