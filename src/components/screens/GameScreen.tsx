@@ -7,8 +7,9 @@
  *
  * El componente solo invoca acciones públicas del store (`openCaseFile`,
  * `openEvidence`, `openAccusation`, `submitAccusation`, `returnToDesktop`) y no
- * duplica estado global: la vista `call` únicamente puede abrirse mediante
- * `startCall`, que invoca el panel de llamadas al elegir sospechoso.
+ * duplica estado global. La navegación lateral solo hace *visible* la sección
+ * de llamadas sobre el escritorio; la llamada activa (`activeView === 'call'`)
+ * únicamente puede establecerla `startCall` desde el selector de sospechosos.
  *
  * Requisitos: 3.1-3.3, 4.1-4.3, 5.1-5.5, 10.1-10.2, 12.1-12.9, 13.2-13.6
  */

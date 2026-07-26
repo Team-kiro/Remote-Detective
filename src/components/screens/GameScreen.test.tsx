@@ -457,7 +457,8 @@ describe('GameScreen: sistema de llamadas', () => {
   });
 });
 
-describe('GameScreen: metadatos internos', () => {  it('no expone metadatos internos en los view models', () => {
+describe('GameScreen: metadatos internos', () => {
+  it('no expone metadatos internos en los view models', () => {
     for (const view of EVIDENCE_VIEWS) {
       expect(Object.hasOwn(view, '_internal')).toBe(false);
     }

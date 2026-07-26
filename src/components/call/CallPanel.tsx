@@ -230,7 +230,12 @@ function Pressure({ suspectId, value }: { suspectId: SuspectId; value: number })
   return (
     <span className={styles.pressure} data-pressure={suspectId}>
       Presión: {value}%
-      <progress className={styles.pressureBar} max={100} value={value} />
+      <progress
+        className={styles.pressureBar}
+        max={100}
+        value={value}
+        aria-label={`Presión acumulada: ${String(value)} por ciento`}
+      />
     </span>
   );
 }
