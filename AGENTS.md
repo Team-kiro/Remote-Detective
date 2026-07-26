@@ -19,6 +19,7 @@ Specs are the source of truth. Read them before changing behavior:
 - Always use instructions files when available, reviewing before generating code
 - Do not generate summary markdown files upon completion of a task
 - Always use absolute paths when running scripts and shell commands
+- Once a PR exists, comment on it every time you push new changes, so the review history explains what moved and why
 - **NEVER commit or push to main automatically unless explicitly instructed to do so**
 
 ## Code standards
