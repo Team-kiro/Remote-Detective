@@ -28,11 +28,13 @@ Specs are the source of truth. Read them before changing behavior:
 #### Testing guidelines
 
 - Run `npm run test` (Vitest, non-interactive) and `npm run lint` (ESLint, `--max-warnings 0`) before every commit
+- Run `npm run test:e2e` (Playwright, Chromium against the production bundle) when a change touches screens, navigation, or the accusation flow
 - Run `npm run build` for any change that touches types, components, or config — the build is the TypeScript gate
 - Tests are **deterministic Vitest cases with concrete values**. Do not introduce `fast-check` or property-based testing; the design explicitly rejects it
 - Review existing tests before adding new ones; the seven approved test groups already cover the 31 Correctness Properties and duplicating them is waste
 - Test code is production code: same typing discipline, same DRY expectations
 - When you change an engine, the store, or persistence, update the co-located test file in the same change
+- Vitest owns `src/**/*.test.{ts,tsx}`; Playwright owns `e2e-tests/**/*.spec.ts`. E2E specs verify player-visible flows, never engine arithmetic
 
 #### Project guidelines
 
@@ -66,6 +68,7 @@ The strict separation between the four layers is what makes the game auditable. 
 | Logic engines | `src/logic/` | Pure deterministic functions. No React, no Zustand, no network | `logic-engines.instructions.md` |
 | State | `src/store/` | The only place game rules mutate state. Owns the minimal public surface | `game-store.instructions.md` |
 | UI | `src/components/` | Renders state and calls public actions. Cannot fabricate outcomes | `react-ui.instructions.md` |
+| E2E | `e2e-tests/` | Playwright specs over the built app. Verify flows, not engine arithmetic | `playwright.instructions.md` |
 
 Two cross-cutting rules that no layer may break:
 
@@ -77,10 +80,15 @@ Two cross-cutting rules that no layer may break:
 All scripts run from the repository root:
 
 - `npm run dev` — start the Vite dev server
+- `npm run preview` — serve the production bundle locally (used by the E2E suite)
 - `npm run test` — run the Vitest suite once, non-interactive
+- `npm run test:e2e` — run the Playwright E2E suite (builds and previews automatically)
+- `npm run test:e2e:install` — download the Chromium binary Playwright needs (once per machine)
 - `npm run build` — type-check (`tsc -b`) and produce the production bundle
 - `npm run typecheck` — type-check without emitting
 - `npm run lint` — ESLint with `--max-warnings 0`
+
+CI (`.github/workflows/run-tests.yml`) runs lint, type-check, unit tests, and the E2E suite as four parallel jobs on pull requests to `main` and pushes to `main`. `copilot-setup-steps.yml` preinstalls dependencies and the Chromium binary for the coding agent.
 
 ## Repository structure
 
@@ -88,8 +96,11 @@ All scripts run from the repository root:
 Remote-Detective/
 ├── AGENTS.md, PRODUCT.md, DESIGN.md   # agent, product, and visual design context
 ├── .github/instructions/              # path-scoped agent instruction files
+├── .github/workflows/                 # CI: lint, type-check, unit tests, E2E
 ├── .kiro/specs/remote-detective/      # requirements.md, design.md, tasks.md
+├── .kiro/steering/                    # Kiro mirror of the instruction files
 ├── openspec/specs/                    # OpenSpec mirror of the same specs
+├── e2e-tests/                         # Playwright specs (*.spec.ts)
 ├── src/
 │   ├── data/                          # frozen narrative data, types, view models
 │   ├── logic/                         # pure deterministic engines
@@ -100,7 +111,7 @@ Remote-Detective/
 │   ├── assets/{suspects,evidence,backgrounds,ui}/
 │   ├── styles/global.css
 │   └── config.ts                      # timer duration, timeout, interrogation mode
-└── vite.config.ts, vitest.config.ts, eslint.config.js, tsconfig*.json
+└── vite.config.ts, vitest.config.ts, playwright.config.ts, eslint.config.js, tsconfig*.json
 ```
 
 ## Out of scope
