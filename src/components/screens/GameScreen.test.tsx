@@ -1,11 +1,12 @@
 /**
  * Pruebas mínimas de render y navegación del HUD persistente, el escritorio, el
- * expediente y el panel de evidencias (tarea 4.2).
+ * expediente, el panel de evidencias (tarea 4.2) y el formulario de acusación
+ * con su confirmación (tarea 4.3).
  *
  * Las pruebas exhaustivas de superficie pública y flujos UI pertenecen al grupo
  * 4.7.
  *
- * Requisitos: 3.1-3.3, 4.1-4.3, 5.1-5.5, 10.1-10.2
+ * Requisitos: 3.1-3.3, 4.1-4.3, 5.1-5.5, 10.1-10.2, 12.1-12.9, 13.6
  */
 
 import { act } from 'react';
@@ -15,6 +16,7 @@ import { GameScreen } from '@/components/screens/GameScreen';
 import { CASE_FILE } from '@/data/case';
 import { EVIDENCE } from '@/data/evidence';
 import { SUSPECTS } from '@/data/suspects';
+import { SOLUTION } from '@/data/solution';
 import { EVIDENCE_VIEWS, SUSPECT_PROFILE_VIEWS } from '@/data/viewModels';
 import { createInitialGameSessionState, useGameStore } from '@/store/gameStore';
 import { PERSISTENCE_KEY } from '@/store/persistence';
@@ -88,6 +90,31 @@ function click(element: HTMLElement): void {
 
 function navigate(container: HTMLElement, view: string): void {
   click(query(container, `nav button[data-view="${view}"]`));
+}
+
+/** Selecciona un valor en un `select` nativo del formulario de acusación. */
+function selectOption(container: HTMLElement, selector: string, value: string): void {
+  const select = query(container, selector) as HTMLSelectElement;
+  act(() => {
+    select.value = value;
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+}
+
+/** Completa el formulario con la acusación indicada. */
+function fillAccusation(
+  container: HTMLElement,
+  suspectId: string,
+  motiveId: string,
+  methodId: string,
+  evidenceIds: readonly string[],
+): void {
+  selectOption(container, '#accusation-suspect', suspectId);
+  selectOption(container, '#accusation-motive', motiveId);
+  selectOption(container, '#accusation-method', methodId);
+  for (const evidenceId of evidenceIds) {
+    click(query(container, `input[data-evidence-choice="${evidenceId}"]`));
+  }
 }
 
 describe('GameScreen: HUD persistente', () => {
@@ -226,6 +253,79 @@ describe('GameScreen: escritorio, expediente y evidencias', () => {
     expect(query(container, `button[data-evidence="${first.id}"]`).getAttribute('aria-pressed')).toBe(
       'true',
     );
+  });
+});
+
+describe('GameScreen: acusación final', () => {
+  it('impide el envío mientras falten campos e indica cuáles', () => {
+    activateGame(600_000);
+    const container = renderGameScreen();
+    navigate(container, 'accusation');
+
+    const submit = query(container, '[data-testid="accusation-submit"]') as HTMLButtonElement;
+    expect(submit.disabled).toBe(true);
+    expect(query(container, '#accusation-status').textContent).toContain('sospechoso');
+    expect(container.querySelectorAll('input[data-evidence-choice]')).toHaveLength(6);
+
+    selectOption(container, '#accusation-suspect', SOLUTION.culpritId);
+    expect(query(container, '#accusation-status').textContent).not.toContain('sospechoso');
+    expect(
+      (query(container, '[data-testid="accusation-submit"]') as HTMLButtonElement).disabled,
+    ).toBe(true);
+
+    fillAccusation(container, SOLUTION.culpritId, SOLUTION.motiveId, SOLUTION.methodId, [
+      SOLUTION.requiredEvidenceIds[0],
+    ]);
+    expect(
+      (query(container, '[data-testid="accusation-submit"]') as HTMLButtonElement).disabled,
+    ).toBe(false);
+    expect(container.querySelector('[data-testid="accusation-confirm"]')).toBeNull();
+  });
+
+  it('cancelar la confirmación vuelve al escritorio sin consumir el intento', () => {
+    activateGame(600_000);
+    const container = renderGameScreen();
+    navigate(container, 'accusation');
+
+    fillAccusation(container, SOLUTION.culpritId, SOLUTION.motiveId, SOLUTION.methodId, [
+      ...SOLUTION.requiredEvidenceIds,
+    ]);
+    click(query(container, '[data-testid="accusation-submit"]'));
+    expect(container.querySelector('[data-testid="accusation-confirm"]')).not.toBeNull();
+
+    click(query(container, '[data-testid="accusation-cancel"]'));
+
+    const state = useGameStore.getState();
+    expect(state.accusationUsed).toBe(false);
+    expect(state.phase).toBe('active');
+    expect(state.activeView).toBe('desktop');
+  });
+
+  it('confirmar entrega la acusación al store, que decide victoria o derrota', () => {
+    activateGame(600_000);
+    const container = renderGameScreen();
+    navigate(container, 'accusation');
+
+    fillAccusation(container, SOLUTION.culpritId, SOLUTION.motiveId, SOLUTION.methodId, [
+      ...SOLUTION.requiredEvidenceIds,
+    ]);
+    click(query(container, '[data-testid="accusation-submit"]'));
+    click(query(container, '[data-testid="accusation-confirm-submit"]'));
+
+    expect(useGameStore.getState().phase).toBe('victory_accusation');
+    expect(useGameStore.getState().accusationUsed).toBe(true);
+  });
+
+  it('con el intento consumido no admite nuevos envíos', () => {
+    activateGame(600_000);
+    useGameStore.setState({ accusationUsed: true });
+    const container = renderGameScreen();
+    navigate(container, 'accusation');
+
+    const submit = query(container, '[data-testid="accusation-submit"]') as HTMLButtonElement;
+    expect(submit.disabled).toBe(true);
+    expect((query(container, '#accusation-suspect') as HTMLSelectElement).disabled).toBe(true);
+    expect(query(container, '#accusation-status').textContent).toContain('única acusación');
   });
 });
 

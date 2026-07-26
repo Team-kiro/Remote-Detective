@@ -3,18 +3,19 @@
  *
  * Compone el HUD persistente (temporizador `mm:ss` y puntuación), la navegación
  * lateral diferenciada y el área principal, que cambia según `activeView`:
- * escritorio, expediente y evidencias quedan implementados aquí, mientras que
- * las áreas de llamada y de acusación quedan conectadas para las tareas 4.3-4.5.
+ * escritorio, expediente, evidencias y acusación quedan implementados aquí,
+ * mientras que el área de llamada queda conectada para la tarea 4.4.
  *
  * El componente solo invoca acciones públicas del store (`openCaseFile`,
- * `openEvidence`, `openAccusation`, `returnToDesktop`) y no duplica estado
- * global: la vista `call` únicamente puede abrirse mediante `startCall`, que
- * pertenece al panel de llamadas de la tarea 4.4.
+ * `openEvidence`, `openAccusation`, `submitAccusation`, `returnToDesktop`) y no
+ * duplica estado global: la vista `call` únicamente puede abrirse mediante
+ * `startCall`, que pertenece al panel de llamadas de la tarea 4.4.
  *
- * Requisitos: 3.1-3.3, 4.1-4.3, 5.1-5.5, 10.1-10.2, 13.2-13.6
+ * Requisitos: 3.1-3.3, 4.1-4.3, 5.1-5.5, 10.1-10.2, 12.1-12.9, 13.2-13.6
  */
 
 import { useCallback, useState } from 'react';
+import { AccusationPanel } from '@/components/desktop/AccusationPanel';
 import { CaseFile } from '@/components/desktop/CaseFile';
 import { Desktop } from '@/components/desktop/Desktop';
 import { EvidencePanel } from '@/components/desktop/EvidencePanel';
@@ -26,6 +27,7 @@ import {
   CASE_FILE_VIEW,
   CASE_SUMMARY_VIEW,
   EVIDENCE_VIEWS,
+  SUSPECT_PROFILE_VIEWS,
 } from '@/data/viewModels';
 import { useGameStore } from '@/store/gameStore';
 
@@ -35,6 +37,8 @@ export function GameScreen(): React.JSX.Element {
   const openEvidence = useGameStore((state) => state.openEvidence);
   const openAccusation = useGameStore((state) => state.openAccusation);
   const returnToDesktop = useGameStore((state) => state.returnToDesktop);
+  const submitAccusation = useGameStore((state) => state.submitAccusation);
+  const accusationUsed = useGameStore((state) => state.accusationUsed);
 
   // El sistema de llamadas se abre desde la navegación, pero la vista `call`
   // del store exige `startCall(suspectId)`. Hasta que la tarea 4.4 monte el
@@ -97,17 +101,14 @@ export function GameScreen(): React.JSX.Element {
   } else if (activeView === 'evidence') {
     panel = <EvidencePanel evidence={EVIDENCE_VIEWS} />;
   } else if (activeView === 'accusation') {
-    // Área conectada para la tarea 4.3 (formulario y confirmación).
     panel = (
-      <section className={styles.pending} aria-labelledby="accusation-heading">
-        <h2 id="accusation-heading" className={styles.pendingTitle}>
-          Acusación final
-        </h2>
-        <p className={styles.pendingText}>
-          El formulario de acusación se habilita en la siguiente entrega. Volver al escritorio no
-          consume el intento.
-        </p>
-      </section>
+      <AccusationPanel
+        suspects={SUSPECT_PROFILE_VIEWS}
+        evidence={EVIDENCE_VIEWS}
+        accusationUsed={accusationUsed}
+        onSubmit={submitAccusation}
+        onCancel={handleReturnToDesktop}
+      />
     );
   } else {
     panel = <Desktop summary={CASE_SUMMARY_VIEW} />;
