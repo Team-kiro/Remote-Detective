@@ -1,8 +1,9 @@
 /**
  * Flujo E2E del sistema de llamadas: selector de sospechosos, interrogatorio,
- * declaraciones registradas y presentación de evidencias con teclado.
+ * declaraciones registradas, presentación de evidencias con teclado y la
+ * victoria por confesión, que es la única forma de ganar sin acusar.
  *
- * Requisitos: 6.1-6.11, 7.8, 9.1-9.3, 14.4, 16.5
+ * Requisitos: 3.3, 6.1-6.11, 7.8, 8.1-8.10, 9.1-9.5, 11.5, 13.9-13.11, 14.4, 16.5
  */
 
 import { expect, test, type Page } from '@playwright/test';
@@ -15,6 +16,42 @@ async function askArrivalQuestion(page: Page): Promise<void> {
   await page.getByLabel('Tu pregunta').fill(DANIEL_ARRIVAL_QUESTION);
   await page.getByRole('button', { name: 'Enviar pregunta' }).click();
   await expect(page.locator('li[data-statement]')).toHaveCount(1);
+}
+
+/**
+ * Presenta una evidencia sobre una declaración con el teclado.
+ *
+ * El número de pasos hasta la zona de destino depende de la geometría, así que
+ * se avanza hasta que la declaración se marque, sin esperas fijas.
+ */
+async function presentEvidence(
+  page: Page,
+  evidenceName: string,
+  statementId: string,
+): Promise<void> {
+  const statement = page.locator(`li[data-statement="${statementId}"]`);
+  await page
+    .getByRole('region', { name: 'Evidencias disponibles' })
+    .getByRole('button', { name: evidenceName })
+    .focus();
+  await page.keyboard.press('Space');
+
+  for (let step = 0; step < 24; step += 1) {
+    if ((await statement.getAttribute('data-over')) === 'true') {
+      break;
+    }
+    await page.keyboard.press('ArrowDown');
+  }
+  await expect(statement).toHaveAttribute('data-over', 'true');
+
+  await page.keyboard.press('Space');
+}
+
+/** Pregunta por el tema sugerido y espera a que se registre su declaración. */
+async function askAbout(page: Page, intent: string, expectedStatements: number): Promise<void> {
+  await page.getByRole('button', { name: intent }).click();
+  await page.getByRole('button', { name: 'Enviar pregunta' }).click();
+  await expect(page.locator('li[data-statement]')).toHaveCount(expectedStatements);
 }
 
 test.describe('Sistema de llamadas', () => {
@@ -118,28 +155,112 @@ test.describe('Sistema de llamadas', () => {
     await page.getByRole('button', { name: /Daniel Rivas/ }).click();
     await askArrivalQuestion(page);
 
-    const statement = page.locator('li[data-statement="stmt_daniel_arrival"]');
-    const evidence = page
-      .getByRole('region', { name: 'Evidencias disponibles' })
-      .getByRole('button', { name: 'Registro de acceso' });
-
-    await evidence.focus();
-    await page.keyboard.press('Space');
-
-    // El número de pasos hasta la declaración depende de la geometría, así que
-    // se avanza hasta que la zona de destino se marque, sin esperas fijas.
-    for (let step = 0; step < 6; step += 1) {
-      if ((await statement.getAttribute('data-over')) === 'true') {
-        break;
-      }
-      await page.keyboard.press('ArrowDown');
-    }
-    await expect(statement).toHaveAttribute('data-over', 'true');
-
-    await page.keyboard.press('Space');
+    await presentEvidence(page, 'Registro de acceso', 'stmt_daniel_arrival');
 
     await expect(page.locator('[data-feedback]')).toHaveAttribute('data-feedback', 'valid');
     await expect(page.getByTestId('hud-score')).toContainText('150');
+  });
+
+  test('Contradicciones - cancelar el arrastre con Escape no evalúa nada', async ({ page }) => {
+    await page.getByRole('button', { name: /Daniel Rivas/ }).click();
+    await askArrivalQuestion(page);
+
+    const statement = page.locator('li[data-statement="stmt_daniel_arrival"]');
+    await page
+      .getByRole('region', { name: 'Evidencias disponibles' })
+      .getByRole('button', { name: 'Registro de acceso' })
+      .focus();
+    await page.keyboard.press('Space');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Escape');
+
+    // Un arrastre cancelado no llega a `presentEvidence`: sin aviso y sin score.
+    await expect(statement).toHaveAttribute('data-over', 'false');
+    await expect(page.locator('[data-feedback]')).toHaveCount(0);
+    await expect(page.getByTestId('hud-score')).toContainText('0');
+  });
+
+  test('Contradicciones - los cuatro resultados se distinguen en pantalla', async ({ page }) => {
+    await page.getByRole('button', { name: /Daniel Rivas/ }).click();
+    await askArrivalQuestion(page);
+
+    const feedback = page.locator('[data-feedback]');
+
+    await test.step('La combinación válida explica la contradicción', async () => {
+      await presentEvidence(page, 'Registro de acceso', 'stmt_daniel_arrival');
+      await expect(feedback).toHaveAttribute('data-feedback', 'valid');
+      await expect(feedback).toContainText('Contradicción demostrada.');
+      await feedback.getByRole('button', { name: 'Cerrar aviso' }).click();
+    });
+
+    await test.step('Repetirla avisa sin volver a puntuar', async () => {
+      await presentEvidence(page, 'Registro de acceso', 'stmt_daniel_arrival');
+      await expect(feedback).toHaveAttribute('data-feedback', 'already_discovered');
+      await expect(page.getByTestId('hud-score')).toContainText('150');
+      await feedback.getByRole('button', { name: 'Cerrar aviso' }).click();
+    });
+
+    await test.step('Una evidencia relevante pero insuficiente no penaliza', async () => {
+      await presentEvidence(page, 'Botella de whisky', 'stmt_daniel_arrival');
+      await expect(feedback).toHaveAttribute('data-feedback', 'related_insufficient');
+      await expect(page.getByTestId('hud-score')).toContainText('150');
+      await feedback.getByRole('button', { name: 'Cerrar aviso' }).click();
+    });
+
+    await test.step('Una combinación sin relación aplica la penalización', async () => {
+      await presentEvidence(page, 'Informe toxicológico', 'stmt_daniel_arrival');
+      await expect(feedback).toHaveAttribute('data-feedback', 'incorrect');
+      await expect(page.getByTestId('hud-score')).toContainText('100');
+    });
+  });
+
+  test('Contradicciones - salir a otro panel y volver conserva la investigación', async ({
+    page,
+  }) => {
+    await page.getByRole('button', { name: /Daniel Rivas/ }).click();
+    await askArrivalQuestion(page);
+    await presentEvidence(page, 'Registro de acceso', 'stmt_daniel_arrival');
+    await expect(page.getByTestId('hud-score')).toContainText('150');
+
+    const nav = page.getByRole('navigation', { name: 'Navegación de la partida' });
+    await nav.getByRole('button', { name: 'Expediente' }).click();
+    await expect(page.getByRole('heading', { level: 2, name: 'Expediente del caso' })).toBeVisible();
+    await nav.getByRole('button', { name: 'Llamar' }).click();
+    await page.getByRole('button', { name: /Daniel Rivas/ }).click();
+
+    await expect(page.getByRole('region', { name: 'Historial de la llamada' })).toContainText(
+      DANIEL_ARRIVAL_QUESTION,
+    );
+    await expect(page.locator('li[data-statement="stmt_daniel_arrival"]')).toBeVisible();
+    await expect(page.getByTestId('hud-score')).toContainText('150');
+  });
+
+  test('Confesión - las tres contradicciones de Daniel ganan la partida', async ({ page }) => {
+    await page.getByRole('button', { name: /Daniel Rivas/ }).click();
+
+    await test.step('Se registran las tres declaraciones que Daniel miente', async () => {
+      await askAbout(page, 'Hora de llegada', 1);
+      await askAbout(page, 'Oficina de Marcos', 2);
+      await askAbout(page, 'Veneno/sustancias', 3);
+    });
+
+    await presentEvidence(page, 'Registro de acceso', 'stmt_daniel_arrival');
+    await expect(page.locator('[data-feedback]')).toHaveAttribute('data-feedback', 'valid');
+    await page.getByRole('button', { name: 'Cerrar aviso' }).click();
+
+    await presentEvidence(page, 'Grabación del pasillo', 'stmt_daniel_office');
+    await expect(page.locator('[data-feedback]')).toHaveAttribute('data-feedback', 'valid');
+    await page.getByRole('button', { name: 'Cerrar aviso' }).click();
+
+    // La tercera contradicción lleva la presión de Daniel al umbral: el store
+    // dispara la confesión sin que el jugador tenga que acusar.
+    await presentEvidence(page, 'Recibo de compra', 'stmt_daniel_substance');
+
+    await expect(page.getByRole('heading', { level: 1, name: 'Victoria por confesión' })).toBeVisible();
+    await expect(page.getByTestId('final-score')).toContainText('Puntuación final:');
+
+    await page.getByRole('button', { name: 'Reiniciar partida' }).click();
+    await expect(page.getByRole('button', { name: 'Iniciar partida' })).toBeVisible();
   });
 
   test('Contradicciones - el arrastre se narra en español y con nombres del caso', async ({
