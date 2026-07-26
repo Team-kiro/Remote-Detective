@@ -5,7 +5,7 @@
   padding: var(--space-xl);
   background:
     var(--scrim-screen),
-    url('../../assets/backgrounds/office.webp') center / cover no-repeat fixed,
+    url('../../assets/backgrounds/office.webp') center / cover no-repeat,
     var(--bg-root);
 }
 

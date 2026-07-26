@@ -4,7 +4,7 @@
   min-height: 100vh;
   background:
     var(--scrim-screen),
-    url('../../assets/backgrounds/desktop.webp') center / cover no-repeat fixed,
+    url('../../assets/backgrounds/desktop.webp') center / cover no-repeat,
     var(--bg-root);
 }
 

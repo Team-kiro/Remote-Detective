@@ -52,8 +52,8 @@ export function evaluateAccusation(
  * spoiler; una puntuación distinta de cero dice «ibas por buen camino» sin
  * nombrar a nadie.
  *
- * ponytail: pista muda hasta que haya más de un caso; entonces conviene
- * detallar qué eje falló en la pantalla final.
+ * Nota: cuando haya más de un caso convendrá detallar qué eje falló en la
+ * pantalla final.
  */
 export function partialAccusationPoints(
   accusation: AccusationInput,
