@@ -1,3 +1,7 @@
+import danielPortrait from '@/assets/suspects/daniel-rivas.png';
+import elenaPortrait from '@/assets/suspects/elena-vargas.png';
+import robertoPortrait from '@/assets/suspects/roberto-mendoza.png';
+import sofiaPortrait from '@/assets/suspects/sofia-castillo.png';
 import type { SuspectDef } from '@/data/types';
 
 /** Los cuatro perfiles aprobados del caso, en orden de presentación. */
@@ -7,7 +11,7 @@ export const SUSPECTS = [
     name: 'Daniel Rivas',
     age: 48,
     role: 'socio financiero',
-    portrait: null,
+    portrait: danielPortrait,
     description: 'Daniel Rivas, 48 años, socio financiero',
     relationship: 'Socio desde la fundación de Linares & Asociados (15 años)',
     personality: 'Calculador, evasivo, tiende a minimizar y deflectar culpa',
@@ -35,7 +39,7 @@ export const SUSPECTS = [
     name: 'Elena Vargas',
     age: 45,
     role: 'socia de operaciones',
-    portrait: null,
+    portrait: elenaPortrait,
     description: 'Elena Vargas, 45 años, socia de operaciones',
     relationship: 'Exesposa, divorciada hace un año',
     personality: 'Directa, emocional, defensiva cuando se la presiona',
@@ -63,7 +67,7 @@ export const SUSPECTS = [
     name: 'Roberto Mendoza',
     age: 50,
     role: 'socio de tecnología',
-    portrait: null,
+    portrait: robertoPortrait,
     description: 'Roberto Mendoza, 50 años, socio de tecnología',
     relationship: 'Amigo cercano desde la universidad, socio desde la fundación',
     personality: 'Nervioso, colaborador, tiende a dar demasiada información',
@@ -94,7 +98,7 @@ export const SUSPECTS = [
     name: 'Sofía Castillo',
     age: 38,
     role: 'socia comercial',
-    portrait: null,
+    portrait: sofiaPortrait,
     description: 'Sofía Castillo, 38 años, socia comercial',
     relationship: 'La más reciente en unirse a la firma (2 años)',
     personality: 'Profesional, fría, medida en sus respuestas',

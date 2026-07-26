@@ -166,7 +166,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - Mantener las seis evidencias disponibles durante la llamada; no hace falta ejecutar `endCall` antes de presentar la evidencia.
     - _Requirements: 5.1, 8.1-8.10, 9.1-9.3, 13.8_
 
-  - [ ] 4.6 Aplicar estética noir y adaptación mínima del viewport
+  - [x] 4.6 Aplicar estética noir y adaptación mínima del viewport
     - Crear paleta de grises/negros con máximo dos acentos, componentes inspirados en expedientes y placeholders para todos los recursos faltantes.
     - Optimizar el layout para 1024 px o más; debajo de ese ancho reorganizar a una columna y mostrar la recomendación de escritorio.
     - Mantener header, timer y score visibles y legibles sin implementar drag-and-drop táctil avanzado.

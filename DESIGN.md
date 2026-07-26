@@ -7,6 +7,8 @@ colors:
   bg-surface-2: "#151515"
   bg-header: "#121212"
   bg-active: "#221515"
+  bg-inset: "#141414"
+  bg-raised: "#1d1d1d"
   border-muted: "#3d3d3d"
   border-default: "#545454"
   border-strong: "#6e6e6e"
@@ -78,6 +80,7 @@ Interfaz de escritorio noir, sobria y de alto contraste, donde la jerarquia la c
 - Tipografia editorial serif con etiquetas en mayusculas espaciadas para controles.
 - Superficies planas con sombra puntual para modales/pantallas de cierre.
 - Botones rectos, directos, con estados por contraste y brillo.
+- Fotografia noir de ambiente detras de cada pantalla, siempre bajo un velo oscuro que preserva el contraste del texto.
 
 ## Colors
 
@@ -91,7 +94,7 @@ La base visual se apoya en negros y grises calidos con acentos funcionales de ri
 
 ### Neutral
 - **Negro Raiz** (`#0b0b0b`): fondo global.
-- **Carbón de Superficie** (`#171717`, `#151515`, `#121212`): paneles y barra superior.
+- **Carbón de Superficie** (`#171717`, `#151515`, `#141414`, `#121212`, `#1d1d1d`): paneles, barra superior, campos hundidos (`bg-inset`) y bloques elevados sobre panel (`bg-raised`).
 - **Marfil de Lectura** (`#e7e2d5`, `#d7d7d7`, `#d4cfc2`, `#b9b4a8`): texto por niveles de prioridad.
 - **Gris de Estructura** (`#3d3d3d`, `#545454`, `#6e6e6e`): bordes, divisores y delimitacion.
 
@@ -115,6 +118,8 @@ El sistema es desktop-first con composicion por paneles: cabecera sticky, navega
 ## Elevation & Depth
 
 Predomina la capa plana. La profundidad aparece en pantallas-estado con sombra `rgb(0 0 0 / 45%)` para separar bloques centrales del fondo.
+
+Las fotografias de ambiente se cubren con dos velos de gradiente: `--scrim-screen` para pantallas completas y `--scrim-panel` para paneles de trabajo. Sobre ellos, las tarjetas usan `--bg-surface-veiled` (`rgb(23 23 23 / 93%)`) para dejar entrever la foto sin perder legibilidad. Una capa global de grano y viñeta (`body::after`, no interactiva) unifica el conjunto.
 
 ## Shapes
 

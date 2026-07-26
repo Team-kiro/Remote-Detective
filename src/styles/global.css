@@ -1,7 +1,65 @@
+/**
+ * Base global del sistema noir.
+ *
+ * `DESIGN.md` es la fuente normativa: cada color, tipografía y escala de
+ * espaciado del documento vive aquí como custom property y los módulos CSS solo
+ * consumen `var(--token)`. Un hex suelto dentro de un módulo es deriva.
+ *
+ * Requisitos: 20.1-20.6
+ */
+
 :root {
-  color: #d7d7d7;
-  background: #0b0b0b;
-  font-family: Cambria, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  /* Superficies */
+  --bg-root: #0b0b0b;
+  --bg-surface: #171717;
+  --bg-surface-2: #151515;
+  --bg-header: #121212;
+  --bg-inset: #141414;
+  --bg-raised: #1d1d1d;
+  --bg-active: #221515;
+
+  /* Superficie translúcida: los paneles se apoyan sobre la fotografía de fondo */
+  --bg-surface-veiled: rgb(23 23 23 / 93%);
+
+  /* Bordes */
+  --border-muted: #3d3d3d;
+  --border-default: #545454;
+  --border-strong: #6e6e6e;
+
+  /* Texto */
+  --text-primary: #e7e2d5;
+  --text-base: #d7d7d7;
+  --text-secondary: #d4cfc2;
+  --text-muted: #b9b4a8;
+  --text-on-accent: #f5f2ea;
+
+  /* Acentos: rojo para acción y riesgo, ámbar reservado a la victoria */
+  --accent-danger: #b44a42;
+  --accent-danger-strong: #d9584f;
+  --accent-victory: #c9b672;
+
+  /* Tipografía */
+  --font-serif: Cambria, 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+  --tracking-label: 0.14em;
+  --tracking-control: 0.1em;
+
+  /* Espaciado */
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  /* Profundidad: plana por defecto, sombra solo bajo pantallas de estado */
+  --shadow-screen: 0 1.5rem 4rem rgb(0 0 0 / 45%);
+
+  /* Velos que garantizan legibilidad sobre las fotografías de ambiente */
+  --scrim-screen: linear-gradient(rgb(11 11 11 / 74%), rgb(11 11 11 / 90%));
+  --scrim-panel: linear-gradient(rgb(11 11 11 / 86%), rgb(11 11 11 / 95%));
+
+  color: var(--text-base);
+  background: var(--bg-root);
+  font-family: var(--font-serif);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -20,9 +78,45 @@ body {
   min-height: 100vh;
 }
 
+/*
+ * Grano y viñeta de película: la textura que separa "fondo oscuro" de "noir".
+ * Capa fija, inerte al puntero y sin coste de layout.
+ */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.55;
+  background:
+    radial-gradient(ellipse at center, transparent 45%, rgb(0 0 0 / 55%) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
+}
+
 button,
 input,
 select,
 textarea {
   font: inherit;
+}
+
+/* Un anillo visible es el único indicador de foco admitido; el brillo no basta. */
+:focus-visible {
+  outline: 3px solid var(--text-primary);
+  outline-offset: 3px;
+}
+
+img {
+  max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

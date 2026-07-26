@@ -65,6 +65,8 @@ export function CaseFile({ caseFile }: CaseFileProps): React.JSX.Element {
                   className={styles.portrait}
                   src={suspect.portrait}
                   alt={`Retrato de ${suspect.name}`}
+                  loading="lazy"
+                  decoding="async"
                 />
               )}
               <div className={styles.suspectBody}>

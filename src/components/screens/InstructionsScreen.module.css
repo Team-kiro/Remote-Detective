@@ -2,21 +2,25 @@
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  padding: 2rem;
+  padding: var(--space-xl);
+  background:
+    var(--scrim-screen),
+    url('../../assets/backgrounds/office.png') center / cover no-repeat fixed,
+    var(--bg-root);
 }
 
 .card {
   width: min(52rem, 100%);
   padding: 2.5rem;
-  border: 1px solid #545454;
-  background: #171717;
-  box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 45%);
-  color: #d4cfc2;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface-veiled);
+  box-shadow: var(--shadow-screen);
+  color: var(--text-secondary);
 }
 
 .title {
-  margin: 0 0 2rem;
-  color: #e7e2d5;
+  margin: 0 0 var(--space-xl);
+  color: var(--text-primary);
   font-size: clamp(1.75rem, 4vw, 2.75rem);
   letter-spacing: 0.06em;
 }
@@ -31,31 +35,26 @@
 }
 
 .blockTitle {
-  margin: 0 0 0.5rem;
-  color: #b44a42;
+  margin: 0 0 var(--space-xs);
+  color: var(--accent-danger);
   font-size: 1rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .backAction {
-  margin-top: 0.5rem;
+  margin-top: var(--space-xs);
   padding: 0.85rem 1.75rem;
-  border: 1px solid #6e6e6e;
+  border: 1px solid var(--border-strong);
   background: transparent;
-  color: #e7e2d5;
+  color: var(--text-primary);
   font: inherit;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--tracking-control);
   text-transform: uppercase;
   cursor: pointer;
 }
 
 .backAction:hover {
   filter: brightness(1.15);
-}
-
-.backAction:focus-visible {
-  outline: 3px solid #e7e2d5;
-  outline-offset: 3px;
 }

@@ -232,7 +232,7 @@ describe('GameScreen: escritorio, expediente y evidencias', () => {
     expect(container.querySelectorAll('[data-suspect]')).toHaveLength(4);
   });
 
-  it('lista las seis evidencias y muestra el detalle con placeholder accesible', () => {
+  it('lista las seis evidencias y muestra el detalle con imagen accesible', () => {
     activateGame(600_000);
     const container = renderGameScreen();
 
@@ -250,10 +250,41 @@ describe('GameScreen: escritorio, expediente y evidencias', () => {
     expect(detail.textContent).toContain(first.name);
     expect(detail.textContent).toContain(first.description);
     expect(detail.textContent).toContain(first.observableInfo);
-    expect(query(detail, '[role="img"]').getAttribute('aria-label')).toContain(first.name);
+    // Con recurso disponible se renderiza la fotografía; sin él, el placeholder
+    // accesible. Ninguna de las dos ramas puede quedar vacía o rota.
+    const visual = query(detail, 'img, [role="img"]');
+    const description =
+      visual.getAttribute('alt') ?? visual.getAttribute('aria-label') ?? '';
+    expect(description).toContain(first.name);
     expect(query(container, `button[data-evidence="${first.id}"]`).getAttribute('aria-pressed')).toBe(
       'true',
     );
+  });
+
+  it('mantiene visible la recomendación de jugar desde una computadora', () => {
+    activateGame(600_000);
+    const container = renderGameScreen();
+
+    // El aviso vive en el DOM y solo lo oculta la media query >= 1024px, de modo
+    // que la recomendación no depende de estado ni de JavaScript.
+    const notice = query(container, '[data-testid="desktop-recommendation"]');
+    expect(notice.textContent).toContain('1024');
+    expect(notice.textContent).toContain('computadora');
+  });
+
+  it('presenta a los cuatro sospechosos con su retrato', () => {
+    activateGame(600_000);
+    const container = renderGameScreen();
+
+    navigate(container, 'casefile');
+
+    for (const suspect of SUSPECT_PROFILE_VIEWS) {
+      const card = query(container, `[data-suspect="${suspect.id}"]`);
+      const visual = query(card, 'img, [role="img"]');
+      const description =
+        visual.getAttribute('alt') ?? visual.getAttribute('aria-label') ?? '';
+      expect(description).toContain(suspect.name);
+    }
   });
 });
 

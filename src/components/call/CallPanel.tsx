@@ -396,7 +396,15 @@ function Portrait({ suspect }: { suspect: SuspectProfileView }): React.JSX.Eleme
     );
   }
 
-  return <img className={styles.portrait} src={suspect.portrait} alt={suspect.name} />;
+  return (
+    <img
+      className={styles.portrait}
+      src={suspect.portrait}
+      alt={suspect.name}
+      loading="lazy"
+      decoding="async"
+    />
+  );
 }
 
 function Pressure({ suspectId, value }: { suspectId: SuspectId; value: number }): React.JSX.Element {

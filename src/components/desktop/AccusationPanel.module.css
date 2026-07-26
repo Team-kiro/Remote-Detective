@@ -1,16 +1,16 @@
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 1.5rem;
-  border: 1px solid #3d3d3d;
-  background: #171717;
-  color: #d4cfc2;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border: 1px solid var(--border-muted);
+  background: var(--bg-surface-veiled);
+  color: var(--text-secondary);
 }
 
 .title {
   margin: 0;
-  color: #b44a42;
+  color: var(--accent-danger);
   font-size: 1rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -18,7 +18,7 @@
 
 .warning {
   margin: 0;
-  color: #b9b4a8;
+  color: var(--text-muted);
   line-height: 1.6;
 }
 
@@ -30,7 +30,7 @@
 }
 
 .label {
-  color: #b9b4a8;
+  color: var(--text-muted);
   font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -38,23 +38,23 @@
 
 .select {
   padding: 0.6rem 0.75rem;
-  border: 1px solid #545454;
-  background: #141414;
-  color: #e7e2d5;
+  border: 1px solid var(--border-default);
+  background: var(--bg-inset);
+  color: var(--text-primary);
   font: inherit;
 }
 
-.select:focus-visible,
+/* El foco del checkbox nativo se traslada a su etiqueta contenedora. */
 .checkbox:focus-within {
-  outline: 3px solid #e7e2d5;
+  outline: 3px solid var(--text-primary);
   outline-offset: 2px;
 }
 
 .fieldset {
   margin: 0;
   padding: 1rem;
-  border: 1px solid #3d3d3d;
-  background: #141414;
+  border: 1px solid var(--border-muted);
+  background: var(--bg-inset);
 }
 
 .evidenceList {
@@ -71,23 +71,23 @@
   gap: 0.5rem;
   align-items: center;
   padding: 0.4rem 0.5rem;
-  border: 1px solid #3d3d3d;
-  color: #d4cfc2;
+  border: 1px solid var(--border-muted);
+  color: var(--text-secondary);
   cursor: pointer;
 }
 
 .status {
   margin: 0;
-  color: #b9b4a8;
+  color: var(--text-muted);
   line-height: 1.6;
 }
 
 .submit {
   align-self: flex-start;
   padding: 0.7rem 1.5rem;
-  border: 1px solid #b44a42;
-  background: #221515;
-  color: #e7e2d5;
+  border: 1px solid var(--accent-danger);
+  background: var(--bg-active);
+  color: var(--text-primary);
   font: inherit;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -95,15 +95,15 @@
 }
 
 .submit:disabled {
-  border-color: #545454;
-  background: #141414;
-  color: #8f8a80;
+  border-color: var(--border-default);
+  background: var(--bg-inset);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 
 .cancel {
   composes: submit;
-  border-color: #6e6e6e;
+  border-color: var(--border-strong);
   background: transparent;
 }
 
@@ -112,24 +112,18 @@
   filter: brightness(1.2);
 }
 
-.submit:focus-visible,
-.cancel:focus-visible {
-  outline: 3px solid #e7e2d5;
-  outline-offset: 3px;
-}
-
 .dialog {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   padding: 1.25rem;
-  border: 1px solid #b44a42;
-  background: #1d1414;
+  border: 1px solid var(--accent-danger);
+  background: var(--bg-active);
 }
 
 .dialogTitle {
   margin: 0;
-  color: #b44a42;
+  color: var(--accent-danger);
   font-size: 0.9rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
