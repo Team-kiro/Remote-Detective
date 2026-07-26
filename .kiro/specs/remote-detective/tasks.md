@@ -183,7 +183,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - **Propiedades de superficie pública cubiertas: 5, 7, 15, 17, 20, 21 y 31.**
     - _Requirements: 2.1-2.5, 3.1-3.3, 4.1-4.3, 5.1-5.5, 6.1-6.11, 8.1, 8.9-8.10, 9.1-9.5, 10.2-10.4, 12.1-12.9, 13.2-13.11, 14.1, 14.4, 15.2-15.6, 20.1-20.6_
 
-- [ ] 5. Checkpoint MVP local - Ensure all tests pass
+- [x] 5. Checkpoint MVP local - Ensure all tests pass
   - Ejecutar en modo no interactivo todas las pruebas deterministas frontend y el build TypeScript/Vite del MVP local conectado: datos, motores, store, persistencia, interrogación local, pantallas, flujo UI y `@dnd-kit/core`.
   - Verificar explícitamente mediante pruebas automatizadas una partida completa offline con victoria por confesión, victoria por acusación, derrota por tiempo y derrota por acusación incorrecta, sin backend, API Gateway ni Bedrock.
   - Confirmar que el fallback local permite continuar y finalizar la partida si el endpoint falta, falla o se retrasa.
