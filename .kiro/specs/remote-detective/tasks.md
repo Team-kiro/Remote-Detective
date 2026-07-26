@@ -133,7 +133,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - **Propiedades cubiertas: 5, 11-15, 20, 22-31.**
     - _Requirements: 6.3-6.11, 7.6-7.9, 9.3, 10.3-10.4, 11.6, 13.2, 13.5, 13.7, 14.1, 14.4, 15.5, 16.1-16.5_
 
-- [ ] 4. Implementar y probar la experiencia frontend y drag-and-drop
+- [x] 4. Implementar y probar la experiencia frontend y drag-and-drop
   - [x] 4.1 Implementar pantallas de título, instrucciones y composición principal
     - Crear título/subtítulo exactos, acción de inicio, instrucciones completas y retorno visible.
     - Componer `App`, `TitleScreen`, `InstructionsScreen`, `GameScreen` y `EndScreen` según `phase`, sin duplicar estado global.
@@ -172,7 +172,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - Mantener header, timer y score visibles y legibles sin implementar drag-and-drop táctil avanzado.
     - _Requirements: 3.2, 5.4, 20.1-20.6_
 
-  - [ ] 4.7 Grupo de pruebas (f): superficie pública y flujos críticos UI
+  - [x] 4.7 Grupo de pruebas (f): superficie pública y flujos críticos UI
     - Automatizar título e instrucciones, inicio de partida, navegación entre todos los paneles sin pérdida de estado, retorno al escritorio, inicio/fin de llamadas y render de resultado/reinicio.
     - Verificar timer y score permanentes en expediente, evidencias, llamada y acusación; expediente completo; seis evidencias con visual/placeholder; ausencia de metadatos internos en la superficie renderizada.
     - Cubrir campo de pregunta vacío, espacios y límite de 300; loading, historial por sospechoso, texto canónico de declaraciones y distintivo local no intrusivo.
