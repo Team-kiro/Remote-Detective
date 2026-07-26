@@ -1,6 +1,6 @@
 ---
 description: 'React 19 components, CSS Modules, drag-and-drop, and the read-only UI contract'
-applyTo: 'remote-detective/src/components/**/*.tsx'
+applyTo: 'src/components/**/*.tsx'
 ---
 
 # React UI Instructions

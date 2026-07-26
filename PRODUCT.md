@@ -51,16 +51,16 @@ La propuesta diferencial es una experiencia de detective remota, con caso canoni
 ## Evidence on Hand
 
 - Especificacion funcional y narrativa:
-    - `remote-detective/openspec/specs/proposal.md`
-    - `remote-detective/openspec/specs/design.md`
-    - `remote-detective/openspec/specs/tasks.md`
+    - `openspec/specs/proposal.md`
+    - `openspec/specs/design.md`
+    - `openspec/specs/tasks.md`
 - Implementacion existente de frontend:
-    - `remote-detective/src/App.tsx`
-    - `remote-detective/src/components/screens/TitleScreen.tsx`
-    - `remote-detective/src/components/screens/InstructionsScreen.tsx`
-    - `remote-detective/src/data/*` (narrativa, sospechosos, evidencias, contradicciones, reglas)
+    - `src/App.tsx`
+    - `src/components/screens/TitleScreen.tsx`
+    - `src/components/screens/InstructionsScreen.tsx`
+    - `src/data/*` (narrativa, sospechosos, evidencias, contradicciones, reglas)
 - Ausencias relevantes:
-    - No existe `remote-detective/README.md` en el estado actual.
+    - No existe `README.md` en el estado actual.
     - Parte de activos visuales finales siguen definidos como placeholders en la especificacion.
 
 ## Product Principles

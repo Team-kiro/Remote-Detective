@@ -1,6 +1,6 @@
 ---
 description: 'CSS Modules and the noir visual system'
-applyTo: 'remote-detective/src/**/*.css'
+applyTo: 'src/**/*.css'
 ---
 
 # Styling Instructions

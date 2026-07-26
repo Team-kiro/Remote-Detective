@@ -1,6 +1,6 @@
 ---
 description: 'Zustand game store, its minimal public surface, async interrogation, and sessionStorage persistence'
-applyTo: 'remote-detective/src/store/**/*.ts'
+applyTo: 'src/store/**/*.ts'
 ---
 
 # Game Store Instructions

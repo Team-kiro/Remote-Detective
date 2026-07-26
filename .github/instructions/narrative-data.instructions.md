@@ -1,6 +1,6 @@
 ---
 description: 'Frozen narrative data, stable identifiers, and view models'
-applyTo: 'remote-detective/src/data/**/*.ts'
+applyTo: 'src/data/**/*.ts'
 ---
 
 # Narrative Data Instructions

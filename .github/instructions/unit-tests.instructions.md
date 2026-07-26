@@ -5,7 +5,7 @@ applyTo: '**/*.test.{ts,tsx}'
 
 # Unit Testing Guidelines (Vitest)
 
-Tests run with `npm run test` from `remote-detective/` (Vitest, single non-interactive run). They are the mechanism that keeps the 31 Correctness Properties in `design.md` honest.
+Tests run with `npm run test` from the repository root (Vitest, single non-interactive run). They are the mechanism that keeps the 31 Correctness Properties in `design.md` honest.
 
 > [!IMPORTANT]
 > Tests are **deterministic cases with concrete values**. `fast-check` and property-based generation are explicitly rejected by the design. Pin time, pin IDs, pin expected numbers.

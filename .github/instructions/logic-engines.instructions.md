@@ -1,6 +1,6 @@
 ---
 description: 'Pure deterministic engines for contradictions, scoring, confession, accusation, timer, and local responses'
-applyTo: 'remote-detective/src/logic/**/*.ts'
+applyTo: 'src/logic/**/*.ts'
 ---
 
 # Logic Engine Instructions

@@ -1,15 +1,15 @@
 # Remote Detective — Development Guidelines
 
-Remote Detective is a **noir criminal-investigation game** built as a single **React 19 + TypeScript + Vite** SPA that lives in the `remote-detective/` directory. The player works from a virtual detective desktop, inspects evidence, interrogates four suspects, proves contradictions via drag-and-drop, and files one final accusation before a 12-minute timer runs out.
+Remote Detective is a **noir criminal-investigation game** built as a single **React 19 + TypeScript + Vite** SPA rooted at the repository root. The player works from a virtual detective desktop, inspects evidence, interrogates four suspects, proves contradictions via drag-and-drop, and files one final accusation before a 12-minute timer runs out.
 
 The defining architectural rule of this project: **a complete game must be winnable and losable with local deterministic logic only.** Amazon Bedrock, AWS Lambda, API Gateway, and `sessionStorage` are important for the presentation but must never block the build, the deploy, or a full playthrough.
 
 Specs are the source of truth. Read them before changing behavior:
 
-- `remote-detective/.kiro/specs/remote-detective/requirements.md` — numbered EARS requirements (`_Requirements: 8.2-8.9_` references in code and tasks point here)
-- `remote-detective/.kiro/specs/remote-detective/design.md` — frozen narrative data, engine signatures, store surface, and the 31 Correctness Properties
-- `remote-detective/.kiro/specs/remote-detective/tasks.md` — the implementation plan and its completion state
-- `remote-detective/openspec/specs/` — mirror of the same three documents for the OpenSpec tooling
+- `.kiro/specs/remote-detective/requirements.md` — numbered EARS requirements (`_Requirements: 8.2-8.9_` references in code and tasks point here)
+- `.kiro/specs/remote-detective/design.md` — frozen narrative data, engine signatures, store surface, and the 31 Correctness Properties
+- `.kiro/specs/remote-detective/tasks.md` — the implementation plan and its completion state
+- `openspec/specs/` — mirror of the same three documents for the OpenSpec tooling
 
 ## Agent notes
 
@@ -19,7 +19,6 @@ Specs are the source of truth. Read them before changing behavior:
 - Always use instructions files when available, reviewing before generating code
 - Do not generate summary markdown files upon completion of a task
 - Always use absolute paths when running scripts and shell commands
-- All npm commands run from `remote-detective/`, not the repository root
 - **NEVER commit or push to main automatically unless explicitly instructed to do so**
 
 ## Code standards
@@ -75,7 +74,7 @@ Two cross-cutting rules that no layer may break:
 
 ## Scripts
 
-All scripts run from `remote-detective/`:
+All scripts run from the repository root:
 
 - `npm run dev` — start the Vite dev server
 - `npm run test` — run the Vitest suite once, non-interactive
@@ -89,20 +88,19 @@ All scripts run from `remote-detective/`:
 Remote-Detective/
 ├── AGENTS.md, PRODUCT.md, DESIGN.md   # agent, product, and visual design context
 ├── .github/instructions/              # path-scoped agent instruction files
-└── remote-detective/                  # the Vite application
-    ├── .kiro/specs/remote-detective/  # requirements.md, design.md, tasks.md
-    ├── openspec/specs/                # OpenSpec mirror of the same specs
-    ├── src/
-    │   ├── data/                      # frozen narrative data, types, view models
-    │   ├── logic/                     # pure deterministic engines
-    │   ├── store/                     # Zustand store, persistence, store types
-    │   ├── services/                  # bedrockService.ts (optional remote path)
-    │   ├── components/{screens,desktop,shared}/
-    │   ├── hooks/                     # useTimer
-    │   ├── assets/{suspects,evidence,backgrounds,ui}/
-    │   ├── styles/global.css
-    │   └── config.ts                  # timer duration, timeout, interrogation mode
-    └── vite.config.ts, vitest.config.ts, eslint.config.js, tsconfig*.json
+├── .kiro/specs/remote-detective/      # requirements.md, design.md, tasks.md
+├── openspec/specs/                    # OpenSpec mirror of the same specs
+├── src/
+│   ├── data/                          # frozen narrative data, types, view models
+│   ├── logic/                         # pure deterministic engines
+│   ├── store/                         # Zustand store, persistence, store types
+│   ├── services/                      # bedrockService.ts (optional remote path)
+│   ├── components/{screens,desktop,shared}/
+│   ├── hooks/                         # useTimer
+│   ├── assets/{suspects,evidence,backgrounds,ui}/
+│   ├── styles/global.css
+│   └── config.ts                      # timer duration, timeout, interrogation mode
+└── vite.config.ts, vitest.config.ts, eslint.config.js, tsconfig*.json
 ```
 
 ## Out of scope
