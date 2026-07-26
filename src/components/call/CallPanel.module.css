@@ -1,11 +1,14 @@
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 1.5rem;
-  border: 1px solid #3d3d3d;
-  background: #171717;
-  color: #d4cfc2;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border: 1px solid var(--border-muted);
+  background:
+    var(--scrim-panel),
+    url('../../assets/backgrounds/call-background.webp') center / cover no-repeat,
+    var(--bg-surface);
+  color: var(--text-secondary);
 }
 
 .header {
@@ -16,27 +19,39 @@
 }
 
 .title {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
   margin: 0;
-  color: #b44a42;
-  font-size: 1rem;
-  letter-spacing: 0.14em;
+  color: var(--text-primary);
+  font-size: var(--text-md);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
+}
+
+/* Regla de óxido: el acento marca la sección sin tener que teñir el texto. */
+.title::before {
+  content: '';
+  flex: none;
+  width: 1.5rem;
+  height: 2px;
+  background: var(--accent-danger);
 }
 
 .subtitle {
   display: block;
   margin: 0 0 0.5rem;
-  color: #e7e2d5;
-  font-size: 0.85rem;
+  color: var(--text-primary);
+  font-size: var(--text-xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .modeBadge {
   padding: 0.15rem 0.5rem;
-  border: 1px solid #545454;
-  color: #8f8a80;
-  font-size: 0.65rem;
+  border: 1px solid var(--border-default);
+  color: var(--text-muted);
+  font-size: var(--text-2xs);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -44,8 +59,8 @@
 .hint,
 .status {
   margin: 0;
-  color: #b9b4a8;
-  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
 }
 
 .suspectList {
@@ -63,9 +78,9 @@
   gap: 0.35rem;
   width: 100%;
   padding: 1rem;
-  border: 1px solid #3d3d3d;
-  background: #141414;
-  color: #d4cfc2;
+  border: 1px solid var(--border-muted);
+  background: var(--bg-inset);
+  color: var(--text-secondary);
   text-align: left;
   cursor: pointer;
 }
@@ -74,54 +89,58 @@
   filter: brightness(1.2);
 }
 
-.suspectButton:focus-visible,
-.endCall:focus-visible,
-.send:focus-visible,
-.input:focus-visible {
-  outline: 3px solid #e7e2d5;
-  outline-offset: 2px;
-}
-
 .callHeader {
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: 1rem;
   align-items: center;
   padding: 1rem;
-  border: 1px solid #3d3d3d;
-  background: #141414;
+  border: 1px solid var(--border-muted);
+  background: var(--bg-inset);
 }
 
 .portrait,
 .portraitPlaceholder {
-  width: 6rem;
-  height: 6rem;
+  width: 100%;
+  aspect-ratio: 1;
   object-fit: cover;
-  border: 1px solid #545454;
+  object-position: top;
+  border: 1px solid var(--border-default);
 }
 
 .portraitPlaceholder {
   display: grid;
   place-items: center;
-  background: repeating-linear-gradient(45deg, #1d1d1d, #1d1d1d 6px, #222 6px, #222 12px);
-  color: #8f8a80;
-  font-size: 0.6rem;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--bg-raised),
+    var(--bg-raised) 6px,
+    var(--bg-surface) 6px,
+    var(--bg-surface) 12px
+  );
+  color: var(--text-muted);
+  font-size: var(--text-2xs);
   letter-spacing: 0.12em;
   text-align: center;
 }
 
+.callHeader .portrait,
+.callHeader .portraitPlaceholder {
+  width: 7rem;
+}
+
 .suspectName {
   margin: 0;
-  color: #e7e2d5;
-  font-size: 1rem;
+  color: var(--text-primary);
+  font-size: var(--text-md);
   font-weight: 700;
   letter-spacing: 0.04em;
 }
 
 .suspectRole {
   margin: 0;
-  color: #b9b4a8;
-  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -130,8 +149,8 @@
   display: flex;
   gap: 0.5rem;
   align-items: center;
-  color: #b9b4a8;
-  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
   letter-spacing: 0.08em;
 }
 
@@ -140,15 +159,22 @@
   height: 0.5rem;
 }
 
+/* Salir de la llamada es reversible: se lee, pero no compite con Enviar. */
 .endCall {
   align-self: start;
+  min-height: 2.75rem;
   padding: 0.6rem 1rem;
-  border: 1px solid #b44a42;
-  background: #221515;
-  color: #e7e2d5;
-  letter-spacing: 0.1em;
+  border: 1px solid var(--border-muted);
+  background: transparent;
+  color: var(--text-muted);
+  letter-spacing: var(--tracking-control);
   text-transform: uppercase;
   cursor: pointer;
+}
+
+.endCall:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
 }
 
 .history {
@@ -173,18 +199,18 @@
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.6rem 0.85rem;
-  border: 1px solid #3d3d3d;
-  background: #141414;
+  border: 1px solid var(--border-muted);
+  background: var(--bg-inset);
 }
 
 .suspectMessage {
-  border-color: #545454;
-  background: #1a1717;
+  border-color: var(--border-default);
+  background: var(--bg-raised);
 }
 
 .messageAuthor {
-  color: #b9b4a8;
-  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-size: var(--text-2xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -195,8 +221,8 @@
 
 .loading {
   margin: 0;
-  color: #b9b4a8;
-  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
   letter-spacing: 0.1em;
 }
 
@@ -206,35 +232,75 @@
   gap: 0.5rem;
 }
 
+/*
+ * Temas sugeridos: el catálogo local solo reconoce ciertas preguntas y sin
+ * pistas el jugador agota el reloj adivinando. El chip escribe la pregunta en
+ * el área de texto; no la envía ni la responde.
+ */
+.promptList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.promptChip {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px dashed var(--border-default);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.promptChip:hover:not(:disabled) {
+  border-style: solid;
+  border-color: var(--accent-danger);
+  color: var(--text-primary);
+}
+
+.promptChip:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
 .input {
   width: 100%;
   padding: 0.6rem 0.75rem;
-  border: 1px solid #3d3d3d;
-  background: #141414;
-  color: #d4cfc2;
+  border: 1px solid var(--border-muted);
+  background: var(--bg-inset);
+  color: var(--text-secondary);
   resize: vertical;
 }
 
+/* Verbo del bucle de juego: el control con más peso dentro de la llamada. */
 .send {
   align-self: start;
+  min-height: 2.75rem;
   padding: 0.6rem 1.2rem;
-  border: 1px solid #545454;
-  background: #1d1d1d;
-  color: #e7e2d5;
-  letter-spacing: 0.1em;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-raised);
+  color: var(--text-primary);
+  font-weight: 700;
+  letter-spacing: var(--tracking-control);
   text-transform: uppercase;
   cursor: pointer;
 }
 
 .send:disabled {
-  color: #8f8a80;
+  border-color: var(--border-muted);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 
 .error {
   margin: 0;
-  color: #b44a42;
-  font-size: 0.85rem;
+  color: var(--accent-danger-text);
+  font-size: var(--text-xs);
 }
 
 .statementList {
@@ -250,8 +316,8 @@
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.6rem 0.85rem;
-  border: 1px dashed #545454;
-  background: #141414;
+  border: 1px dashed var(--border-default);
+  background: var(--bg-inset);
 }
 
 .evidenceTray {
@@ -271,11 +337,16 @@
 
 .evidenceChip,
 .evidenceChipDragging {
+  display: inline-flex;
+  align-items: center;
+  /* Son las asas del gesto central del juego: fallar el agarre no cuesta un
+     clic, cuesta una evidencia soltada en el vacío. */
+  min-height: 2.75rem;
   padding: 0.5rem 0.85rem;
-  border: 1px solid #545454;
-  background: #1d1d1d;
-  color: #e7e2d5;
-  font-size: 0.8rem;
+  border: 1px solid var(--border-default);
+  background: var(--bg-raised);
+  color: var(--text-primary);
+  font-size: var(--text-xs);
   letter-spacing: 0.08em;
   text-align: left;
   cursor: grab;
@@ -283,81 +354,122 @@
 }
 
 .evidenceChipDragging {
-  border-color: #b44a42;
+  border-color: var(--accent-danger);
   cursor: grabbing;
 }
 
-.evidenceChip:focus-visible,
-.evidenceChipDragging:focus-visible,
-.feedbackDismiss:focus-visible {
-  outline: 3px solid #e7e2d5;
-  outline-offset: 2px;
+/* Sin declaraciones no hay destino: la evidencia se ve, pero no se ofrece.
+   `aria-disabled` en vez de `disabled` para que siga en el orden de tabulación:
+   una bandeja que desaparece del teclado no puede explicar por qué está vacía.
+   No se usa borde discontinuo porque ese trazo ya significa «pulsable» en los
+   temas de pregunta que están unos centímetros más arriba. */
+.evidenceChip[aria-disabled='true'] {
+  border-color: var(--border-muted);
+  background: none;
+  color: var(--text-muted);
+  cursor: not-allowed;
 }
 
 /* Zonas de destino válidas resaltadas solo mientras dura el arrastre. */
 .statementCardAvailable {
   border-style: solid;
-  border-color: #b9b4a8;
+  border-color: var(--text-muted);
 }
 
 .statementCardOver {
-  border-color: #b44a42;
-  background: #221515;
+  border-color: var(--accent-danger);
+  background: var(--bg-active);
 }
 
+/* El resultado se distingue por el color del contorno completo, igual que las
+   demás piezas del sistema (activo, seleccionado, zona de drop). */
+/*
+ * El resultado de una contradicción es un aviso, no contenido del panel: en el
+ * flujo empujaba las declaraciones justo después de soltar, y quedaba fuera de
+ * la vista cuando la lista era larga. Fijado arriba a la derecha se lee sin
+ * mover nada. Va por debajo del encabezado (z-index 10) para que la cuenta
+ * atrás nunca quede tapada si el encabezado se parte en dos líneas.
+ */
 .feedback {
+  position: fixed;
+  top: calc(var(--header-height) + var(--space-md));
+  right: var(--space-md);
+  z-index: 9;
+  /* Al desplazar la página el aviso queda sobre lo que pase por debajo. No
+     puede robar el clic de lo que tapa, así que solo su botón lo recibe. */
+  pointer-events: none;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  max-width: min(22rem, calc(100vw - 2 * var(--space-md)));
   padding: 0.6rem 0.85rem;
-  border-left: 4px solid #545454;
-  background: #141414;
+  border: 1px solid var(--border-default);
+  background: var(--bg-inset);
+  box-shadow: var(--shadow-screen);
+}
+
+/* Con el encabezado partido en dos líneas no hay hueco arriba: el aviso baja
+   al pie, que es donde el pulgar ya está. */
+@media (width <= 40rem) {
+  .feedback {
+    top: auto;
+    right: var(--space-md);
+    bottom: var(--space-md);
+    left: var(--space-md);
+    max-width: none;
+  }
 }
 
 .feedback[data-feedback='valid'] {
-  border-left-color: #c9b672;
+  border-color: var(--accent-victory);
 }
 
 .feedback[data-feedback='incorrect'] {
-  border-left-color: #b44a42;
+  border-color: var(--accent-danger);
+  background: var(--bg-active);
 }
 
 .feedback[data-feedback='related_insufficient'] {
-  border-left-color: #b9b4a8;
+  border-color: var(--text-muted);
 }
 
 .feedback[data-feedback='already_discovered'] {
-  border-left-color: #545454;
+  border-color: var(--border-default);
 }
 
 .feedbackMessage {
   margin: 0;
-  color: #e7e2d5;
-  font-size: 0.85rem;
+  color: var(--text-primary);
+  font-size: var(--text-xs);
 }
 
 .feedbackExplanation {
   margin: 0;
-  color: #b9b4a8;
-  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
   line-height: 1.5;
 }
 
 .feedbackDismiss {
   align-self: start;
-  padding: 0.3rem 0.7rem;
-  border: 1px solid #545454;
-  background: #1d1d1d;
-  color: #b9b4a8;
-  font-size: 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  pointer-events: auto;
+  /* Único camino para quitar el aviso, y con él lo que quede debajo. */
+  min-height: 2.75rem;
+  padding: 0 var(--space-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: var(--text-2xs);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
 }
 
 .statementAuthor {
-  color: #b9b4a8;
-  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-size: var(--text-2xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -367,7 +479,39 @@
 }
 
 @media (width < 1024px) {
+  .panel {
+    padding: var(--space-md);
+  }
+
   .callHeader {
     grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .callHeader .portrait,
+  .callHeader .portraitPlaceholder {
+    width: 5.5rem;
+  }
+
+  .suspectList {
+    grid-template-columns: 1fr;
+  }
+
+  /*
+   * En una sola columna el retrato cuadrado ocupaba una pantalla por sospechoso
+   * y elegir exigía recorrer cuatro fotos a tamaño completo. En horizontal los
+   * cuatro caben de una vez sin renunciar al retrato.
+   */
+  .suspectButton {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    column-gap: var(--space-md);
+    align-items: center;
+  }
+
+  .suspectButton .portrait,
+  .suspectButton .portraitPlaceholder {
+    grid-row: 1 / -1;
+    width: 4.5rem;
   }
 }

@@ -70,6 +70,7 @@ describe('scoring rules', () => {
       incorrectCombinationPenalty: 50,
       confessionBonus: 500,
       correctAccusationBonus: 300,
+      partialSuspectBonus: 100,
       timeRemainingFactor: 1,
       minimumScore: 0,
     });

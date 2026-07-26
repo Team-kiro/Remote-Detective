@@ -3,27 +3,68 @@
   flex-direction: column;
   gap: 0.15rem;
   margin: 0;
-  color: #e7e2d5;
+  color: var(--text-primary);
+}
+
+/*
+ * La cuenta atrás sube en tres escalones en lugar de saltar de inerte a rojo:
+ * el aviso llega cuando aún se puede reaccionar.
+ */
+.timerCaution {
+  composes: timer;
+  color: var(--accent-victory);
 }
 
 .timerCritical {
   composes: timer;
-  color: #d9584f;
+  color: var(--accent-danger-text);
+}
+
+/*
+ * El último minuto es el único momento con movimiento en toda la interfaz: un
+ * latido lento y sin desplazamiento, para que la cuenta atrás se sienta y no
+ * solo se lea.
+ */
+.timerFinal {
+  composes: timerCritical;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/*
+ * Sin movimiento el latido desaparecería y el último minuto sería
+ * indistinguible de los treinta segundos anteriores, que ya son óxido. La
+ * placa invierte la relación figura-fondo: el aviso sigue siendo el escalón
+ * más fuerte de la cuenta atrás, solo que quieto.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .timerFinal {
+    padding: 0 var(--space-xs);
+    background: var(--accent-danger);
+    color: var(--text-on-accent);
+  }
 }
 
 .label {
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: #b9b4a8;
+  color: var(--text-muted);
 }
 
-.timerCritical .label {
-  color: #d9584f;
+.timerCaution .label,
+.timerCritical .label,
+.timerFinal .label {
+  color: inherit;
 }
 
 .value {
-  font-size: 1.5rem;
+  font-size: var(--text-xl);
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   letter-spacing: 0.08em;

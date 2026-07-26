@@ -5,6 +5,7 @@ export const SCORING_RULES = {
   incorrectCombinationPenalty: 50,
   confessionBonus: 500,
   correctAccusationBonus: 300,
+  partialSuspectBonus: 100,
   timeRemainingFactor: 1,
   minimumScore: 0,
 } as const satisfies ScoringRules;

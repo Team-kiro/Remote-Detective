@@ -21,9 +21,11 @@ import {
   useDroppable,
   useSensor,
   useSensors,
+  type Announcements,
   type DragEndEvent,
+  type ScreenReaderInstructions,
 } from '@dnd-kit/core';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from '@/components/call/CallPanel.module.css';
 import { resolveDrop } from '@/components/call/contradictionDrop';
 import { config } from '@/config';
@@ -36,6 +38,7 @@ import type {
   SuspectId,
   SuspectProfileView,
 } from '@/data/types';
+import { getSuggestedQuestions } from '@/data/viewModels';
 import { MAX_QUESTION_LENGTH } from '@/logic/localResponseEngine';
 import { useGameStore } from '@/store/gameStore';
 
@@ -57,6 +60,16 @@ const FEEDBACK_MESSAGES: Record<ContradictionOutcome, string> = {
   incorrect: 'La combinación no demuestra nada: se aplicó la penalización.',
 };
 
+/*
+ * Sin esto @dnd-kit narra el arrastre en inglés y con identificadores internos
+ * («Picked up draggable item ev_access_log»), que es lo único de la partida que
+ * un lector de pantalla no oiría en español ni con nombres del caso.
+ */
+const DRAG_INSTRUCTIONS: ScreenReaderInstructions = {
+  draggable:
+    'Pulsa Espacio para tomar la evidencia, muévete entre las declaraciones con las flechas y pulsa Espacio de nuevo para presentarla. Escape cancela.',
+};
+
 export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Element {
   const activeCallSuspect = useGameStore((state) => state.activeCallSuspect);
   const suspectPressure = useGameStore((state) => state.suspectPressure);
@@ -74,8 +87,44 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
   const [error, setError] = useState<string | null>(null);
   // Solo presentación: resalta las zonas de drop mientras dura el arrastre.
   const [isDragging, setIsDragging] = useState(false);
+  const questionRef = useRef<HTMLTextAreaElement>(null);
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
+
+  const hasStatements = registeredStatements.size > 0;
+
+  // El anuncio nombra las piezas del caso, no sus claves: el jugador que
+  // escucha necesita «Registro de acceso sobre la declaración de Daniel Rivas»,
+  // no `ev_access_log` sobre `stmt_daniel_arrival`.
+  const announcements = useMemo<Announcements>(() => {
+    const evidenceName = (id: string | number): string =>
+      evidence.find((item) => item.id === id)?.name ?? String(id);
+    const statementLabel = (id: string | number | undefined): string | null => {
+      const statement = STATEMENT_LIST.find((entry) => entry.id === id);
+      if (statement === undefined) {
+        return null;
+      }
+      const author = suspects.find((suspect) => suspect.id === statement.suspectId)?.name;
+      return `la declaración de ${author ?? statement.suspectId}: «${statement.canonicalText}»`;
+    };
+
+    return {
+      onDragStart: ({ active }) => `Has tomado ${evidenceName(active.id)}.`,
+      onDragOver: ({ active, over }) => {
+        const target = statementLabel(over?.id);
+        return target === null
+          ? `${evidenceName(active.id)} fuera de cualquier declaración.`
+          : `${evidenceName(active.id)} sobre ${target}`;
+      },
+      onDragEnd: ({ active, over }) => {
+        const target = statementLabel(over?.id);
+        return target === null
+          ? `Has soltado ${evidenceName(active.id)} sin presentarla.`
+          : `Has presentado ${evidenceName(active.id)} sobre ${target}`;
+      },
+      onDragCancel: ({ active }) => `Has soltado ${evidenceName(active.id)} sin presentarla.`,
+    };
+  }, [evidence, suspects]);
 
   const handleDragStart = useCallback((): void => {
     setIsDragging(true);
@@ -118,6 +167,18 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
     [askQuestion, draft, isLoading],
   );
 
+  // La llamada se juega contra el reloj: Enter envía, como en un chat, y
+  // Shift+Enter conserva el salto de línea nativo del área de texto.
+  const handleShortcut = useCallback(
+    (event: React.KeyboardEvent<HTMLTextAreaElement>): void => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        event.currentTarget.form?.requestSubmit();
+      }
+    },
+    [],
+  );
+
   const active = suspects.find((suspect) => suspect.id === activeCallSuspect) ?? null;
 
   return (
@@ -128,7 +189,7 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
         </h2>
         {config.interrogationMode === 'local' ? (
           <span className={styles.modeBadge} data-testid="call-local-mode">
-            Modo local
+            Línea segura
           </span>
         ) : null}
       </div>
@@ -172,6 +233,12 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
             </button>
           </article>
 
+          {/* Fijado sobre el escritorio: el aviso no forma parte del flujo, así
+              que soltar una evidencia no desplaza las zonas de drop. Va aquí en
+              el DOM, y no al final, para que su orden de tabulación coincida con
+              el sitio donde el jugador lo ve. */}
+          {feedback === null ? null : <Feedback feedback={feedback} onDismiss={clearFeedback} />}
+
           <section className={styles.history} aria-labelledby="call-history-heading">
             <h3 id="call-history-heading" className={styles.subtitle}>
               Historial de la llamada
@@ -206,20 +273,41 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
             <label className={styles.subtitle} htmlFor="call-question">
               Tu pregunta
             </label>
+            <ul className={styles.promptList} data-testid="call-prompts">
+              {getSuggestedQuestions(active.id).map((suggestion) => (
+                <li key={suggestion.intent}>
+                  <button
+                    type="button"
+                    className={styles.promptChip}
+                    disabled={isLoading}
+                    onClick={() => {
+                      setDraft(suggestion.prompt);
+                      // El tema es un borrador editable: devolver el foco al
+                      // área deja al jugador matizar la pregunta y enviarla.
+                      questionRef.current?.focus();
+                    }}
+                  >
+                    {suggestion.intent}
+                  </button>
+                </li>
+              ))}
+            </ul>
             <textarea
               id="call-question"
+              ref={questionRef}
               className={styles.input}
               value={draft}
               maxLength={MAX_QUESTION_LENGTH}
               rows={3}
               aria-describedby="call-question-status"
+              onKeyDown={handleShortcut}
               onChange={(event) => {
                 setDraft(event.currentTarget.value);
               }}
             />
             <p id="call-question-status" className={styles.status} role="status">
               {draft.trim().length === 0
-                ? 'Escribe una pregunta para poder enviarla.'
+                ? 'Elige un tema o escribe tu propia pregunta. Enter la envía, Shift+Enter salta de línea.'
                 : `${String(draft.length)} de ${String(MAX_QUESTION_LENGTH)} caracteres.`}
             </p>
             <button
@@ -239,6 +327,7 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
 
           <DndContext
             sensors={sensors}
+            accessibility={{ announcements, screenReaderInstructions: DRAG_INSTRUCTIONS }}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             onDragCancel={handleDragCancel}
@@ -247,14 +336,17 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
               <h3 id="call-evidence-heading" className={styles.subtitle}>
                 Evidencias disponibles
               </h3>
+              {/* Ofrecer el arrastre sin declaraciones sería prometer un gesto
+                  que no puede terminar en ningún sitio. */}
               <p className={styles.hint}>
-                Arrastra una evidencia sobre una declaración registrada. Con teclado: enfoca la
-                evidencia, pulsa Espacio, muévete con las flechas y pulsa Espacio para soltarla.
+                {hasStatements
+                  ? 'Arrastra una evidencia sobre una declaración registrada. Con teclado: enfoca la evidencia, pulsa Espacio, muévete con las flechas y pulsa Espacio para soltarla.'
+                  : 'Pregunta a un sospechoso para registrar su primera declaración: hasta entonces no hay dónde presentar una evidencia.'}
               </p>
               <ul className={styles.evidenceList}>
                 {evidence.map((item) => (
                   <li key={item.id}>
-                    <DraggableEvidence evidence={item} />
+                    <DraggableEvidence evidence={item} isEnabled={hasStatements} />
                   </li>
                 ))}
               </ul>
@@ -285,9 +377,6 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
                   )}
                 </ul>
               )}
-              {/* El aviso va al final: si apareciera encima, desplazaría las
-                  zonas de drop justo después de cada intento. */}
-              {feedback === null ? null : <Feedback feedback={feedback} onDismiss={clearFeedback} />}
             </section>
           </DndContext>
         </>
@@ -300,9 +389,17 @@ export function CallPanel({ suspects, evidence }: CallPanelProps): React.JSX.Ele
  * Evidencia arrastrable. Su identificador es el `EvidenceId` congelado: la UI no
  * fabrica identificadores ni resultados, solo transporta la pareja al store.
  */
-function DraggableEvidence({ evidence }: { evidence: EvidenceView }): React.JSX.Element {
+function DraggableEvidence({
+  evidence,
+  isEnabled,
+}: {
+  evidence: EvidenceView;
+  isEnabled: boolean;
+}): React.JSX.Element {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: evidence.id,
+    disabled: !isEnabled,
+    attributes: { roleDescription: 'evidencia arrastrable' },
   });
 
   return (
@@ -310,6 +407,9 @@ function DraggableEvidence({ evidence }: { evidence: EvidenceView }): React.JSX.
       type="button"
       ref={setNodeRef}
       className={isDragging ? styles.evidenceChipDragging : styles.evidenceChip}
+      // Sin `disabled`: dnd-kit ya emite `aria-disabled` en `attributes`, y así
+      // la evidencia sigue siendo alcanzable con el tabulador, que es donde el
+      // jugador lee por qué todavía no puede presentarla.
       // El transform sigue al puntero y al teclado; sin él dnd-kit desplaza la
       // página para mantener visible una evidencia que nunca se mueve.
       style={
@@ -365,13 +465,22 @@ function Feedback({
   feedback: ContradictionFeedbackState;
   onDismiss: () => void;
 }): React.JSX.Element {
+  // El resto de la interfaz se cierra con Escape (el diálogo de acusación, el
+  // arrastre en curso); un aviso que ignorase la tecla rompería la convención.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') {
+        onDismiss();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [onDismiss]);
+
   return (
-    <div
-      className={styles.feedback}
-      data-feedback={feedback.type}
-      role="status"
-      aria-live="polite"
-    >
+    <div className={styles.feedback} data-feedback={feedback.type} role="status">
       <p className={styles.feedbackMessage}>{FEEDBACK_MESSAGES[feedback.type]}</p>
       {feedback.explanation === undefined ? null : (
         <p className={styles.feedbackExplanation}>{feedback.explanation}</p>
@@ -396,19 +505,23 @@ function Portrait({ suspect }: { suspect: SuspectProfileView }): React.JSX.Eleme
     );
   }
 
-  return <img className={styles.portrait} src={suspect.portrait} alt={suspect.name} />;
+  return (
+    <img
+      className={styles.portrait}
+      src={suspect.portrait}
+      alt=""
+      loading="lazy"
+      decoding="async"
+    />
+  );
 }
 
 function Pressure({ suspectId, value }: { suspectId: SuspectId; value: number }): React.JSX.Element {
   return (
     <span className={styles.pressure} data-pressure={suspectId}>
       Presión: {value}%
-      <progress
-        className={styles.pressureBar}
-        max={100}
-        value={value}
-        aria-label={`Presión acumulada: ${String(value)} por ciento`}
-      />
+      {/* El texto visible ya da el valor; la barra solo lo dibuja. */}
+      <progress className={styles.pressureBar} max={100} value={value} aria-hidden="true" />
     </span>
   );
 }

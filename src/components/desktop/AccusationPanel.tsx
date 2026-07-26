@@ -1,29 +1,29 @@
 /**
- * Formulario de acusación final y su paso de confirmación.
+ * Tablero de caso de la acusación final y su paso de confirmación.
  *
- * Reúne sospechoso, motivo, método y al menos una de las seis evidencias
- * (todas seleccionables, se hayan inspeccionado o no) y entrega un
- * `AccusationInput` al store. El componente nunca evalúa la acusación: victoria
- * o derrota las decide `submitAccusation`. Abrir el panel o cancelar la
- * confirmación no consume el único intento de la partida.
+ * El jugador arma la acusación con las mismas piezas que ya tocó durante la
+ * partida —los retratos de los sospechosos y las evidencias del expediente— en
+ * lugar de reconstruir su teoría de memoria dentro de desplegables. Reúne
+ * sospechoso, motivo, método y al menos una de las seis evidencias (todas
+ * seleccionables, se hayan inspeccionado o no) y entrega un `AccusationInput`
+ * al store. El componente nunca evalúa la acusación: victoria o derrota las
+ * decide `submitAccusation`. Abrir el panel o cancelar la confirmación no
+ * consume el único intento de la partida.
  *
  * Requisitos: 12.1-12.9, 13.6, 14.4
  */
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from '@/components/desktop/AccusationPanel.module.css';
 import { METHOD_OPTIONS, MOTIVE_OPTIONS } from '@/data/accusationOptions';
-import {
-  isMethodId,
-  isMotiveId,
-  isSuspectId,
-  type AccusationInput,
-  type EvidenceId,
-  type EvidenceView,
-  type MethodId,
-  type MotiveId,
-  type SuspectId,
-  type SuspectProfileView,
+import type {
+  AccusationInput,
+  EvidenceId,
+  EvidenceView,
+  MethodId,
+  MotiveId,
+  SuspectId,
+  SuspectProfileView,
 } from '@/data/types';
 
 export interface AccusationPanelProps {
@@ -39,6 +39,9 @@ export interface AccusationPanelProps {
   onCancel: () => void;
 }
 
+/** Hueco en el resumen mientras una pieza del caso sigue sin elegirse. */
+const PENDING = '⸺';
+
 export function AccusationPanel({
   suspects,
   evidence,
@@ -51,11 +54,23 @@ export function AccusationPanel({
   const [methodId, setMethodId] = useState<MethodId | null>(null);
   const [selectedEvidence, setSelectedEvidence] = useState<readonly EvidenceId[]>([]);
   const [isConfirming, setIsConfirming] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  // `showModal` es lo que aporta el scrim, la trampa de foco y el cierre con
+  // Escape: replicarlos a mano sería reescribir el diálogo nativo peor.
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (dialog !== null && !dialog.open) {
+      dialog.showModal();
+    }
+  }, [isConfirming]);
 
   // Se conserva el orden del catálogo, no el de marcado del jugador.
-  const evidenceIds = evidence
-    .map((item) => item.id)
-    .filter((id) => selectedEvidence.includes(id));
+  const evidenceIds = evidence.map((item) => item.id).filter((id) => selectedEvidence.includes(id));
+
+  const suspectName = suspects.find((suspect) => suspect.id === suspectId)?.name ?? null;
+  const motiveText = MOTIVE_OPTIONS.find((option) => option.id === motiveId)?.text ?? null;
+  const methodText = METHOD_OPTIONS.find((option) => option.id === methodId)?.text ?? null;
 
   const missingFields: string[] = [];
   if (suspectId === null) {
@@ -82,6 +97,10 @@ export function AccusationPanel({
     statusText = 'Acusación completa. Revisa la confirmación antes de enviarla.';
   }
 
+  const evidenceCount = `${String(evidenceIds.length)} ${
+    evidenceIds.length === 1 ? 'evidencia' : 'evidencias'
+  }`;
+
   return (
     <section className={styles.panel} aria-labelledby="accusation-heading">
       <h2 id="accusation-heading" className={styles.title}>
@@ -91,100 +110,108 @@ export function AccusationPanel({
         Solo dispones de un intento. Abrir esta pantalla o cancelar la confirmación no lo consume.
       </p>
 
-      <div className={styles.field}>
-        <label className={styles.label} htmlFor="accusation-suspect">
-          Sospechoso
-        </label>
-        <select
-          id="accusation-suspect"
-          className={styles.select}
-          value={suspectId ?? ''}
-          disabled={accusationUsed}
-          onChange={(event) => {
-            const { value } = event.currentTarget;
-            setSuspectId(isSuspectId(value) ? value : null);
-          }}
-        >
-          <option value="">Sin seleccionar</option>
-          {suspects.map((suspect) => (
-            <option key={suspect.id} value={suspect.id}>
-              {suspect.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className={styles.field}>
-        <label className={styles.label} htmlFor="accusation-motive">
-          Motivo
-        </label>
-        <select
-          id="accusation-motive"
-          className={styles.select}
-          value={motiveId ?? ''}
-          disabled={accusationUsed}
-          onChange={(event) => {
-            const { value } = event.currentTarget;
-            setMotiveId(isMotiveId(value) ? value : null);
-          }}
-        >
-          <option value="">Sin seleccionar</option>
-          {MOTIVE_OPTIONS.map((option) => (
-            <option key={option.id} value={option.id}>
-              {option.text}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className={styles.field}>
-        <label className={styles.label} htmlFor="accusation-method">
-          Método
-        </label>
-        <select
-          id="accusation-method"
-          className={styles.select}
-          value={methodId ?? ''}
-          disabled={accusationUsed}
-          onChange={(event) => {
-            const { value } = event.currentTarget;
-            setMethodId(isMethodId(value) ? value : null);
-          }}
-        >
-          <option value="">Sin seleccionar</option>
-          {METHOD_OPTIONS.map((option) => (
-            <option key={option.id} value={option.id}>
-              {option.text}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <fieldset className={styles.fieldset} disabled={accusationUsed}>
-        <legend className={styles.label}>Evidencias que sustentan la acusación</legend>
-        <ul className={styles.evidenceList}>
-          {evidence.map((item) => (
-            <li key={item.id}>
-              <label className={styles.checkbox}>
+      <div className={styles.board}>
+        <fieldset className={styles.group} disabled={accusationUsed}>
+          <legend className={styles.legend}>Sospechoso</legend>
+          <div className={styles.suspectGrid}>
+            {suspects.map((suspect) => (
+              <label key={suspect.id} className={styles.suspectCard}>
                 <input
-                  type="checkbox"
-                  data-evidence-choice={item.id}
-                  checked={selectedEvidence.includes(item.id)}
-                  onChange={(event) => {
-                    const isChecked = event.currentTarget.checked;
-                    setSelectedEvidence((current) =>
-                      isChecked
-                        ? [...current, item.id]
-                        : current.filter((id) => id !== item.id),
-                    );
+                  className={styles.choiceInput}
+                  type="radio"
+                  name="accusation-suspect"
+                  data-suspect-choice={suspect.id}
+                  checked={suspectId === suspect.id}
+                  onChange={() => {
+                    setSuspectId(suspect.id);
                   }}
                 />
-                {item.name}
+                <Portrait suspect={suspect} />
+                <span className={styles.suspectName}>{suspect.name}</span>
+                <span className={styles.suspectRole}>{suspect.role}</span>
               </label>
-            </li>
+            ))}
+          </div>
+        </fieldset>
+
+        <div className={styles.reasons}>
+          <fieldset className={styles.group} disabled={accusationUsed}>
+            <legend className={styles.legend}>Motivo</legend>
+            <div className={styles.optionList}>
+              {MOTIVE_OPTIONS.map((option) => (
+                <label key={option.id} className={styles.optionCard}>
+                  <input
+                    className={styles.choiceInput}
+                    type="radio"
+                    name="accusation-motive"
+                    data-motive-choice={option.id}
+                    checked={motiveId === option.id}
+                    onChange={() => {
+                      setMotiveId(option.id);
+                    }}
+                  />
+                  {option.text}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset className={styles.group} disabled={accusationUsed}>
+            <legend className={styles.legend}>Método</legend>
+            <div className={styles.optionList}>
+              {METHOD_OPTIONS.map((option) => (
+                <label key={option.id} className={styles.optionCard}>
+                  <input
+                    className={styles.choiceInput}
+                    type="radio"
+                    name="accusation-method"
+                    data-method-choice={option.id}
+                    checked={methodId === option.id}
+                    onChange={() => {
+                      setMethodId(option.id);
+                    }}
+                  />
+                  {option.text}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        </div>
+      </div>
+
+      <fieldset className={styles.group} disabled={accusationUsed}>
+        <legend className={styles.legend}>Evidencias que sustentan la acusación</legend>
+        <div className={styles.evidenceGrid}>
+          {evidence.map((item) => (
+            <label key={item.id} className={styles.evidenceCard}>
+              <input
+                className={styles.choiceInput}
+                type="checkbox"
+                data-evidence-choice={item.id}
+                checked={selectedEvidence.includes(item.id)}
+                onChange={(event) => {
+                  const isChecked = event.currentTarget.checked;
+                  setSelectedEvidence((current) =>
+                    isChecked ? [...current, item.id] : current.filter((id) => id !== item.id),
+                  );
+                }}
+              />
+              <Thumbnail item={item} />
+              <span className={styles.evidenceName}>{item.name}</span>
+            </label>
           ))}
-        </ul>
+        </div>
       </fieldset>
+
+      {/*
+        El caso se lee mientras se arma: el jugador ve la frase que va a firmar
+        en lugar de reconstruirla de memoria al pulsar el botón.
+      */}
+      <p className={styles.summary} data-testid="accusation-summary">
+        Acuso a <strong>{suspectName ?? PENDING}</strong> por{' '}
+        <strong>{motiveText ?? PENDING}</strong>, mediante <strong>{methodText ?? PENDING}</strong>,
+        con <strong>{evidenceCount}</strong>.
+      </p>
 
       <p id="accusation-status" className={styles.status} role="status">
         {statusText}
@@ -203,22 +230,27 @@ export function AccusationPanel({
         Presentar acusación
       </button>
 
-      {isConfirming && isSubmittable && suspectId !== null && motiveId !== null && methodId !== null ? (
-        <div
+      {isConfirming &&
+      isSubmittable &&
+      suspectId !== null &&
+      motiveId !== null &&
+      methodId !== null ? (
+        <dialog
+          ref={dialogRef}
           className={styles.dialog}
-          role="dialog"
           aria-labelledby="accusation-confirm-heading"
           aria-describedby="accusation-confirm-description"
           data-testid="accusation-confirm"
+          onClose={() => {
+            setIsConfirming(false);
+          }}
         >
           <h3 id="accusation-confirm-heading" className={styles.dialogTitle}>
             Confirmar acusación
           </h3>
           <p id="accusation-confirm-description" className={styles.dialogText}>
-            Acusas a {suspects.find((suspect) => suspect.id === suspectId)?.name ?? suspectId} por{' '}
-            {MOTIVE_OPTIONS.find((option) => option.id === motiveId)?.text ?? motiveId}, mediante{' '}
-            {METHOD_OPTIONS.find((option) => option.id === methodId)?.text ?? methodId}, con{' '}
-            {evidenceIds.length} evidencia(s). Esta decisión es definitiva.
+            Acusas a {suspectName ?? suspectId} por {motiveText ?? motiveId}, mediante{' '}
+            {methodText ?? methodId}, con {evidenceCount}. Esta decisión es definitiva.
           </p>
 
           <div className={styles.dialogActions}>
@@ -245,8 +277,32 @@ export function AccusationPanel({
               Cancelar y volver al escritorio
             </button>
           </div>
-        </div>
+        </dialog>
       ) : null}
     </section>
   );
+}
+
+/** Retrato de la ficha; el hueco mantiene la rejilla cuando falta la imagen. */
+function Portrait({ suspect }: { suspect: SuspectProfileView }): React.JSX.Element {
+  if (suspect.portrait === null) {
+    return (
+      <span className={styles.portraitPlaceholder} aria-hidden="true">
+        SIN RETRATO
+      </span>
+    );
+  }
+
+  return (
+    <img className={styles.portrait} src={suspect.portrait} alt="" loading="lazy" decoding="async" />
+  );
+}
+
+/** Miniatura de la evidencia; decorativa, el nombre ya está en la etiqueta. */
+function Thumbnail({ item }: { item: EvidenceView }): React.JSX.Element {
+  if (item.image === null) {
+    return <span className={styles.thumbnailPlaceholder} aria-hidden="true" />;
+  }
+
+  return <img className={styles.thumbnail} src={item.image} alt="" loading="lazy" decoding="async" />;
 }

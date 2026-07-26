@@ -78,7 +78,13 @@ export function EvidencePanel({ evidence }: EvidencePanelProps): React.JSX.Eleme
                   <span aria-hidden="true">SIN IMAGEN</span>
                 </div>
               ) : (
-                <img className={styles.image} src={selected.image} alt={selected.name} />
+                <img
+                  className={styles.image}
+                  src={selected.image}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
               )}
               <h4 className={styles.detailName}>{selected.name}</h4>
               <dl className={styles.detailData}>

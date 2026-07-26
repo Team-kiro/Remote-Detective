@@ -3,19 +3,19 @@
   flex-direction: column;
   gap: 0.15rem;
   margin: 0;
-  color: #e7e2d5;
+  color: var(--text-primary);
   text-align: right;
 }
 
 .label {
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: #b9b4a8;
+  color: var(--text-muted);
 }
 
 .value {
-  font-size: 1.5rem;
+  font-size: var(--text-xl);
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   letter-spacing: 0.08em;

@@ -19,14 +19,16 @@ async function fillAccusation(
   page: Page,
   options: { suspect: string; motive: string; method: string },
 ): Promise<void> {
-  await page.getByLabel('Sospechoso').selectOption({ label: options.suspect });
-  await page.getByLabel('Motivo').selectOption({ label: options.motive });
-  await page.getByLabel('Método').selectOption({ label: options.method });
+  // Los controles del tablero son radios y casillas nativas ocultas dentro de
+  // su ficha: `force` evita depender del punto de impacto de la etiqueta.
+  await page.getByRole('radio', { name: options.suspect }).check({ force: true });
+  await page.getByRole('radio', { name: options.motive, exact: true }).check({ force: true });
+  await page.getByRole('radio', { name: options.method, exact: true }).check({ force: true });
 
   // Se marcan las seis evidencias: la solución admite extras y así el caso de
   // victoria no depende del orden del catálogo.
   for (const checkbox of await page.getByRole('checkbox').all()) {
-    await checkbox.check();
+    await checkbox.check({ force: true });
   }
 }
 
@@ -38,7 +40,7 @@ test.describe('Acusación final', () => {
   });
 
   test('Acusación - el envío exige los cuatro campos', async ({ page }) => {
-    await expect(page.getByRole('status')).toContainText(
+    await expect(page.locator('#accusation-status')).toContainText(
       'Faltan campos por completar: sospechoso, motivo, método, al menos una evidencia.',
     );
     await expect(page.getByTestId('accusation-submit')).toBeDisabled();
@@ -49,7 +51,7 @@ test.describe('Acusación final', () => {
       method: 'Agresión física directa',
     });
 
-    await expect(page.getByRole('status')).toContainText('Acusación completa.');
+    await expect(page.locator('#accusation-status')).toContainText('Acusación completa.');
     await expect(page.getByTestId('accusation-submit')).toBeEnabled();
   });
 
@@ -67,7 +69,7 @@ test.describe('Acusación final', () => {
     await expect(page.getByRole('heading', { level: 2, name: 'Escritorio' })).toBeVisible();
 
     await openAccusation(page);
-    await expect(page.getByRole('status')).not.toContainText('Ya presentaste');
+    await expect(page.locator('#accusation-status')).not.toContainText('Ya presentaste');
   });
 
   test('Acusación - la acusación correcta termina en victoria', async ({ page }) => {

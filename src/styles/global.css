@@ -1,7 +1,85 @@
+/**
+ * Base global del sistema noir.
+ *
+ * `DESIGN.md` es la fuente normativa: cada color, tipografía y escala de
+ * espaciado del documento vive aquí como custom property y los módulos CSS solo
+ * consumen `var(--token)`. Un hex suelto dentro de un módulo es deriva.
+ *
+ * Requisitos: 20.1-20.6
+ */
+
 :root {
-  color: #d7d7d7;
-  background: #0b0b0b;
-  font-family: Cambria, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  /* Superficies */
+  --bg-root: #0b0b0b;
+  --bg-surface: #171717;
+  --bg-surface-2: #151515;
+  --bg-header: #121212;
+  --bg-inset: #141414;
+  --bg-raised: #1d1d1d;
+  --bg-active: #221515;
+
+  /* Superficie translúcida: los paneles se apoyan sobre la fotografía de fondo */
+  --bg-surface-veiled: rgb(23 23 23 / 93%);
+
+  /* Bordes */
+  --border-muted: #3d3d3d;
+  --border-default: #545454;
+  --border-strong: #6e6e6e;
+
+  /* Texto */
+  --text-primary: #e7e2d5;
+  --text-base: #d7d7d7;
+  --text-secondary: #d4cfc2;
+  --text-muted: #b9b4a8;
+  --text-on-accent: #f5f2ea;
+
+  /* Acentos: rojo para acción y riesgo, ámbar reservado a la victoria */
+  --accent-danger: #b44a42;
+  --accent-victory: #c9b672;
+
+  /*
+   * El óxido base rinde 3.46:1 sobre panel: suficiente para un borde o un
+   * relleno, insuficiente para texto. Todo texto en acento usa esta variante,
+   * que alcanza 4.75:1 sin añadir un color nuevo a la paleta.
+   */
+  --accent-danger-text: #d9584f;
+
+  /* Tipografía */
+  --font-serif: Cambria, 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+  --tracking-label: 0.14em;
+  --tracking-control: 0.1em;
+
+  /* Escala tipográfica: seis pasos, ningún tamaño suelto fuera de ellos */
+  --text-2xs: 0.7rem;
+  --text-xs: 0.8rem;
+  --text-sm: 0.9rem;
+  --text-md: 1rem;
+  --text-lg: 1.15rem;
+  --text-xl: 1.5rem;
+  --text-title: clamp(1.6rem, 4vw, 2.75rem);
+  --text-display: clamp(2rem, 7vw, 4.25rem);
+
+  /* Espaciado */
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  /* Altura del encabezado pegajoso: contrato entre él y lo que debe quedar
+     por debajo, como el aviso de contradicción. */
+  --header-height: 4.75rem;
+
+  /* Profundidad: plana por defecto, sombra solo bajo pantallas de estado */
+  --shadow-screen: 0 1.5rem 4rem rgb(0 0 0 / 45%);
+
+  /* Velos que garantizan legibilidad sobre las fotografías de ambiente */
+  --scrim-screen: linear-gradient(rgb(11 11 11 / 74%), rgb(11 11 11 / 90%));
+  --scrim-panel: linear-gradient(rgb(11 11 11 / 86%), rgb(11 11 11 / 95%));
+
+  color: var(--text-base);
+  background: var(--bg-root);
+  font-family: var(--font-serif);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -20,9 +98,57 @@ body {
   min-height: 100vh;
 }
 
+/*
+ * Viñeta de sala oscura: concentra la mirada en el centro del expediente.
+ * Capa fija, inerte al puntero y sin coste de layout.
+ */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 45%, rgb(0 0 0 / 40%) 100%);
+}
+
+/*
+ * Solo para lectores de pantalla: anuncios de estado que no deben ocupar
+ * espacio ni competir con la información ya visible en pantalla.
+ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 button,
 input,
-select,
 textarea {
   font: inherit;
+}
+
+/* Un anillo visible es el único indicador de foco admitido; el brillo no basta. */
+:focus-visible {
+  outline: 3px solid var(--text-primary);
+  outline-offset: 3px;
+}
+
+img {
+  max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

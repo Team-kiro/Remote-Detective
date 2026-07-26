@@ -317,6 +317,25 @@ describe('gameStore: presentEvidence', () => {
 
     expect(useGameStore.getState().phase).toBe('defeat_time');
   });
+
+  it('el aviso muere con la llamada que lo produjo', () => {
+    useGameStore.getState().startCall('daniel');
+    useGameStore.getState().presentEvidence('ev_bottle', 'stmt_daniel_arrival');
+    expect(useGameStore.getState().lastContradictionFeedback).not.toBeNull();
+
+    useGameStore.getState().endCall();
+
+    expect(useGameStore.getState().lastContradictionFeedback).toBeNull();
+  });
+
+  it('llamar a otro sospechoso no arrastra el aviso de la llamada anterior', () => {
+    useGameStore.getState().startCall('daniel');
+    useGameStore.getState().presentEvidence('ev_bottle', 'stmt_daniel_arrival');
+
+    useGameStore.getState().startCall('elena');
+
+    expect(useGameStore.getState().lastContradictionFeedback).toBeNull();
+  });
 });
 
 describe('gameStore: confesión automática', () => {

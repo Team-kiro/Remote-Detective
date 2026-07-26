@@ -21,6 +21,15 @@ export const TIMER_TICK_MS = 1000;
 /** Umbral en segundos por debajo del cual el temporizador se muestra en rojo. */
 export const TIMER_CRITICAL_SECONDS = 120;
 
+/** Umbral en segundos a partir del cual el temporizador pide atención. */
+export const TIMER_CAUTION_SECONDS = 240;
+
+/** Umbral en segundos del último minuto: el escalón que además late. */
+export const TIMER_FINAL_MINUTE_SECONDS = 60;
+
+/** Nivel de urgencia del temporizador, de menor a mayor. */
+export type TimerLevel = 'calm' | 'caution' | 'critical' | 'final';
+
 export interface TimerViewModel {
   /** Segundos restantes, nunca negativos. */
   secondsRemaining: number;
@@ -30,6 +39,15 @@ export interface TimerViewModel {
   isCritical: boolean;
   /** `true` cuando el temporizador ya llegó a 00:00. */
   isExpired: boolean;
+  /** Escalón de urgencia actual: gobierna color, énfasis y anuncio. */
+  level: TimerLevel;
+  /**
+   * Aviso para lectores de pantalla, vacío mientras no haya urgencia.
+   *
+   * Cambia solo al cruzar un umbral, nunca cada segundo: una región viva atada
+   * al `mm:ss` convertiría la cuenta atrás en ruido continuo.
+   */
+  announcement: string;
 }
 
 /** Convierte segundos restantes al formato `mm:ss`. */
@@ -54,6 +72,27 @@ function displayedSeconds(endTimestamp: number | null): number {
 
   return Math.ceil(calculateTimeRemaining(endTimestamp) / 1000);
 }
+
+/** Escalón de urgencia correspondiente a los segundos restantes. */
+export function timerLevel(secondsRemaining: number): TimerLevel {
+  if (secondsRemaining < TIMER_FINAL_MINUTE_SECONDS) {
+    return 'final';
+  }
+  if (secondsRemaining < TIMER_CRITICAL_SECONDS) {
+    return 'critical';
+  }
+  if (secondsRemaining < TIMER_CAUTION_SECONDS) {
+    return 'caution';
+  }
+  return 'calm';
+}
+
+const LEVEL_ANNOUNCEMENTS: Record<TimerLevel, string> = {
+  calm: '',
+  caution: 'Quedan cuatro minutos de investigación.',
+  critical: 'Quedan dos minutos de investigación.',
+  final: 'Queda un minuto de investigación.',
+};
 
 export function useTimer(): TimerViewModel {
   const phase = useGameStore((state) => state.phase);
@@ -94,10 +133,14 @@ export function useTimer(): TimerViewModel {
     };
   }, [phase, timerEndTimestamp, triggerTimeDefeat]);
 
+  const level = timerLevel(secondsRemaining);
+
   return {
     secondsRemaining,
     formatted: formatTimeRemaining(secondsRemaining),
     isCritical: secondsRemaining < TIMER_CRITICAL_SECONDS,
     isExpired: secondsRemaining <= 0,
+    level,
+    announcement: LEVEL_ANNOUNCEMENTS[level],
   };
 }

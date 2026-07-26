@@ -207,7 +207,7 @@ const SOLUTION: NarrativeSolution = {
 | `resp_daniel_substance` | Veneno/sustancias | `[['veneno']],[['sustancia','quimica']],[['cianuro']],[['quimicos']]` | "No tengo idea de dónde salió ese veneno. Yo no manejo sustancias químicas." | `stmt_daniel_substance` | 10 | false |
 | `resp_daniel_relation` | Relación con Marcos | `[['relacion','marcos']],[['marcos','socio']],[['conocias','marcos']]` | "Marcos y yo éramos socios desde hace años. Relación estrictamente profesional." | null | 5 | false |
 | `resp_daniel_motive` | Motivo | `[['motivo']],[['razon','matar']],[['por','que','harias']]` | "No tengo ningún motivo. La reestructuración me afectaba, pero no es para matar." | null | 5 | false |
-| `resp_daniel_generic` | Genérica | `[]` | "No sé qué quieres que te diga. Ya expliqué todo lo que sé sobre esa noche." | null | 0 | true |
+| `resp_daniel_generic` | Genérica | `[]` | "No sé qué quieres que te diga con eso. Pregúntame por la hora a la que llegué, por la oficina de Marcos o por el veneno, y te contesto." | null | 0 | true |
 
 #### Elena Vargas (5 + genérica)
 
@@ -218,7 +218,7 @@ const SOLUTION: NarrativeSolution = {
 | `resp_elena_motive` | Motivo económico | `[['dinero']],[['acciones']],[['economico']],[['herencia']]` | "El divorcio fue complicado económicamente, pero estaba resolviendo eso por vía legal." | null | 5 | false |
 | `resp_elena_thursday` | Discusión del jueves | `[['jueves']],[['discusion']],[['pelea','marcos']]` | "Sí, discutí con Marcos el jueves por las acciones. Pero no tiene que ver con su muerte." | null | 5 | false |
 | `resp_elena_reunion` | Reunión previa | `[['confrontar']],[['antes','reunion']],[['temprano']]` | "Llegué a la hora que dije. No tengo nada más que agregar sobre eso." | null | 5 | false |
-| `resp_elena_generic` | Genérica | `[]` | "No tengo por qué seguir respondiendo esto. Ya dije todo lo que sé." | null | 0 | true |
+| `resp_elena_generic` | Genérica | `[]` | "Esa pregunta no lleva a ninguna parte. Si quieres, hablamos de mi llegada, de mi relación con Marcos o del dinero del divorcio." | null | 0 | true |
 
 #### Roberto Mendoza (5 + genérica)
 
@@ -229,7 +229,7 @@ const SOLUTION: NarrativeSolution = {
 | `resp_roberto_daniel` | Opinión de Daniel | `[['daniel']],[['rivas']],[['socio','financiero']]` | "Daniel siempre fue reservado con los números. Yo no me metía en su área." | null | 5 | false |
 | `resp_roberto_arrival` | Hora de llegada | `[['hora','llegaste']],[['cuando','llegaste']]` | "Llegué solo a las 20:50. Vi a Daniel entrar unos minutos después, poco antes de que comenzara la reunión." | null | 5 | false |
 | `resp_roberto_fear` | Miedo | `[['miedo']],[['asustado']],[['nervioso']],[['ocultas']]` | "Estoy nervioso porque mataron a mi amigo. Cualquiera lo estaría." | null | 5 | false |
-| `resp_roberto_generic` | Genérica | `[]` | "Lo siento, no sé qué más puedo decirte. Esto es muy difícil para mí." | null | 0 | true |
+| `resp_roberto_generic` | Genérica | `[]` | "Lo siento, no sé qué responder a eso. Pregúntame por el desfalco, por la hora en que llegué o por Marcos, y hago lo que pueda." | null | 0 | true |
 
 #### Sofía Castillo (5 + genérica)
 
@@ -240,7 +240,7 @@ const SOLUTION: NarrativeSolution = {
 | `resp_sofia_laptop` | Laptop/regreso | `[['laptop']],[['computadora']],[['19','38']],[['regresaste']]` | "Regresé brevemente a recoger mi laptop de mi oficina antes de la reunión. Fue algo rápido. No vi a nadie." | null | 5 | false |
 | `resp_sofia_motive` | Motivo | `[['motivo']],[['beneficio']],[['competencia']]` | "No tengo motivos. La firma funciona bien para mí tal como está." | null | 5 | false |
 | `resp_sofia_arrival` | Hora de llegada | `[['hora','llegaste']],[['cuando','llegaste']]` | "Llegué a las 20:55 para la reunión." | null | 5 | false |
-| `resp_sofia_generic` | Genérica | `[]` | "No tengo información sobre eso. Prefiero no especular." | null | 0 | true |
+| `resp_sofia_generic` | Genérica | `[]` | "No tengo información sobre eso. Pregúntame por lo que vi en el edificio, por mi laptop o por la hora en que llegué." | null | 0 | true |
 
 ## Architecture
 
@@ -292,7 +292,7 @@ export interface StatementDef { id: StatementId; suspectId: SuspectId; canonical
 export interface Contradiction { id: ContradictionId; suspectId: SuspectId; evidenceId: EvidenceId; statementId: StatementId; explanation: string; pressureIncrease: number; points: number; unlocksStatement: null; }
 export interface NarrativeSolution { culpritId: SuspectId; motiveId: MotiveId; methodId: MethodId; requiredEvidenceIds: EvidenceId[]; confessionPressureThreshold: number; mandatoryContradictionIds: ContradictionId[]; }
 export interface LocalResponseDef { id: string; suspectId: SuspectId; intent: string; keywordGroups: string[][]; text: string; statementId: StatementId|null; priority: number; isGeneric: boolean; }
-export interface ScoringRules { incorrectCombinationPenalty: number; confessionBonus: number; correctAccusationBonus: number; timeRemainingFactor: number; minimumScore: 0; }
+export interface ScoringRules { incorrectCombinationPenalty: number; confessionBonus: number; correctAccusationBonus: number; partialSuspectBonus: number; timeRemainingFactor: number; minimumScore: 0; }
 export interface AccusationInput { suspectId: SuspectId; motiveId: MotiveId; methodId: MethodId; evidenceIds: EvidenceId[]; }
 export type AccusationResult = 'victory' | 'defeat';
 export type GamePhase = 'title'|'instructions'|'active'|'victory_accusation'|'victory_confession'|'defeat_time'|'defeat_accusation';
@@ -306,7 +306,7 @@ export interface InterrogationResponse { text: string; statementId: StatementId|
 ### Reglas Numéricas
 
 ```typescript
-export const SCORING_RULES: ScoringRules = { incorrectCombinationPenalty: 50, confessionBonus: 500, correctAccusationBonus: 300, timeRemainingFactor: 1, minimumScore: 0 };
+export const SCORING_RULES: ScoringRules = { incorrectCombinationPenalty: 50, confessionBonus: 500, correctAccusationBonus: 300, partialSuspectBonus: 100, timeRemainingFactor: 1, minimumScore: 0 };
 ```
 
 ---
@@ -323,6 +323,7 @@ export function shouldTriggerConfession(calledSuspectId: SuspectId, isCallActive
 
 // accusationEngine.ts
 export function evaluateAccusation(accusation: AccusationInput, solution: NarrativeSolution): AccusationResult;
+export function partialAccusationPoints(accusation: AccusationInput, solution: NarrativeSolution, rules?: ScoringRules): number;
 
 // scoringEngine.ts
 export function calculateFinalScore(state: { discoveredContradictions: Set<ContradictionId>; contradictionsData: Contradiction[]; incorrectAttempts: number; victoryType: 'accusation'|'confession'|null; timeRemainingMs: number; rules: ScoringRules; }): number;
@@ -516,7 +517,7 @@ La UI nunca puede entregar: `ChatMessage`, `statementId`, `requestId`, `callSess
 3. if timerEndTimestamp === null → triggerTimeDefeat(); return
 4. if isTimeExpired(timerEndTimestamp) → triggerTimeDefeat(); return
 5. set({ accusationUsed: true })
-6. result = evaluateAccusation(accusation, SOLUTION)
+6. result = evaluateAccusation(accusation, SOLUTION); crédito parcial = partialAccusationPoints(accusation, SOLUTION)
 7. if victory → finalizeGame('victory_accusation')
 8. if defeat → finalizeGame('defeat_accusation')
 ```

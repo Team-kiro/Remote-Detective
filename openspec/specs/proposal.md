@@ -190,7 +190,7 @@ Remote Detective es un juego web de investigación criminal con estética noir. 
 
 #### Criterios de Aceptación
 
-1. THE Aplicación SHALL calcular la Puntuación como la suma de: puntos por contradicciones válidas descubiertas, puntos por confesión del culpable, puntos por acusación final correcta, y puntos por tiempo restante al ganar, menos las penalizaciones por combinaciones incorrectas, con un valor mínimo de cero.
+1. THE Aplicación SHALL calcular la Puntuación como la suma de: puntos por contradicciones válidas descubiertas, puntos por confesión del culpable, puntos por acusación final correcta, puntos de crédito parcial cuando una acusación derrotada señala al culpable correcto, y puntos por tiempo restante al ganar, menos las penalizaciones por combinaciones incorrectas, con un valor mínimo de cero.
 2. WHEN el jugador descubre una contradicción válida, THE Aplicación SHALL sumar los puntos definidos en el módulo de reglas de puntuación para esa contradicción.
 3. WHEN el jugador realiza una combinación incorrecta en el Sistema_Contradicciones, THE Aplicación SHALL restar los puntos de penalización definidos en las reglas de puntuación, sin reducir la Puntuación por debajo de cero.
 4. WHEN la Partida finaliza en victoria, THE Aplicación SHALL sumar puntos proporcionales al tiempo restante según el factor definido en las reglas de puntuación.
@@ -206,7 +206,7 @@ Remote Detective es un juego web de investigación criminal con estética noir. 
 #### Criterios de Aceptación
 
 1. WHILE la Partida está activa, THE Aplicación SHALL permitir al jugador abrir la pantalla de Acusación_Final.
-2. WHEN el jugador abre la pantalla de Acusación_Final, THE Aplicación SHALL presentar listas de selección para: sospechoso (los cuatro), motivo (opciones definidas en los datos narrativos), método (opciones definidas en los datos narrativos) y evidencias (las 6 evidencias disponibles), requiriendo exactamente un sospechoso, un motivo, un método y al menos una evidencia.
+2. WHEN el jugador abre la pantalla de Acusación_Final, THE Aplicación SHALL presentar un tablero de caso con controles de selección visibles simultáneamente para: sospechoso (los cuatro, identificados por su retrato), motivo (opciones definidas en los datos narrativos), método (opciones definidas en los datos narrativos) y evidencias (las 6 evidencias disponibles, identificadas por su imagen), requiriendo exactamente un sospechoso, un motivo, un método y al menos una evidencia.
 3. THE Aplicación SHALL permitir al jugador seleccionar cualquiera de las 6 evidencias disponibles en la acusación, no solamente evidencias previamente inspeccionadas o "descubiertas".
 4. IF el jugador intenta enviar la Acusación_Final sin haber completado todos los campos requeridos, THEN THE Aplicación SHALL impedir el envío e indicar los campos faltantes.
 5. WHEN el jugador intenta enviar la Acusación_Final con todos los campos completos, THE Aplicación SHALL mostrar un diálogo de confirmación que permita confirmar o cancelar el envío.

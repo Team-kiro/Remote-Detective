@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { SCORING_RULES } from '@/data/scoringRules';
 import { SOLUTION } from '@/data/solution';
 import { EVIDENCE_IDS, METHOD_IDS, MOTIVE_IDS, SUSPECT_IDS } from '@/data/types';
 import type { AccusationInput } from '@/data/types';
-import { evaluateAccusation } from '@/logic/accusationEngine';
+import { evaluateAccusation, partialAccusationPoints } from '@/logic/accusationEngine';
 
 const correctAccusation: AccusationInput = {
   suspectId: SOLUTION.culpritId,
@@ -120,5 +121,21 @@ describe('evaluateAccusation: cobertura exhaustiva de la solución congelada', (
     expect(evaluateAccusation(input, SOLUTION)).toBe('victory');
     expect(evaluateAccusation(input, SOLUTION)).toBe('victory');
     expect(input.evidenceIds).toEqual(SOLUTION.requiredEvidenceIds);
+  });
+});
+
+describe('partialAccusationPoints', () => {
+  it('otorga crédito parcial cuando la acusación falla pero el culpable es correcto', () => {
+    expect(
+      partialAccusationPoints({ ...correctAccusation, motiveId: 'motive_greed' }, SOLUTION),
+    ).toBe(SCORING_RULES.partialSuspectBonus);
+  });
+
+  it('no otorga nada cuando el sospechoso señalado es inocente', () => {
+    expect(partialAccusationPoints({ ...correctAccusation, suspectId: 'elena' }, SOLUTION)).toBe(0);
+  });
+
+  it('no otorga nada en victoria: el bonus de acusación correcta ya la premia', () => {
+    expect(partialAccusationPoints(correctAccusation, SOLUTION)).toBe(0);
   });
 });

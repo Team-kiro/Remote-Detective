@@ -11,7 +11,7 @@
  * de llamadas sobre el escritorio; la llamada activa (`activeView === 'call'`)
  * únicamente puede establecerla `startCall` desde el selector de sospechosos.
  *
- * Requisitos: 3.1-3.3, 4.1-4.3, 5.1-5.5, 10.1-10.2, 12.1-12.9, 13.2-13.6
+ * Requisitos: 3.1-3.3, 4.1-4.3, 5.1-5.5, 10.1-10.2, 12.1-12.9, 13.2-13.6, 20.4-20.6
  */
 
 import { useCallback, useState } from 'react';
@@ -41,10 +41,9 @@ export function GameScreen(): React.JSX.Element {
   const submitAccusation = useGameStore((state) => state.submitAccusation);
   const accusationUsed = useGameStore((state) => state.accusationUsed);
 
-  // El sistema de llamadas se abre desde la navegación, pero la vista `call`
-  // del store exige `startCall(suspectId)`. Hasta que la tarea 4.4 monte el
-  // selector de sospechosos, esta bandera local solo indica que el área de
-  // llamadas está visible sobre el escritorio.
+  // La vista `call` del store exige `startCall(suspectId)`, pero la navegación
+  // abre el área de llamadas antes de que haya sospechoso elegido: esta bandera
+  // local solo indica que el selector está visible sobre el escritorio.
   const [isCallAreaOpen, setIsCallAreaOpen] = useState(false);
 
   const handleNavigate = useCallback(
@@ -108,6 +107,11 @@ export function GameScreen(): React.JSX.Element {
   return (
     <div className={styles.screen}>
       <GameHeader />
+      <p className={styles.desktopNotice} data-testid="desktop-recommendation">
+        Esta investigación está pensada para pantallas de 1024 px o más. En pantallas menores el
+        contenido se apila y arrastrar evidencias sobre las declaraciones puede fallar: te
+        recomendamos jugar desde una computadora.
+      </p>
       <div className={styles.body}>
         <NavigationBar currentSection={currentSection} onNavigate={handleNavigate} />
         <main className={styles.panel} aria-label="Panel activo de la partida">

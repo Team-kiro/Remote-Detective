@@ -93,16 +93,15 @@ function navigate(container: HTMLElement, view: string): void {
   click(query(container, `nav button[data-view="${view}"]`));
 }
 
-/** Selecciona un valor en un `select` nativo del formulario de acusación. */
-function selectOption(container: HTMLElement, selector: string, value: string): void {
-  const select = query(container, selector) as HTMLSelectElement;
+/** Marca una opción del tablero de caso disparando el evento nativo. */
+function choose(container: HTMLElement, selector: string): void {
+  const input = query(container, selector) as HTMLInputElement;
   act(() => {
-    select.value = value;
-    select.dispatchEvent(new Event('change', { bubbles: true }));
+    input.click();
   });
 }
 
-/** Completa el formulario con la acusación indicada. */
+/** Completa el tablero con la acusación indicada. */
 function fillAccusation(
   container: HTMLElement,
   suspectId: string,
@@ -110,11 +109,11 @@ function fillAccusation(
   methodId: string,
   evidenceIds: readonly string[],
 ): void {
-  selectOption(container, '#accusation-suspect', suspectId);
-  selectOption(container, '#accusation-motive', motiveId);
-  selectOption(container, '#accusation-method', methodId);
+  choose(container, `input[data-suspect-choice="${suspectId}"]`);
+  choose(container, `input[data-motive-choice="${motiveId}"]`);
+  choose(container, `input[data-method-choice="${methodId}"]`);
   for (const evidenceId of evidenceIds) {
-    click(query(container, `input[data-evidence-choice="${evidenceId}"]`));
+    choose(container, `input[data-evidence-choice="${evidenceId}"]`);
   }
 }
 
@@ -232,7 +231,7 @@ describe('GameScreen: escritorio, expediente y evidencias', () => {
     expect(container.querySelectorAll('[data-suspect]')).toHaveLength(4);
   });
 
-  it('lista las seis evidencias y muestra el detalle con placeholder accesible', () => {
+  it('lista las seis evidencias y muestra el detalle con imagen accesible', () => {
     activateGame(600_000);
     const container = renderGameScreen();
 
@@ -250,10 +249,41 @@ describe('GameScreen: escritorio, expediente y evidencias', () => {
     expect(detail.textContent).toContain(first.name);
     expect(detail.textContent).toContain(first.description);
     expect(detail.textContent).toContain(first.observableInfo);
-    expect(query(detail, '[role="img"]').getAttribute('aria-label')).toContain(first.name);
+    // Con recurso disponible se renderiza la fotografía; sin él, el placeholder
+    // accesible. La foto es decorativa: el nombre ya está en el detalle, así
+    // que un `alt` con el mismo texto solo lo anunciaría dos veces.
+    const visual = query(detail, 'img, [role="img"]');
+    expect(visual.getAttribute('alt') ?? visual.getAttribute('aria-label') ?? '').toBe('');
     expect(query(container, `button[data-evidence="${first.id}"]`).getAttribute('aria-pressed')).toBe(
       'true',
     );
+  });
+
+  it('mantiene visible la recomendación de jugar desde una computadora', () => {
+    activateGame(600_000);
+    const container = renderGameScreen();
+
+    // El aviso vive en el DOM y solo lo oculta la media query >= 1024px, de modo
+    // que la recomendación no depende de estado ni de JavaScript.
+    const notice = query(container, '[data-testid="desktop-recommendation"]');
+    expect(notice.textContent).toContain('1024');
+    expect(notice.textContent).toContain('computadora');
+  });
+
+  it('presenta a los cuatro sospechosos con su retrato', () => {
+    activateGame(600_000);
+    const container = renderGameScreen();
+
+    navigate(container, 'casefile');
+
+    for (const suspect of SUSPECT_PROFILE_VIEWS) {
+      const card = query(container, `[data-suspect="${suspect.id}"]`);
+      // El retrato es decorativo: el nombre ya está en la ficha, así que
+      // describirlo otra vez en el `alt` solo duplica el anuncio.
+      const visual = query(card, 'img, [role="img"]');
+      expect(visual.getAttribute('alt') ?? visual.getAttribute('aria-label') ?? '').toBe('');
+      expect(card.textContent).toContain(suspect.name);
+    }
   });
 });
 
@@ -268,7 +298,7 @@ describe('GameScreen: acusación final', () => {
     expect(query(container, '#accusation-status').textContent).toContain('sospechoso');
     expect(container.querySelectorAll('input[data-evidence-choice]')).toHaveLength(6);
 
-    selectOption(container, '#accusation-suspect', SOLUTION.culpritId);
+    choose(container, `input[data-suspect-choice="${SOLUTION.culpritId}"]`);
     expect(query(container, '#accusation-status').textContent).not.toContain('sospechoso');
     expect(
       (query(container, '[data-testid="accusation-submit"]') as HTMLButtonElement).disabled,
@@ -328,7 +358,14 @@ describe('GameScreen: acusación final', () => {
 
     const submit = query(container, '[data-testid="accusation-submit"]') as HTMLButtonElement;
     expect(submit.disabled).toBe(true);
-    expect((query(container, '#accusation-suspect') as HTMLSelectElement).disabled).toBe(true);
+    expect(
+      (
+        query(
+          container,
+          `input[data-suspect-choice="${SOLUTION.culpritId}"]`,
+        ) as HTMLInputElement
+      ).closest('fieldset')?.disabled,
+    ).toBe(true);
     expect(query(container, '#accusation-status').textContent).toContain('única acusación');
   });
 });
@@ -397,7 +434,7 @@ describe('GameScreen: sistema de llamadas', () => {
     const send = (): HTMLButtonElement =>
       query(container, '[data-testid="call-send"]') as HTMLButtonElement;
     expect(send().disabled).toBe(true);
-    expect(query(container, '#call-question-status').textContent).toContain('Escribe una pregunta');
+    expect(query(container, '#call-question-status').textContent).toContain('Elige un tema');
 
     typeQuestion(container, '    ');
     expect(send().disabled).toBe(true);
