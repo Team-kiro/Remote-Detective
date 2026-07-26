@@ -1,6 +1,6 @@
 ---
 description: 'Pure deterministic engines for contradictions, scoring, confession, accusation, timer, and local responses'
-applyTo: 'src/logic/**/*.ts'
+applyTo: 'frontend/src/logic/**/*.ts'
 ---
 
 # Logic Engine Instructions

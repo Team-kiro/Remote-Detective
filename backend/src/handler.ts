@@ -36,6 +36,18 @@ function jsonResult(
   };
 }
 
+/**
+ * Desenvuelve el JSON de una valla de código markdown.
+ *
+ * El prompt prohíbe explícitamente el markdown, pero los modelos lo añaden de
+ * todos modos. Es envoltorio de transporte, no contenido: quitarlo no relaja el
+ * contrato, que se sigue validando entero sobre el objeto ya parseado.
+ */
+export function stripCodeFence(text: string): string {
+  const fenced = /^\s*```(?:json)?\s*\n?([\s\S]*?)\n?\s*```\s*$/.exec(text);
+  return fenced?.[1] ?? text;
+}
+
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   // API Gateway puede entregar `headers` nulo en invocaciones sin cabeceras.
   const headers: Record<string, string | undefined> = event.headers ?? {};
@@ -79,6 +91,10 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     if (err instanceof BedrockTimeoutError) {
       return jsonResult(504, { error: 'Tiempo de respuesta agotado' }, corsHeaders);
     }
+    // El cliente nunca ve el detalle del proveedor, pero sin registrarlo en
+    // CloudWatch un 502 es indiagnosticable (p. ej. un modelo legacy o un
+    // permiso IAM ausente se ven idénticos desde fuera).
+    console.error('Fallo al invocar Bedrock:', err);
     // BedrockProviderError u otro: 502 sin detalles internos
     return jsonResult(502, { error: 'Error del proveedor de IA' }, corsHeaders);
   }
@@ -86,14 +102,16 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
   // Parsear y validar la respuesta del modelo
   let parsedResponse: unknown;
   try {
-    parsedResponse = JSON.parse(modelText) as unknown;
+    parsedResponse = JSON.parse(stripCodeFence(modelText)) as unknown;
   } catch {
     // JSON inválido → descarte completo; el frontend usará la respuesta local
+    console.error('El modelo no devolvió JSON válido:', modelText.slice(0, 200));
     return jsonResult(502, { error: 'Respuesta del modelo inválida' }, corsHeaders);
   }
 
   if (!validateResponse(parsedResponse, request.suspectId)) {
     // Respuesta fuera de contrato → descarte completo
+    console.error('Respuesta del modelo fuera de contrato:', modelText.slice(0, 200));
     return jsonResult(502, { error: 'Respuesta del modelo fuera de contrato' }, corsHeaders);
   }
 

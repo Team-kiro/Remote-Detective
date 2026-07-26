@@ -5,9 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  // `backend/` es un paquete independiente con su propio tsconfig y su propia
-  // suite Jest; incluirlo aquí rompe el lint tipado del frontend.
-  { ignores: ['dist', 'coverage', 'backend'] },
+  { ignores: ['dist', 'coverage'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.strictTypeChecked],
     files: ['**/*.{ts,tsx}'],

@@ -8,8 +8,18 @@ Parameters:
     Description: Lista de orígenes CORS separados por coma (p. ej. "http://localhost:5173,https://tu-app.amplifyapp.com")
   BedrockModelId:
     Type: String
-    Default: anthropic.claude-3-haiku-20240307-v1:0
-    Description: Identificador del modelo Bedrock a invocar
+    Default: us.anthropic.claude-haiku-4-5-20251001-v1:0
+    Description: >-
+      Perfil de inferencia entre regiones de Bedrock. Los Claude actuales no
+      admiten throughput bajo demanda por ID de modelo directo, así que debe ser
+      un inference profile (prefijo "us."), no un foundation-model a secas.
+  BedrockFoundationModelId:
+    Type: String
+    Default: anthropic.claude-haiku-4-5-20251001-v1:0
+    Description: >-
+      Modelo base que respalda el perfil anterior. Se declara aparte porque el
+      permiso IAM debe cubrir el perfil y además el modelo en cada región que el
+      perfil abarca.
 
 Globals:
   Function:
@@ -38,7 +48,14 @@ Resources:
             - Effect: Allow
               Action:
                 - bedrock:InvokeModel
-              Resource: !Sub "arn:aws:bedrock:${AWS::Region}::foundation-model/${BedrockModelId}"
+              # Un perfil de inferencia enruta la invocación a la región con
+              # capacidad libre, así que el permiso necesita el propio perfil y
+              # el modelo base en las tres regiones que abarca.
+              Resource:
+                - !Sub "arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${BedrockModelId}"
+                - !Sub "arn:aws:bedrock:us-east-1::foundation-model/${BedrockFoundationModelId}"
+                - !Sub "arn:aws:bedrock:us-east-2::foundation-model/${BedrockFoundationModelId}"
+                - !Sub "arn:aws:bedrock:us-west-2::foundation-model/${BedrockFoundationModelId}"
       Events:
         PostInterrogate:
           Type: Api

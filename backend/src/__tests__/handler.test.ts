@@ -23,7 +23,7 @@ jest.mock('../bedrockClient', () => ({
   invokeBedrock: jest.fn(),
 }));
 
-import { handler } from '../handler';
+import { handler, stripCodeFence } from '../handler';
 import { invokeBedrock } from '../bedrockClient';
 
 const mockInvokeBedrock = invokeBedrock as jest.MockedFunction<typeof invokeBedrock>;
@@ -74,11 +74,33 @@ const VALID_MODEL_RESPONSE = JSON.stringify({
 
 beforeEach(() => {
   jest.resetAllMocks();
+  // El handler registra el detalle del proveedor en CloudWatch; silenciarlo
+  // mantiene legible la salida de Jest sin ocultar el contrato probado abajo.
+  jest.spyOn(console, 'error').mockImplementation(() => undefined);
   process.env['ALLOWED_ORIGINS'] = 'http://localhost:5173,https://frontend.example.com';
 });
 
 afterEach(() => {
+  jest.restoreAllMocks();
   delete process.env['ALLOWED_ORIGINS'];
+});
+
+describe('stripCodeFence', () => {
+  it('desenvuelve una valla ```json', () => {
+    expect(stripCodeFence('```json\n{"a":1}\n```')).toBe('{"a":1}');
+  });
+
+  it('desenvuelve una valla sin etiqueta de lenguaje', () => {
+    expect(stripCodeFence('```\n{"a":1}\n```')).toBe('{"a":1}');
+  });
+
+  it('deja intacto un JSON sin valla', () => {
+    expect(stripCodeFence('{"a":1}')).toBe('{"a":1}');
+  });
+
+  it('deja intacto un texto con backticks sueltos que no forman valla', () => {
+    expect(stripCodeFence('```json\n{"a":1}')).toBe('```json\n{"a":1}');
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -94,6 +116,16 @@ describe('handler — request válido', () => {
     expect(result.statusCode).toBe(200);
     const parsed = JSON.parse(result.body) as { text: string; statementId: string | null };
     expect(parsed.text).toBe('Llegué al edificio a las 20:50 junto con Roberto.');
+    expect(parsed.statementId).toBe('stmt_daniel_arrival');
+  });
+
+  it('acepta la respuesta aunque el modelo la envuelva en una valla markdown', async () => {
+    mockInvokeBedrock.mockResolvedValue('```json\n' + VALID_MODEL_RESPONSE + '\n```');
+
+    const result = await handler(buildEvent(VALID_REQUEST_BODY));
+
+    expect(result.statusCode).toBe(200);
+    const parsed = JSON.parse(result.body) as { statementId: string | null };
     expect(parsed.statementId).toBe('stmt_daniel_arrival');
   });
 
@@ -192,6 +224,8 @@ describe('handler — error del proveedor de IA', () => {
     // No debe filtrar detalles internos del proveedor
     expect(body.error).not.toContain('ThrottlingException');
     expect(body.error).not.toContain('rate exceeded');
+    // ...pero sí debe registrarlos del lado servidor para poder diagnosticarlos
+    expect(console.error).toHaveBeenCalled();
   });
 
   it('devuelve 502 cuando el modelo responde con JSON inválido', async () => {

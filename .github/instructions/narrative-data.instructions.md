@@ -1,6 +1,6 @@
 ---
 description: 'Frozen narrative data, stable identifiers, and view models'
-applyTo: 'src/data/**/*.ts'
+applyTo: 'frontend/src/data/**/*.ts'
 ---
 
 # Narrative Data Instructions

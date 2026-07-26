@@ -2,38 +2,18 @@
   "name": "remote-detective",
   "private": true,
   "version": "0.1.0",
-  "type": "module",
+  "description": "Enrutador de scripts del monorepo. frontend/ y backend/ instalan y se versionan por separado a propósito: el requisito 17.7 exige que la ausencia o el fallo del backend nunca bloquee el build, las pruebas ni la publicación del frontend, y SAM empaqueta backend/ con su propio package-lock.json.",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "preview": "vite preview",
-    "test": "vitest run",
-    "test:e2e": "playwright test",
-    "test:e2e:install": "playwright install chromium",
-    "build": "tsc -b && vite build",
-    "typecheck": "tsc -b --pretty false",
-    "lint": "eslint . --max-warnings 0"
-  },
-  "dependencies": {
-    "@dnd-kit/core": "6.3.1",
-    "react": "19.1.1",
-    "react-dom": "19.1.1",
-    "zustand": "5.0.8"
-  },
-  "devDependencies": {
-    "@eslint/js": "9.36.0",
-    "@playwright/test": "1.62.0",
-    "@types/node": "24.5.2",
-    "@types/react": "19.1.16",
-    "@types/react-dom": "19.1.9",
-    "@vitejs/plugin-react": "5.0.4",
-    "eslint": "9.36.0",
-    "eslint-plugin-react-hooks": "5.2.0",
-    "eslint-plugin-react-refresh": "0.4.20",
-    "globals": "16.4.0",
-    "jsdom": "26.1.0",
-    "typescript": "5.9.2",
-    "typescript-eslint": "8.44.1",
-    "vite": "7.1.7",
-    "vitest": "3.2.4"
+    "dev": "npm --prefix frontend run dev",
+    "preview": "npm --prefix frontend run preview",
+    "build": "npm --prefix frontend run build",
+    "test": "npm --prefix frontend run test",
+    "test:e2e": "npm --prefix frontend run test:e2e",
+    "test:e2e:install": "npm --prefix frontend run test:e2e:install",
+    "typecheck": "npm --prefix frontend run typecheck",
+    "lint": "npm --prefix frontend run lint",
+    "install:all": "npm --prefix frontend ci && npm --prefix backend ci",
+    "backend:build": "npm --prefix backend run build",
+    "backend:test": "npm --prefix backend test"
   }
 }

@@ -35,18 +35,18 @@ Specs are the source of truth. Read them before changing behavior:
 - Review existing tests before adding new ones; the seven approved test groups already cover the 31 Correctness Properties and duplicating them is waste
 - Test code is production code: same typing discipline, same DRY expectations
 - When you change an engine, the store, or persistence, update the co-located test file in the same change
-- Vitest owns `src/**/*.test.{ts,tsx}`; Playwright owns `e2e-tests/**/*.spec.ts`. E2E specs verify player-visible flows, never engine arithmetic
+- Vitest owns `frontend/src/**/*.test.{ts,tsx}`; Playwright owns `frontend/e2e-tests/**/*.spec.ts`. E2E specs verify player-visible flows, never engine arithmetic
 
 #### Project guidelines
 
 - When a task from `tasks.md` is completed, tick its checkbox in **both** `.kiro/specs/` and `openspec/specs/` copies so the two stay in sync
 - When adding new functionality, update `README.md` and the relevant instruction files
 - Never add narrative content: four suspects, six evidence items, six canonical statements, six contradictions, and Daniel Rivas as the culprit are **frozen** by the spec
-- Never expose `_internal` metadata (narrative relevance, related suspects, resolved contradiction) to the rendered UI — route presentation data through `src/data/viewModels.ts`
+- Never expose `_internal` metadata (narrative relevance, related suspects, resolved contradiction) to the rendered UI — route presentation data through `frontend/src/data/viewModels.ts`
 
 ### Code formatting requirements
 
-- TypeScript strict mode; explicit types on function parameters and return values, especially in `src/data/`, `src/logic/`, and `src/store/`
+- TypeScript strict mode; explicit types on function parameters and return values, especially in `frontend/src/data/`, `frontend/src/logic/`, and `frontend/src/store/`
 - `@typescript-eslint/no-explicit-any` is an **error** — `any` is banned in exported APIs
 - Prefer `interface` for object shapes and `import type` for type-only imports
 - Import intra-project modules through the `@/` alias (`@/store/gameStore`), not deep relative chains
@@ -65,11 +65,11 @@ The strict separation between the four layers is what makes the game auditable. 
 
 | Layer | Path | Rule | Instructions |
 |---|---|---|---|
-| Narrative data | `src/data/` | Frozen constants and types. No React, no store, no logic imports | `narrative-data.instructions.md` |
-| Logic engines | `src/logic/` | Pure deterministic functions. No React, no Zustand, no network | `logic-engines.instructions.md` |
-| State | `src/store/` | The only place game rules mutate state. Owns the minimal public surface | `game-store.instructions.md` |
-| UI | `src/components/` | Renders state and calls public actions. Cannot fabricate outcomes | `react-ui.instructions.md` |
-| E2E | `e2e-tests/` | Playwright specs over the built app. Verify flows, not engine arithmetic | `playwright.instructions.md` |
+| Narrative data | `frontend/src/data/` | Frozen constants and types. No React, no store, no logic imports | `narrative-data.instructions.md` |
+| Logic engines | `frontend/src/logic/` | Pure deterministic functions. No React, no Zustand, no network | `logic-engines.instructions.md` |
+| State | `frontend/src/store/` | The only place game rules mutate state. Owns the minimal public surface | `game-store.instructions.md` |
+| UI | `frontend/src/components/` | Renders state and calls public actions. Cannot fabricate outcomes | `react-ui.instructions.md` |
+| E2E | `frontend/e2e-tests/` | Playwright specs over the built app. Verify flows, not engine arithmetic | `playwright.instructions.md` |
 
 Two cross-cutting rules that no layer may break:
 
@@ -78,8 +78,10 @@ Two cross-cutting rules that no layer may break:
 
 ## Scripts
 
-All scripts run from the repository root:
+All scripts run from the repository root, which is a script router — it forwards to
+`frontend/` (or `backend/`) so the two packages install and version independently:
 
+- `npm run install:all` — install both packages (`npm ci` in `frontend/` and `backend/`)
 - `npm run dev` — start the Vite dev server
 - `npm run preview` — serve the production bundle locally (used by the E2E suite)
 - `npm run test` — run the Vitest suite once, non-interactive
@@ -88,31 +90,43 @@ All scripts run from the repository root:
 - `npm run build` — type-check (`tsc -b`) and produce the production bundle
 - `npm run typecheck` — type-check without emitting
 - `npm run lint` — ESLint with `--max-warnings 0`
+- `npm run backend:build` / `npm run backend:test` — the Lambda package's own gates
 
-CI (`.github/workflows/run-tests.yml`) runs lint, type-check, unit tests, and the E2E suite as four parallel jobs on pull requests to `main` and pushes to `main`. `copilot-setup-steps.yml` preinstalls dependencies and the Chromium binary for the coding agent.
+CI (`.github/workflows/run-tests.yml`) runs lint, type-check, unit tests, and the E2E suite as four parallel jobs on pull requests to `main` and pushes to `main`, plus an independent `backend` job that builds and tests the Lambda package. `copilot-setup-steps.yml` preinstalls dependencies and the Chromium binary for the coding agent.
 
 ## Repository structure
 
+The two packages are deliberately separate: each keeps its own `package.json` and
+`package-lock.json` so the backend's absence or failure can never block the
+frontend's build, tests, or deploy (requirement 17.7), and so SAM can package
+`backend/` on its own.
+
 ```
 Remote-Detective/
+├── package.json                       # script router only; no dependencies
 ├── AGENTS.md, PRODUCT.md, DESIGN.md   # agent, product, and visual design context
 ├── .github/instructions/              # path-scoped agent instruction files
-├── .github/workflows/                 # CI: lint, type-check, unit tests, E2E
+├── .github/workflows/                 # CI: lint, type-check, unit tests, E2E, backend
 ├── .kiro/specs/remote-detective/      # requirements.md, design.md, tasks.md
 ├── .kiro/steering/                    # Kiro mirror of the instruction files
 ├── openspec/specs/                    # OpenSpec mirror of the same specs
-├── e2e-tests/                         # Playwright specs (*.spec.ts)
-├── src/
-│   ├── data/                          # frozen narrative data, types, view models
-│   ├── logic/                         # pure deterministic engines
-│   ├── store/                         # Zustand store, persistence, store types
-│   ├── services/                      # bedrockService.ts (optional remote path)
-│   ├── components/{screens,desktop,shared}/
-│   ├── hooks/                         # useTimer
-│   ├── assets/{suspects,evidence,backgrounds,ui}/
-│   ├── styles/global.css
-│   └── config.ts                      # timer duration, timeout, interrogation mode
-└── vite.config.ts, vitest.config.ts, playwright.config.ts, eslint.config.js, tsconfig*.json
+├── frontend/
+│   ├── e2e-tests/                     # Playwright specs (*.spec.ts)
+│   ├── src/
+│   │   ├── data/                      # frozen narrative data, types, view models
+│   │   ├── logic/                     # pure deterministic engines
+│   │   ├── store/                     # Zustand store, persistence, store types
+│   │   ├── services/                  # bedrockService.ts (optional remote path)
+│   │   ├── components/{screens,desktop,shared}/
+│   │   ├── hooks/                     # useTimer
+│   │   ├── assets/{suspects,evidence,backgrounds,ui}/
+│   │   ├── styles/global.css
+│   │   └── config.ts                  # timer duration, timeout, interrogation mode
+│   └── vite.config.ts, vitest.config.ts, playwright.config.ts, eslint.config.js, tsconfig*.json
+└── backend/
+    ├── src/                           # validator, promptBuilder, bedrockClient, handler
+    ├── src/__tests__/                 # Jest suite (test group (g))
+    └── template.yaml, tsconfig.json, jest.config.js
 ```
 
 ## Out of scope

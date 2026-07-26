@@ -1,6 +1,6 @@
 ---
 description: 'React 19 components, CSS Modules, drag-and-drop, and the read-only UI contract'
-applyTo: 'src/components/**/*.tsx'
+applyTo: 'frontend/src/components/**/*.tsx'
 ---
 
 # React UI Instructions

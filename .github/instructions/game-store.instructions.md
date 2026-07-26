@@ -1,6 +1,6 @@
 ---
 description: 'Zustand game store, its minimal public surface, async interrogation, and sessionStorage persistence'
-applyTo: 'src/store/**/*.ts'
+applyTo: 'frontend/src/store/**/*.ts'
 ---
 
 # Game Store Instructions

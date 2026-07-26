@@ -1,6 +1,6 @@
 ---
 description: 'Deterministic Vitest guidelines for narrative data, engines, store, and UI flows'
-applyTo: '**/*.test.{ts,tsx}'
+applyTo: 'frontend/src/**/*.test.{ts,tsx}'
 ---
 
 # Unit Testing Guidelines (Vitest)
