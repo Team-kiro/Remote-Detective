@@ -18,7 +18,7 @@ Closes #
 - [ ] `npm run test` passes
 - [ ] `npm run build` succeeds
 - [ ] No new colors or fonts outside `DESIGN.md`
-- [ ] Frozen narrative data unchanged (4 suspects, 6 evidences, 6 statements, 6 contradictions), or the change is intentional and every dependent test was updated
+- [ ] Frozen narrative data unchanged (4 suspects, 6 evidence items, 6 statements, 6 contradictions), or the change is intentional and every dependent test was updated
 - [ ] The spec task checkbox was ticked in **both** `.kiro/specs/remote-detective/tasks.md` and `openspec/specs/tasks.md`
 
 ## Testing

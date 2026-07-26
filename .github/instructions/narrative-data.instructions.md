@@ -15,7 +15,7 @@ applyTo: 'src/data/**/*.ts'
 These counts are verified by `narrativeData.test.ts` and `narrativeRules.test.ts`:
 
 - Exactly **4** suspects (`daniel`, `elena`, `roberto`, `sofia`); Daniel Rivas is the culprit
-- Exactly **6** evidences, all available from the start — there is no unlock mechanic
+- Exactly **6** evidence items, all available from the start — there is no unlock mechanic
 - Exactly **6** canonical statements, one usable statement per contradiction
 - Exactly **6** contradictions, distributed 3 (Daniel) / 1 / 1 / 1
 - **>=5** specific local responses plus **exactly 1** generic response per suspect

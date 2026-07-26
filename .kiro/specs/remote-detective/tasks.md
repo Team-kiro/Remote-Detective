@@ -163,7 +163,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - Cancelar drops fuera de una declaración sin evaluar; presentar feedback diferenciado para contradicción válida, evidencia relacionada pero insuficiente, combinación incorrecta y contradicción ya descubierta.
     - La UI y `@dnd-kit/core` solo llaman `presentEvidence(evidenceId, statementId)`; el store decide internamente el resultado, los cambios de estado y la posible confesión.
     - La tercera contradicción obligatoria de Daniel, cuando se cumplen la presión y las demás condiciones, activa la confesión automática y finaliza la partida mediante `victory_confession`.
-    - Mantener las seis evidencias disponibles durante la llamada; no hace falta ejecutar `endCall` antes de presentar la evidencia. La UI solo llama `presentEvidence` y, si la tercera contradicción obligatoria satisface la presión y las demás condiciones, el store finaliza inmediatamente la partida como `victory_confession`.
+    - Mantener las seis evidencias disponibles durante la llamada; no hace falta ejecutar `endCall` antes de presentar la evidencia.
     - _Requirements: 5.1, 8.1-8.10, 9.1-9.3, 13.8_
 
   - [ ] 4.6 Aplicar estética noir y adaptación mínima del viewport

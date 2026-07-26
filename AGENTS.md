@@ -38,7 +38,7 @@ Specs are the source of truth. Read them before changing behavior:
 
 - When a task from `tasks.md` is completed, tick its checkbox in **both** `.kiro/specs/` and `openspec/specs/` copies so the two stay in sync
 - When adding new functionality, update `README.md` and the relevant instruction files
-- Never add narrative content: four suspects, six evidences, six canonical statements, six contradictions, and Daniel Rivas as the culprit are **frozen** by the spec
+- Never add narrative content: four suspects, six evidence items, six canonical statements, six contradictions, and Daniel Rivas as the culprit are **frozen** by the spec
 - Never expose `_internal` metadata (narrative relevance, related suspects, resolved contradiction) to the rendered UI — route presentation data through `src/data/viewModels.ts`
 
 ### Code formatting requirements
