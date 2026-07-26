@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Remote Detective — endpoint de interrogación mediante Amazon Bedrock
+
+Parameters:
+  AllowedOrigins:
+    Type: String
+    Description: Lista de orígenes CORS separados por coma (p. ej. "http://localhost:5173,https://tu-app.amplifyapp.com")
+  BedrockModelId:
+    Type: String
+    Default: anthropic.claude-3-haiku-20240307-v1:0
+    Description: Identificador del modelo Bedrock a invocar
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 30
+    MemorySize: 256
+    Environment:
+      Variables:
+        ALLOWED_ORIGINS: !Ref AllowedOrigins
+        BEDROCK_MODEL_ID: !Ref BedrockModelId
+
+Resources:
+  InterrogateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: dist/handler.handler
+      Description: Recibe una pregunta de interrogatorio, construye el prompt y consulta Bedrock
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: !Sub "arn:aws:bedrock:${AWS::Region}::foundation-model/${BedrockModelId}"
+      Events:
+        PostInterrogate:
+          Type: Api
+          Properties:
+            Path: /interrogate
+            Method: post
+        OptionsInterrogate:
+          Type: Api
+          Properties:
+            Path: /interrogate
+            Method: options
+
+Outputs:
+  InterrogateApi:
+    Description: URL del endpoint POST /interrogate
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/interrogate"

@@ -189,26 +189,26 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
   - Confirmar que el fallback local permite continuar y finalizar la partida si el endpoint falta, falla o se retrasa.
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 6. Implementar y probar el backend importante pero no bloqueante
-  - [ ] 6.1 Preparar el paquete backend y la plantilla SAM
+- [x] 6. Implementar y probar el backend importante pero no bloqueante
+  - [x] 6.1 Preparar el paquete backend y la plantilla SAM
     - Crear proyecto TypeScript independiente bajo `backend/`, scripts de build/test y `template.yaml` para Lambda y `POST /interrogate` en API Gateway.
     - Declarar variables `ALLOWED_ORIGINS`, `AWS_REGION` y `BEDROCK_MODEL_ID`, permisos IAM mínimos para Bedrock y timeout coherente con el contrato.
     - Mantener el backend posterior e independiente del checkpoint local: su ausencia, retraso o fallo no debe impedir build, publicación ni juego completo del frontend.
     - _Requirements: 16.6, 17.1, 17.5-17.7_
 
-  - [ ] 6.2 Implementar validación de solicitudes y construcción de prompts
+  - [x] 6.2 Implementar validación de solicitudes y construcción de prompts
     - Validar tamaño del cuerpo, sospechoso conocido, pregunta de 1 a 300, IDs de contradicción conocidos y presión finita no negativa; devolver 4xx con campo inválido.
     - Construir prompts por sospechoso solo desde datos aprobados, con personalidad, conocimientos, mentiras, prohibición de confesar o cambiar hechos y lista de `statementId` permitidos.
     - Exigir JSON estricto compatible con texto no vacío de hasta 500 caracteres e ID permitido o `null`.
     - _Requirements: 16.2-16.4, 17.2-17.4_
 
-  - [ ] 6.3 Implementar cliente Bedrock, handler, timeout y CORS
+  - [x] 6.3 Implementar cliente Bedrock, handler, timeout y CORS
     - Invocar Bedrock para solicitudes válidas, parsear/validar su salida y devolver únicamente el contrato aprobado.
     - Devolver 504 al superar 10 segundos y 502 ante fallos del proveedor, sin filtrar detalles internos.
     - Aplicar CORS mediante lista configurable que soporte origen local y dominio Amplify, sin hardcodear dominios.
     - _Requirements: 16.1-16.5, 17.1, 17.3-17.6_
 
-  - [ ] 6.4 Grupo de pruebas (g): contrato backend
+  - [x] 6.4 Grupo de pruebas (g): contrato backend
     - Cubrir request válido; sospechoso desconocido; pregunta vacía o mayor a 300; contexto ausente o mal tipado; cuerpo excedido; IDs de contradicción desconocidos; presión no numérica, infinita, negativa o ausente; y respuesta 4xx con identificación del campo inválido.
     - Verificar origen local y Amplify permitidos mediante configuración, origen no permitido rechazado, timeout de Bedrock mayor a 10 segundos como 504 y error del proveedor como 502 sin detalles internos.
     - Comprobar que el prompt usa únicamente perfil, conocimientos, mentiras y `statementId` permitidos del sospechoso, prohíbe inventar hechos, cambiar cronología, confesar o decidir culpabilidad y solicita JSON estricto.
