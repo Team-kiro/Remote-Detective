@@ -8,6 +8,9 @@ coverage/
 npm-debug.log*
 .DS_Store
 
+# Artefactos de build de AWS SAM (backend/)
+.aws-sam/
+
 # Ephemeral agent/tooling artifacts
 .playwright-mcp/
 test-results/
