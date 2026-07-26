@@ -21,11 +21,12 @@ Frontend y backend se despliegan de forma **completamente independiente**. El fr
 
 2. **Configuración de build**
 
-   Amplify detecta `amplify.yml` en la raíz. El archivo define:
-   - `npm ci` para instalar dependencias.
-   - `npm run build` para compilar TypeScript y generar el bundle en `dist/`.
-   - `dist/` como directorio de artefactos.
-   - Caché de `node_modules` para builds más rápidos.
+   El repositorio es un monorepo y la raíz no contiene dependencias, así que hay que apuntar Amplify al paquete del frontend. No hay `amplify.yml` versionado; los ajustes se definen en la consola (*App settings → Build settings*):
+   - Raíz de la app (monorepo app root): `frontend`.
+   - Instalación: `npm ci`.
+   - Build: `npm run build` (compila TypeScript y genera el bundle).
+   - Directorio de artefactos: `frontend/dist` (`dist` si el app root ya es `frontend`).
+   - Caché de `frontend/node_modules` para builds más rápidos.
 
 3. **Variables de entorno en Amplify (opcional)**
 
@@ -137,14 +138,15 @@ aws cloudformation delete-stack --stack-name remote-detective-backend
 
 El archivo `.github/workflows/run-tests.yml` ejecuta automáticamente en cada PR a `main` y en cada push a `main`:
 
-| Job | Comando | Descripción |
-|---|---|---|
-| `lint` | `npm run lint` | ESLint con `--max-warnings 0` |
-| `type-check` | `npm run typecheck` | TypeScript estricto |
-| `unit-tests` | `npm run test` | Suite Vitest (Vitest, no interactivo) |
-| `e2e-tests` | `npm run test:e2e` | Suite Playwright con Chromium |
+| Job | Directorio | Comando | Descripción |
+|---|---|---|---|
+| `lint` | `frontend/` | `npm run lint` | ESLint con `--max-warnings 0` |
+| `type-check` | `frontend/` | `npm run typecheck` | TypeScript estricto |
+| `unit-tests` | `frontend/` | `npm run test` | Suite Vitest (no interactivo) |
+| `e2e-tests` | `frontend/` | `npm run test:e2e` | Suite Playwright con Chromium |
+| `backend` | `backend/` | `npm run build && npm test` | Build y suite Jest del Lambda |
 
-Los cuatro jobs corren en paralelo. Si alguno falla, el PR no puede fusionarse.
+Los cinco jobs corren en paralelo y cada uno instala solo las dependencias de su paquete. Si alguno falla, el PR no puede fusionarse.
 
 El CI **no despliega** ni a Amplify ni a SAM; el despliegue es un paso manual o se puede configurar por separado como workflow adicional de Amplify/CloudFormation.
 

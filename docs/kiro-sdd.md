@@ -111,13 +111,13 @@ Cada motor lógico tiene su archivo de test co-localizado:
 
 | Motor | Test |
 |---|---|
-| `src/logic/contradictionEngine.ts` | `src/logic/contradictionEngine.test.ts` |
-| `src/logic/scoringEngine.ts` | `src/logic/scoringEngine.test.ts` |
-| `src/logic/confessionEngine.ts` | `src/logic/confessionEngine.test.ts` |
-| `src/logic/accusationEngine.ts` | `src/logic/accusationEngine.test.ts` |
-| `src/logic/localResponseEngine.ts` | `src/logic/localResponseEngine.test.ts` |
-| `src/logic/timerEngine.ts` | `src/logic/timerEngine.test.ts` |
-| `src/data/` | `src/data/narrativeData.test.ts` |
+| `frontend/src/logic/contradictionEngine.ts` | `frontend/src/logic/contradictionEngine.test.ts` |
+| `frontend/src/logic/scoringEngine.ts` | `frontend/src/logic/scoringEngine.test.ts` |
+| `frontend/src/logic/confessionEngine.ts` | `frontend/src/logic/confessionEngine.test.ts` |
+| `frontend/src/logic/accusationEngine.ts` | `frontend/src/logic/accusationEngine.test.ts` |
+| `frontend/src/logic/localResponseEngine.ts` | `frontend/src/logic/localResponseEngine.test.ts` |
+| `frontend/src/logic/timerEngine.ts` | `frontend/src/logic/timerEngine.test.ts` |
+| `frontend/src/data/` | `frontend/src/data/narrativeData.test.ts` |
 
 ---
 

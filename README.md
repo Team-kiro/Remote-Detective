@@ -42,12 +42,14 @@ El frontend puede instalarse y ejecutarse sin ninguna dependencia de AWS.
 git clone https://github.com/Escarlatus/Remote-Detective.git
 cd Remote-Detective
 
-# Instalar dependencias del frontend
-npm ci
+# Instalar dependencias de ambos paquetes (frontend y backend)
+npm run install:all
 
-# (Opcional) Instalar dependencias del backend
-cd backend && npm ci && cd ..
+# O solo el frontend, que basta para jugar y desarrollar
+npm --prefix frontend ci
 ```
+
+La raíz del repositorio es un **enrutador de scripts**: su `package.json` no tiene dependencias y reenvía cada comando a `frontend/` o `backend/`, que se instalan y versionan por separado.
 
 No se requiere ninguna variable de entorno para ejecutar el juego en modo local. El motor de respuestas locales está activo por defecto.
 
@@ -62,9 +64,9 @@ El frontend lee variables de entorno con el prefijo `VITE_`. Todas son opcionale
 | `VITE_API_URL` | URL | URL del endpoint `/interrogate` desplegado en API Gateway. Si está vacía o ausente, el modo Bedrock queda desactivado. |
 | `VITE_INTERROGATION_MODE` | `bedrock` \| *(vacío)* | Solo tiene efecto si `VITE_API_URL` también está definida. Cualquier otro valor o ausencia activa el modo local. |
 
-**Modo predeterminado:** local. El motor de respuestas deterministas (`src/logic/localResponseEngine.ts`) se usa siempre como mecanismo principal y como fallback obligatorio ante cualquier fallo de Bedrock.
+**Modo predeterminado:** local. El motor de respuestas deterministas (`frontend/src/logic/localResponseEngine.ts`) se usa siempre como mecanismo principal y como fallback obligatorio ante cualquier fallo de Bedrock.
 
-Para el desarrollo local crear un archivo `.env.local` (no se versiona):
+Para el desarrollo local crear un archivo `frontend/.env.local` (no se versiona):
 
 ```env
 # Ejemplo con backend desplegado
@@ -84,12 +86,13 @@ El backend requiere las siguientes variables de entorno en tiempo de ejecución 
 
 ## 4. Comandos del frontend
 
-Todos los comandos se ejecutan desde la raíz del repositorio.
+Todos los comandos se ejecutan desde la raíz del repositorio y se reenvían a `frontend/`. También funcionan dentro de `frontend/`.
 
 | Comando | Descripción |
 |---|---|
+| `npm run install:all` | `npm ci` en `frontend/` y en `backend/` |
 | `npm run dev` | Servidor de desarrollo Vite con hot-reload |
-| `npm run build` | Type-check (`tsc -b`) y bundle de producción en `dist/` |
+| `npm run build` | Type-check (`tsc -b`) y bundle de producción en `frontend/dist/` |
 | `npm run preview` | Servidor local del bundle de producción |
 | `npm run typecheck` | Type-check sin emitir archivos |
 | `npm run lint` | ESLint con `--max-warnings 0` |
@@ -101,7 +104,7 @@ Todos los comandos se ejecutan desde la raíz del repositorio.
 
 ## 5. Comandos del backend
 
-Los comandos se ejecutan desde el directorio `backend/`.
+Desde la raíz hay dos atajos: `npm run backend:build` y `npm run backend:test`. El resto de los comandos se ejecutan desde el directorio `backend/`.
 
 ```bash
 cd backend
@@ -142,11 +145,11 @@ El principio rector es que **una partida completa debe ser ganable y perdible co
 
 | Capa | Ruta | Regla |
 |---|---|---|
-| Datos narrativos | `src/data/` | Constantes congeladas y tipos. Sin imports de React, store ni lógica. |
-| Motores lógicos | `src/logic/` | Funciones puras deterministas. Sin React, Zustand ni red. |
-| Estado | `src/store/` | Único store Zustand. Único lugar donde las reglas del juego mutan el estado. |
-| UI | `src/components/` | Renderiza estado y llama acciones públicas. No puede fabricar resultados. |
-| E2E | `e2e-tests/` | Specs Playwright sobre el bundle de producción. Verifican flujos, no aritmética. |
+| Datos narrativos | `frontend/src/data/` | Constantes congeladas y tipos. Sin imports de React, store ni lógica. |
+| Motores lógicos | `frontend/src/logic/` | Funciones puras deterministas. Sin React, Zustand ni red. |
+| Estado | `frontend/src/store/` | Único store Zustand. Único lugar donde las reglas del juego mutan el estado. |
+| UI | `frontend/src/components/` | Renderiza estado y llama acciones públicas. No puede fabricar resultados. |
+| E2E | `frontend/e2e-tests/` | Specs Playwright sobre el bundle de producción. Verifican flujos, no aritmética. |
 
 ### Stack tecnológico
 
@@ -167,7 +170,7 @@ Ver [`docs/deployment.md`](docs/deployment.md) para la guía completa de Amplify
 ### Frontend en AWS Amplify
 
 1. Conectar el repositorio en la consola de Amplify.
-2. Amplify detecta `amplify.yml` y ejecuta `npm ci` + `npm run build` automáticamente.
+2. El repositorio es un monorepo: configurar la raíz de la app en `frontend`, con `npm ci` como comando de instalación, `npm run build` como comando de build y `frontend/dist` como directorio de artefactos. No hay `amplify.yml` versionado; los ajustes se definen en la consola.
 3. Configurar las variables de entorno `VITE_API_URL` y `VITE_INTERROGATION_MODE` en la consola de Amplify si se quiere habilitar Bedrock. Sin ellas el frontend publicado funciona en modo local.
 
 ### Backend con AWS SAM
@@ -192,7 +195,7 @@ El frontend y el backend son **completamente independientes**. El frontend puede
 npm run test
 ```
 
-Siete grupos de pruebas deterministas que cubren las 31 Propiedades de Corrección definidas en `design.md`. Los archivos de test están en `src/**/*.test.{ts,tsx}`.
+Siete grupos de pruebas deterministas que cubren las 31 Propiedades de Corrección definidas en `design.md`. Los archivos de test están en `frontend/src/**/*.test.{ts,tsx}`.
 
 ### Suite E2E (Playwright)
 
@@ -200,7 +203,7 @@ Siete grupos de pruebas deterministas que cubren las 31 Propiedades de Correcci�
 npm run test:e2e
 ```
 
-Especificaciones en `e2e-tests/`. Verifican flujos visibles del jugador (navegación, interrogatorio, drag-and-drop, acusación) contra el bundle de producción.
+Especificaciones en `frontend/e2e-tests/`. Verifican flujos visibles del jugador (navegación, interrogatorio, drag-and-drop, acusación) contra el bundle de producción.
 
 ### Suite backend (Jest)
 
@@ -212,7 +215,7 @@ Pruebas unitarias del handler Lambda, validador, constructor de prompts y client
 
 ### CI automático
 
-GitHub Actions ejecuta lint, type-check, pruebas unitarias y E2E en paralelo en cada PR a `main` y en cada push a `main`. Ver `.github/workflows/run-tests.yml`.
+GitHub Actions ejecuta lint, type-check, pruebas unitarias y E2E del frontend, más un job independiente que construye y prueba el backend, en paralelo en cada PR a `main` y en cada push a `main`. Ver `.github/workflows/run-tests.yml`.
 
 ---
 
@@ -248,11 +251,11 @@ Ver [`docs/narrative-structure.md`](docs/narrative-structure.md) para la descrip
 | Lugar | Oficina privada, piso 12 del edificio corporativo |
 | Causa | Envenenamiento por cianuro disuelto en whisky |
 | Culpable | Daniel Rivas |
-| Sospechosos | 4 (Daniel Rivas, Elena Vargas, Roberto Mendoza, Sofía Castro) |
+| Sospechosos | 4 (Daniel Rivas, Elena Vargas, Roberto Mendoza, Sofía Castillo) |
 | Evidencias | 6 (disponibles desde el inicio de la partida) |
 | Contradicciones | 6 (3 de Daniel, 1 por cada otro sospechoso) |
 
-### Módulos de datos (`src/data/`)
+### Módulos de datos (`frontend/src/data/`)
 
 | Archivo | Contenido |
 |---|---|
