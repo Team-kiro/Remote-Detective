@@ -92,7 +92,7 @@ All scripts run from the repository root, which is a script router — it forwar
 - `npm run lint` — ESLint with `--max-warnings 0`
 - `npm run backend:build` / `npm run backend:test` — the Lambda package's own gates
 
-CI (`.github/workflows/run-tests.yml`) runs lint, type-check, unit tests, and the E2E suite as four parallel jobs on pull requests to `main` and pushes to `main`, plus an independent `backend` job that builds and tests the Lambda package. `copilot-setup-steps.yml` preinstalls dependencies and the Chromium binary for the coding agent.
+CI (`.github/workflows/run-tests.yml`) runs lint, type-check, unit tests, and the E2E suite as four parallel jobs on pull requests to `main` and pushes to `main`, plus an independent `backend` job that builds and tests the Lambda package and then verifies with `sam validate --lint` and `sam build` that the deployable artifact is actually produced. `copilot-setup-steps.yml` preinstalls dependencies and the Chromium binary for the coding agent.
 
 ## Repository structure
 

@@ -39,7 +39,7 @@ El frontend puede instalarse y ejecutarse sin ninguna dependencia de AWS.
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/Escarlatus/Remote-Detective.git
+git clone https://github.com/Team-kiro/Remote-Detective.git
 cd Remote-Detective
 
 # Instalar dependencias de ambos paquetes (frontend y backend)
@@ -118,11 +118,14 @@ npm test
 # Type-check sin emitir
 npm run typecheck
 
+# Empaquetar la Lambda (compila con esbuild; obligatorio antes de cualquier despliegue)
+sam build
+
 # Iniciar la función Lambda de forma local con SAM (requiere AWS SAM CLI)
 sam local start-api \
   --parameter-overrides \
     AllowedOrigins=http://localhost:5173 \
-    BedrockModelId=anthropic.claude-3-haiku-20240307-v1:0
+    BedrockModelId=us.anthropic.claude-haiku-4-5-20251001-v1:0
 
 # Desplegar en AWS (primera vez)
 sam deploy --guided
@@ -132,6 +135,8 @@ sam deploy
 ```
 
 > **Nota:** El juego funciona completamente sin el backend. `sam local start-api` requiere credenciales de AWS con permisos `bedrock:InvokeModel` para que Bedrock responda.
+>
+> **`sam build` antes de cada `sam deploy`.** `sam deploy` por sí solo comprime `CodeUri` aplicando `.gitignore`, deja fuera `dist/` y `node_modules/` y la Lambda arranca con `Runtime.ImportModuleError`.
 
 ---
 
@@ -170,18 +175,18 @@ Ver [`docs/deployment.md`](docs/deployment.md) para la guía completa de Amplify
 ### Frontend en AWS Amplify
 
 1. Conectar el repositorio en la consola de Amplify.
-2. El repositorio es un monorepo: configurar la raíz de la app en `frontend`, con `npm ci` como comando de instalación, `npm run build` como comando de build y `dist` como directorio de artefactos, relativo a la raíz `frontend`. No hay `amplify.yml` versionado; los ajustes se definen en la consola.
+2. El build está versionado en [`amplify.yml`](amplify.yml) en la raíz del repositorio: Amplify lo detecta solo y no hay que configurar nada en la consola. Dejar la raíz de la app sin cambiar (el repositorio completo), porque las rutas del archivo (`frontend/dist`, `npm --prefix frontend ci`) son relativas a esa raíz.
 3. Configurar las variables de entorno `VITE_API_URL` y `VITE_INTERROGATION_MODE` en la consola de Amplify si se quiere habilitar Bedrock. Sin ellas el frontend publicado funciona en modo local.
 
 ### Backend con AWS SAM
 
 ```bash
 cd backend
-npm run build
+sam build
 sam deploy --guided
 ```
 
-El despliegue crea: una función Lambda, un API Gateway REST con CORS y los permisos IAM mínimos para invocar Bedrock. La URL de API Gateway resultante es el valor a asignar a `VITE_API_URL`.
+El despliegue crea: una función Lambda, un API Gateway REST con CORS y los permisos IAM mínimos para invocar Bedrock. La URL de API Gateway resultante (output `InterrogateApi`) es el valor a asignar a `VITE_API_URL`. Los orígenes de `AllowedOrigins` se comparan de forma exacta: sin barra final.
 
 El frontend y el backend son **completamente independientes**. El frontend puede desplegarse antes, después o sin el backend.
 
@@ -215,7 +220,7 @@ Pruebas unitarias del handler Lambda, validador, constructor de prompts y client
 
 ### CI automático
 
-GitHub Actions ejecuta lint, type-check, pruebas unitarias y E2E del frontend, más un job independiente que construye y prueba el backend, en paralelo en cada PR a `main` y en cada push a `main`. Ver `.github/workflows/run-tests.yml`.
+GitHub Actions ejecuta lint, type-check, pruebas unitarias y E2E del frontend, más un job independiente que construye el backend, corre su suite Jest y comprueba con `sam validate --lint` y `sam build` que el paquete desplegable de la Lambda se genera. Todo en paralelo en cada PR a `main` y en cada push a `main`. Ver `.github/workflows/run-tests.yml`.
 
 ---
 

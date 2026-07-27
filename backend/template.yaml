@@ -39,9 +39,23 @@ Globals:
 Resources:
   InterrogateFunction:
     Type: AWS::Serverless::Function
+    # `sam deploy` a secas comprime CodeUri aplicando .gitignore, así que dist/ y
+    # node_modules/ nunca entraban en el paquete y la Lambda arrancaba con
+    # Runtime.ImportModuleError. esbuild compila el TypeScript y empaqueta las
+    # dependencias en un solo archivo durante `sam build`. esbuild figura en
+    # `dependencies` y no en `devDependencies` porque SAM ejecuta `npm install
+    # --production` en su directorio de trabajo; no llega al artefacto, que es
+    # solo el bundle del grafo de `src/handler.ts`.
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Format: cjs
+        Target: node24
+        EntryPoints:
+          - src/handler.ts
     Properties:
       CodeUri: ./
-      Handler: dist/handler.handler
+      Handler: handler.handler
       Description: Recibe una pregunta de interrogatorio, construye el prompt y consulta Bedrock
       Policies:
         - Statement:

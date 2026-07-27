@@ -7,7 +7,7 @@ s3_prefix = "Remote-Detective"
 region = "us-east-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
-parameter_overrides = "AllowedOrigins=\"http://localhost:5173,https://remote-detective.amplifyapp.com\" BedrockModelId=\"us.anthropic.claude-haiku-4-5-20251001-v1:0\" BedrockFoundationModelId=\"anthropic.claude-haiku-4-5-20251001-v1:0\""
+parameter_overrides = "AllowedOrigins=\"http://localhost:5173,https://main.df6sc2858b5sx.amplifyapp.com\" BedrockModelId=\"us.anthropic.claude-haiku-4-5-20251001-v1:0\" BedrockFoundationModelId=\"anthropic.claude-haiku-4-5-20251001-v1:0\""
 image_repositories = []
 
 [default.global.parameters]
