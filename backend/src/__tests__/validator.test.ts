@@ -24,6 +24,7 @@ import {
   MAX_BODY_BYTES,
   MAX_QUESTION_LENGTH,
   MAX_RESPONSE_TEXT_LENGTH,
+  MAX_HISTORY_TURNS,
 } from '../validator';
 
 // ---------------------------------------------------------------------------
@@ -63,6 +64,54 @@ describe('validateBodySize', () => {
   it('acepta exactamente MAX_BODY_BYTES bytes', () => {
     const exact = 'x'.repeat(MAX_BODY_BYTES);
     expect(validateBodySize(exact)).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// validateRequest — conversationHistory
+// ---------------------------------------------------------------------------
+
+describe('validateRequest — conversationHistory', () => {
+  it('acepta un request sin historial (cliente sin memoria de llamada)', () => {
+    const result = validateRequest(validBody());
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.request.conversationHistory).toEqual([]);
+    }
+  });
+
+  it('acepta y conserva turnos válidos en orden', () => {
+    const history = [
+      { role: 'player', text: '¿Hora?' },
+      { role: 'suspect', text: 'A las nueve.' },
+    ];
+    const result = validateRequest(validBody({ conversationHistory: history }));
+    expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.request.conversationHistory).toEqual(history);
+    }
+  });
+
+  it.each([
+    ['no es array', 'hola', 'conversationHistory'],
+    ['supera el máximo de turnos', Array.from({ length: MAX_HISTORY_TURNS + 1 }, () => ({
+      role: 'player',
+      text: 'a',
+    })), 'conversationHistory'],
+    ['turno no objeto', ['hola'], 'conversationHistory'],
+    ['rol desconocido', [{ role: 'narrator', text: 'a' }], 'conversationHistory.role'],
+    ['texto vacío', [{ role: 'player', text: '' }], 'conversationHistory.text'],
+    [
+      'texto mayor a 500',
+      [{ role: 'suspect', text: 'a'.repeat(MAX_RESPONSE_TEXT_LENGTH + 1) }],
+      'conversationHistory.text',
+    ],
+  ])('rechaza cuando %s', (_label, conversationHistory, field) => {
+    const result = validateRequest(validBody({ conversationHistory }));
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.error.field).toBe(field);
+    }
   });
 });
 

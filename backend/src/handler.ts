@@ -86,7 +86,11 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
   // Invocar Bedrock
   let modelText: string;
   try {
-    modelText = await invokeBedrock(systemPrompt, request.question);
+    modelText = await invokeBedrock(
+      systemPrompt,
+      request.question,
+      request.conversationHistory ?? [],
+    );
   } catch (err) {
     if (err instanceof BedrockTimeoutError) {
       return jsonResult(504, { error: 'Tiempo de respuesta agotado' }, corsHeaders);

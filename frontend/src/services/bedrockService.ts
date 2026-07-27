@@ -11,10 +11,19 @@
  */
 
 import type { AppConfig } from '@/config';
-import type { InterrogationRequest } from '@/data/types';
+import type { InterrogationRequest, InterrogationTurn } from '@/data/types';
 
 /** Ruta del contrato aprobado. */
 export const INTERROGATE_PATH = '/interrogate';
+
+/**
+ * Turnos previos que viajan al backend. El límite mantiene el cuerpo dentro de
+ * los 8 KB que acepta el endpoint sin recortar la memoria útil de la llamada.
+ */
+export const MAX_HISTORY_TURNS = 8;
+
+/** Longitud máxima del texto de cada turno del historial. */
+export const MAX_HISTORY_TURN_LENGTH = 500;
 
 /**
  * Permite al store conservar el controlador de la solicitud en curso para
@@ -39,6 +48,10 @@ export function buildInterrogationRequestBody(
   const rawPressure = request.gameContext.suspectPressure;
   const suspectPressure = Number.isFinite(rawPressure) ? Math.max(0, rawPressure) : 0;
 
+  const conversationHistory: InterrogationTurn[] = (request.conversationHistory ?? [])
+    .slice(-MAX_HISTORY_TURNS)
+    .map((turn) => ({ role: turn.role, text: turn.text.slice(0, MAX_HISTORY_TURN_LENGTH) }));
+
   return {
     suspectId: request.suspectId,
     question: request.question,
@@ -46,6 +59,7 @@ export function buildInterrogationRequestBody(
       discoveredContradictionIds: [...request.gameContext.discoveredContradictionIds],
       suspectPressure,
     },
+    conversationHistory,
   };
 }
 

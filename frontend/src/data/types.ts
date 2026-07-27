@@ -382,11 +382,23 @@ export interface InterrogationGameContext {
   suspectPressure: number;
 }
 
+/** Turno previo de la llamada enviado al backend para dar memoria al modelo. */
+export interface InterrogationTurn {
+  role: 'player' | 'suspect';
+  text: string;
+}
+
 export interface InterrogationRequest {
   suspectId: SuspectId;
   /** Pregunta del jugador, entre 1 y 300 caracteres. */
   question: string;
   gameContext: InterrogationGameContext;
+  /**
+   * Turnos anteriores de la llamada en curso, del más antiguo al más reciente y
+   * sin incluir la pregunta actual. Sin esto el modelo trata cada pregunta como
+   * aislada y se contradice o repite respuestas ya dadas.
+   */
+  conversationHistory?: readonly InterrogationTurn[];
 }
 
 /** Única forma aceptada de respuesta: texto no vacío de hasta 500 caracteres. */

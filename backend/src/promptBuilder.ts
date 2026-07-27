@@ -87,7 +87,10 @@ DECLARACIONES QUE PUEDES REGISTRAR:
 ${statementCatalog}
 
 Cuando la pregunta toque el tema de una de esas declaraciones, sostén ese contenido en tu respuesta y devuelve OBLIGATORIAMENTE su statementId; no lo omitas ni respondas con evasivas que lo eviten.
-Usa null solo si ninguna de esas declaraciones aplica al tema de la pregunta.`;
+Usa null solo si ninguna de esas declaraciones aplica al tema de la pregunta.
+
+CONTINUIDAD DE LA LLAMADA:
+Los mensajes anteriores de esta conversación son tuyos y del detective: recuérdalos. No te contradigas con lo que ya dijiste, no repitas literalmente una respuesta previa y reacciona si el detective insiste sobre un punto que ya trataste.`;
 }
 
 /**

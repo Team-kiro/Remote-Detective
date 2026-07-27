@@ -17,6 +17,7 @@ jest.mock('@aws-sdk/client-bedrock-runtime', () => ({
 
 import {
   invokeBedrock,
+  buildConversationMessages,
   BedrockProviderError,
   BedrockTimeoutError,
   BEDROCK_TIMEOUT_MS,
@@ -35,6 +36,43 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.useRealTimers();
+});
+
+describe('buildConversationMessages', () => {
+  it('traduce los turnos previos y añade la pregunta actual al final', () => {
+    expect(
+      buildConversationMessages(
+        [
+          { role: 'player', text: '¿Hora?' },
+          { role: 'suspect', text: 'A las nueve.' },
+        ],
+        '¿Seguro?',
+      ),
+    ).toEqual([
+      { role: 'user', content: '¿Hora?' },
+      { role: 'assistant', content: 'A las nueve.' },
+      { role: 'user', content: '¿Seguro?' },
+    ]);
+  });
+
+  it('descarta un prefijo del sospechoso y fusiona turnos consecutivos del mismo rol', () => {
+    expect(
+      buildConversationMessages(
+        [
+          { role: 'suspect', text: 'Huérfana.' },
+          { role: 'player', text: 'A' },
+          { role: 'player', text: 'B' },
+        ],
+        'C',
+      ),
+    ).toEqual([{ role: 'user', content: 'A\nB\nC' }]);
+  });
+
+  it('sin historial envía solo la pregunta', () => {
+    expect(buildConversationMessages([], 'pregunta')).toEqual([
+      { role: 'user', content: 'pregunta' },
+    ]);
+  });
 });
 
 describe('invokeBedrock', () => {

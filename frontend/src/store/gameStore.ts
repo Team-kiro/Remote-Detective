@@ -707,6 +707,11 @@ export const useGameStore = create<GameState>((set, get) => {
             discoveredContradictionIds: [...pending.discoveredContradictions],
             suspectPressure: pending.suspectPressure[suspect],
           },
+          // La pregunta actual ya está en el historial (paso 3): se excluye para
+          // no duplicarla como último turno además de `question`.
+          conversationHistory: pending.callHistory[suspect]
+            .slice(0, -1)
+            .map((message) => ({ role: message.role, text: message.text })),
         };
 
         try {

@@ -7,6 +7,8 @@
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
+  MAX_HISTORY_TURNS,
+  MAX_HISTORY_TURN_LENGTH,
   buildInterrogateUrl,
   buildInterrogationRequestBody,
   fetchBedrockResponse,
@@ -52,7 +54,24 @@ describe('bedrockService', () => {
       suspectId: 'daniel',
       question: '¿A qué hora llegaste?',
       gameContext: { discoveredContradictionIds: ['contra_daniel_access'], suspectPressure: 3 },
+      conversationHistory: [],
     });
+  });
+
+  it('recorta el historial a los últimos turnos y a 500 caracteres por turno', () => {
+    const body = buildInterrogationRequestBody({
+      ...REQUEST,
+      conversationHistory: Array.from({ length: MAX_HISTORY_TURNS + 3 }, (_, i) => ({
+        role: i % 2 === 0 ? ('player' as const) : ('suspect' as const),
+        text: `t${String(i)}-${'x'.repeat(600)}`,
+      })),
+    });
+
+    expect(body.conversationHistory).toHaveLength(MAX_HISTORY_TURNS);
+    expect(body.conversationHistory?.[0]?.text).toHaveLength(MAX_HISTORY_TURN_LENGTH);
+    // Se conservan los más recientes, no los primeros: el último turno enviado
+    // es el índice 10 de los 11 generados.
+    expect(body.conversationHistory?.[MAX_HISTORY_TURNS - 1]?.text.startsWith('t10-')).toBe(true);
   });
 
   it('normaliza una presión no finita o negativa a cero', () => {
