@@ -30,6 +30,28 @@ export interface SuspectProfile {
   allowedStatementIds: readonly StatementId[];
 }
 
+/**
+ * Contenido canónico de cada declaración, espejo de `frontend/src/data/statements.ts`.
+ *
+ * El prompt necesita decir QUÉ afirma cada `statementId`: con solo el
+ * identificador el modelo devuelve `null` casi siempre y la partida se queda sin
+ * declaraciones que contradecir.
+ */
+export const STATEMENT_CONTENTS: Record<StatementId, string> = {
+  stmt_daniel_arrival:
+    'Llegué al edificio a las 20:50, vine con Roberto desde el estacionamiento.',
+  stmt_daniel_office:
+    'No entré a la oficina de Marcos antes de la reunión. No tenía motivo para hacerlo.',
+  stmt_daniel_substance:
+    'No tengo idea de dónde salió ese veneno. Yo no manejo sustancias químicas.',
+  stmt_elena_arrival:
+    'Llegué después de las nueve, cuando Marcos ya había comenzado a sentirse mal.',
+  stmt_roberto_knowledge:
+    'Yo no sabía nada de un desfalco. Es la primera vez que escucho sobre eso.',
+  stmt_sofia_witness:
+    'Regresé brevemente antes de la reunión, pero no vi a nadie en el edificio. Luego volví a las 20:55.',
+};
+
 /** Perfiles aprobados de los cuatro sospechosos. */
 export const SUSPECT_PROFILES: Record<SuspectId, SuspectProfile> = {
   daniel: {

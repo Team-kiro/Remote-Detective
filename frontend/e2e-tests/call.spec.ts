@@ -137,6 +137,27 @@ test.describe('Sistema de llamadas', () => {
     await expect(history).toContainText(DANIEL_ARRIVAL_QUESTION);
   });
 
+  test('Llamadas - cada sospechoso registra su propia declaración canónica', async ({ page }) => {
+    // La regresión que cubre: durante un tiempo solo Daniel llegaba a registrar
+    // declaraciones, y sin las de Elena, Roberto y Sofía la mitad del tablero de
+    // contradicciones quedaba fuera de alcance.
+    const cases = [
+      { suspect: 'Daniel Rivas', intent: 'Hora de llegada', statement: 'stmt_daniel_arrival' },
+      { suspect: 'Elena Vargas', intent: 'Hora de llegada', statement: 'stmt_elena_arrival' },
+      { suspect: 'Roberto Mendoza', intent: 'Desfalco', statement: 'stmt_roberto_knowledge' },
+      { suspect: 'Sofía Castillo', intent: 'Testigo/vio algo', statement: 'stmt_sofia_witness' },
+    ];
+
+    let registered = 0;
+    for (const entry of cases) {
+      await page.getByRole('button', { name: new RegExp(entry.suspect) }).click();
+      await askAbout(page, entry.intent, registered + 1);
+      registered += 1;
+      await expect(page.locator(`li[data-statement="${entry.statement}"]`)).toBeVisible();
+      await page.getByRole('button', { name: 'Terminar llamada' }).click();
+    }
+  });
+
   test('Contradicciones - la bandeja no ofrece arrastre sin declaraciones', async ({ page }) => {
     await page.getByRole('button', { name: /Daniel Rivas/ }).click();
 
