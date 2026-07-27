@@ -39,12 +39,20 @@ export interface InterrogationGameContext {
   suspectPressure: number;
 }
 
+/** Turno previo de la llamada, del más antiguo al más reciente. */
+export interface InterrogationTurn {
+  role: 'player' | 'suspect';
+  text: string;
+}
+
 /** Cuerpo de la solicitud POST /interrogate. */
 export interface InterrogationRequest {
   suspectId: SuspectId;
   /** Texto entre 1 y 300 caracteres. */
   question: string;
   gameContext: InterrogationGameContext;
+  /** Turnos anteriores de la llamada, sin la pregunta actual. Opcional. */
+  conversationHistory?: InterrogationTurn[];
 }
 
 /** Cuerpo de la respuesta 200. */

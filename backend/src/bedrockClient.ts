@@ -18,6 +18,7 @@ import {
   InvokeModelCommand,
   type InvokeModelCommandInput,
 } from '@aws-sdk/client-bedrock-runtime';
+import type { InterrogationTurn } from './types';
 
 /** Timeout de Bedrock en milisegundos. */
 export const BEDROCK_TIMEOUT_MS = 10_000;
@@ -43,6 +44,48 @@ interface ClaudeResponse {
   content: Array<{ type: string; text: string }>;
 }
 
+/** Mensaje del formato de conversación de Anthropic. */
+interface ClaudeMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+/**
+ * Convierte los turnos previos de la llamada en mensajes válidos para Claude,
+ * que exige empezar por `user` y alternar roles. El historial real puede
+ * romper ambas reglas (una respuesta descartada por obsoleta deja una pregunta
+ * sin réplica), así que se descarta el prefijo `assistant` y se fusionan los
+ * turnos consecutivos del mismo rol.
+ */
+export function buildConversationMessages(
+  history: readonly InterrogationTurn[],
+  question: string,
+): ClaudeMessage[] {
+  const messages: ClaudeMessage[] = [];
+
+  for (const turn of history) {
+    const role: ClaudeMessage['role'] = turn.role === 'player' ? 'user' : 'assistant';
+    if (messages.length === 0 && role === 'assistant') {
+      continue;
+    }
+    const last = messages[messages.length - 1];
+    if (last !== undefined && last.role === role) {
+      last.content = `${last.content}\n${turn.text}`;
+      continue;
+    }
+    messages.push({ role, content: turn.text });
+  }
+
+  const last = messages[messages.length - 1];
+  if (last !== undefined && last.role === 'user') {
+    last.content = `${last.content}\n${question}`;
+  } else {
+    messages.push({ role: 'user', content: question });
+  }
+
+  return messages;
+}
+
 /**
  * Invoca el modelo Bedrock y devuelve el texto generado como string.
  * Lanza BedrockTimeoutError si supera BEDROCK_TIMEOUT_MS.
@@ -51,6 +94,7 @@ interface ClaudeResponse {
 export async function invokeBedrock(
   systemPrompt: string,
   userMessage: string,
+  history: readonly InterrogationTurn[] = [],
   modelId: string = process.env['BEDROCK_MODEL_ID'] ??
     'us.anthropic.claude-haiku-4-5-20251001-v1:0',
   region: string = process.env['AWS_REGION'] ?? 'us-east-1',
@@ -61,7 +105,7 @@ export async function invokeBedrock(
     anthropic_version: 'bedrock-2023-05-31',
     max_tokens: 1_024,
     system: systemPrompt,
-    messages: [{ role: 'user', content: userMessage }],
+    messages: buildConversationMessages(history, userMessage),
   };
 
   const input: InvokeModelCommandInput = {

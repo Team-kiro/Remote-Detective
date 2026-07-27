@@ -12,6 +12,7 @@ import { config } from '@/config';
 import { STATEMENTS } from '@/data/statements';
 import { createInitialGameSessionState, useGameStore } from '@/store/gameStore';
 import type { AppConfig, InterrogationMode } from '@/config';
+import type { InterrogationRequest } from '@/data/types';
 
 const DANIEL_ARRIVAL_QUESTION = '¿A qué hora llegaste al edificio?';
 const UNKNOWN_QUESTION = '¿Te gusta la jardinería tropical?';
@@ -245,7 +246,31 @@ describe('askQuestion: contrato de Bedrock y fallback', () => {
       suspectId: 'daniel',
       question: DANIEL_ARRIVAL_QUESTION,
       gameContext: { discoveredContradictionIds: [], suspectPressure: 0 },
+      conversationHistory: [],
     });
+  });
+
+  it('envía los turnos previos de la llamada sin duplicar la pregunta actual', async () => {
+    enableBedrock();
+    const sent: string[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((_url: string, init?: RequestInit) => {
+        sent.push(typeof init?.body === 'string' ? init.body : '');
+
+        return Promise.resolve(jsonResponse({ text: 'Sin comentarios.', statementId: null }));
+      }),
+    );
+
+    await useGameStore.getState().askQuestion(DANIEL_ARRIVAL_QUESTION);
+    await useGameStore.getState().askQuestion('¿Seguro?');
+
+    const bodies = sent.map((raw) => JSON.parse(raw) as InterrogationRequest);
+    expect(bodies[0]?.conversationHistory).toEqual([]);
+    expect(bodies[1]?.conversationHistory).toEqual([
+      { role: 'player', text: DANIEL_ARRIVAL_QUESTION },
+      { role: 'suspect', text: 'Sin comentarios.' },
+    ]);
   });
 
   it.each([

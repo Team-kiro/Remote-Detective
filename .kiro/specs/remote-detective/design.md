@@ -631,16 +631,19 @@ No se colocan dominios fijos en el código.
 **Contrato:**
 ```
 POST /interrogate
-Request: { suspectId: SuspectId, question: string (1-300), gameContext: { discoveredContradictionIds: ContradictionId[], suspectPressure: number } }
+Request: { suspectId: SuspectId, question: string (1-300), gameContext: { discoveredContradictionIds: ContradictionId[], suspectPressure: number }, conversationHistory?: { role: 'player'|'suspect', text: string (1-500) }[] (máx. 8 turnos) }
 Response 200: { text: string (1-500 chars, no vacío), statementId: StatementId|null }
 Errors: 400, 504, 502
 ```
+
+**Memoria de la llamada:** `conversationHistory` lleva los turnos previos de la llamada en curso —del más antiguo al más reciente y sin la pregunta actual— para que el modelo no trate cada pregunta como aislada. El frontend recorta a los 8 últimos turnos y 500 caracteres por turno; el backend los traduce a mensajes multivuelta de Anthropic descartando un prefijo `assistant` y fusionando turnos consecutivos del mismo rol. Es opcional: su ausencia es válida y el juego sigue siendo jugable sin ella.
 
 **Validación backend:**
 - `suspectId` conocido.
 - `question` entre 1 y 300 caracteres.
 - `discoveredContradictionIds` array de IDs conocidos.
 - `suspectPressure` número finito ≥ 0.
+- `conversationHistory` ausente o array de ≤ 8 turnos con `role` conocido y `text` no vacío ≤ 500 chars.
 - Tamaño máximo del cuerpo.
 - Respuesta con texto no vacío ≤ 500 chars.
 - `statementId` null o permitido para el sospechoso solicitado.
@@ -653,7 +656,7 @@ Errors: 400, 504, 502
 
 ### Prompt Builder (`backend/src/promptBuilder.ts`)
 
-System prompt por sospechoso incluye: personalidad, relación, conocimientos permitidos, mentiras activas, información desconocida, prohibiciones (no inventar evidencias, no cambiar cronología, no salir de personaje, no confesar, no declarar culpable), límite 500 chars en español, lista de statementId permitidos SOLO para ese sospechoso.
+System prompt por sospechoso incluye: personalidad, relación, conocimientos permitidos, mentiras activas, información desconocida, prohibiciones (no inventar evidencias, no cambiar cronología, no salir de personaje, no confesar, no declarar culpable), límite 500 chars en español, lista de statementId permitidos SOLO para ese sospechoso, y una regla de continuidad: recordar los turnos previos de la llamada sin contradecirse ni repetirlos.
 
 Confesión local y predefinida. Bedrock no la activa.
 

@@ -15,6 +15,7 @@ import {
   type ContradictionId,
   type InterrogationRequest,
   type InterrogationResponse,
+  type InterrogationTurn,
   type SuspectId,
 } from './types';
 import { SUSPECT_PROFILES } from './gameData';
@@ -27,6 +28,9 @@ export const MAX_QUESTION_LENGTH = 300;
 
 /** Longitud máxima del texto de la respuesta en caracteres. */
 export const MAX_RESPONSE_TEXT_LENGTH = 500;
+
+/** Turnos previos aceptados en una solicitud. */
+export const MAX_HISTORY_TURNS = 8;
 
 /** Resultado de una validación fallida con el campo responsable identificado. */
 export interface ValidationError {
@@ -169,6 +173,61 @@ export function validateRequest(rawBody: string): RequestValidationResult {
     };
   }
 
+  // Validar conversationHistory (opcional): un cliente antiguo sin memoria de
+  // llamada sigue siendo válido.
+  const history: InterrogationTurn[] = [];
+  if ('conversationHistory' in body && body['conversationHistory'] !== undefined) {
+    const rawHistory: unknown = body['conversationHistory'];
+    if (!Array.isArray(rawHistory)) {
+      return {
+        valid: false,
+        error: { field: 'conversationHistory', message: 'Debe ser un array' },
+      };
+    }
+    if (rawHistory.length > MAX_HISTORY_TURNS) {
+      return {
+        valid: false,
+        error: {
+          field: 'conversationHistory',
+          message: `No puede superar ${MAX_HISTORY_TURNS} turnos`,
+        },
+      };
+    }
+    for (const turn of rawHistory as unknown[]) {
+      if (typeof turn !== 'object' || turn === null || Array.isArray(turn)) {
+        return {
+          valid: false,
+          error: { field: 'conversationHistory', message: 'Cada turno debe ser un objeto' },
+        };
+      }
+      const entry = turn as Record<string, unknown>;
+      const role = entry['role'];
+      const text = entry['text'];
+      if (role !== 'player' && role !== 'suspect') {
+        return {
+          valid: false,
+          error: { field: 'conversationHistory.role', message: 'Debe ser "player" o "suspect"' },
+        };
+      }
+      if (typeof text !== 'string' || text.length === 0) {
+        return {
+          valid: false,
+          error: { field: 'conversationHistory.text', message: 'Debe ser texto no vacío' },
+        };
+      }
+      if (text.length > MAX_RESPONSE_TEXT_LENGTH) {
+        return {
+          valid: false,
+          error: {
+            field: 'conversationHistory.text',
+            message: `Supera los ${MAX_RESPONSE_TEXT_LENGTH} caracteres`,
+          },
+        };
+      }
+      history.push({ role, text });
+    }
+  }
+
   return {
     valid: true,
     request: {
@@ -178,6 +237,7 @@ export function validateRequest(rawBody: string): RequestValidationResult {
         discoveredContradictionIds: ids as ContradictionId[],
         suspectPressure: pressure,
       },
+      conversationHistory: history,
     },
   };
 }

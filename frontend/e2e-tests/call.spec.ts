@@ -53,6 +53,20 @@ async function presentEvidence(
   await page.mouse.up();
 }
 
+/** Cierra el aviso incluso si dnd-kit consume el primer clic tras un arrastre. */
+async function dismissFeedback(page: Page): Promise<void> {
+  const feedback = page.locator('[data-feedback]');
+  const closeButton = feedback.getByRole('button', { name: 'Cerrar aviso' });
+
+  await closeButton.click();
+  try {
+    await expect(feedback).toHaveCount(0, { timeout: 1_000 });
+  } catch {
+    await closeButton.click();
+    await expect(feedback).toHaveCount(0);
+  }
+}
+
 /** Pregunta por el tema sugerido y espera a que se registre su declaración. */
 async function askAbout(page: Page, intent: string, expectedStatements: number): Promise<void> {
   await page.getByRole('button', { name: intent }).click();
@@ -263,10 +277,7 @@ test.describe('Sistema de llamadas', () => {
     await askArrivalQuestion(page);
     await presentEvidence(page, 'Registro de acceso', 'stmt_daniel_arrival');
     await expect(page.getByTestId('hud-score')).toContainText('150');
-    // El aviso es fijo y dnd-kit se traga el clic que sigue a un arrastre:
-    // cerrarlo deja la barra de navegación despejada, como haría el jugador.
-    await page.getByRole('button', { name: 'Cerrar aviso' }).click();
-    await expect(page.locator('[data-feedback]')).toHaveCount(0);
+    await dismissFeedback(page);
 
     const nav = page.getByRole('navigation', { name: 'Navegación de la partida' });
     await nav.getByRole('button', { name: 'Expediente' }).click();
