@@ -23,7 +23,7 @@ Parameters:
 
 Globals:
   Function:
-    Runtime: nodejs20.x
+    Runtime: nodejs24.x
     # Por debajo del tope de 29 s de API Gateway REST, y por encima del timeout
     # de 10 s de Bedrock: así el 504 que emite el handler llega al cliente en
     # lugar de que el gateway corte antes con su propio error.
