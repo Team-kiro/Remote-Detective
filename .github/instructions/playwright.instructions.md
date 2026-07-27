@@ -22,6 +22,8 @@ npm run test:e2e -- --project=chromium-bedrock
 
 Necesita su propio build porque `interrogationMode` se resuelve desde `import.meta.env` en tiempo de build. El origen `http://localhost:4174` debe estar en el `ALLOWED_ORIGINS` del despliegue o el endpoint responde 403. Nunca aserciones sobre el *contenido* que devuelve el modelo: solo sobre lo estable (qué viaja en la petición, que la respuesta llega al historial).
 
+Es además la **única excepción** a la prohibición de timeouts ampliados de la sección siguiente: una invocación real de Bedrock tarda segundos, así que este spec sube el timeout del proyecto y el de las aserciones que esperan la respuesta remota. La prohibición sigue siendo absoluta para la suite local, donde nada espera a la red.
+
 > [!IMPORTANT]
 > E2E tests are the *outer* ring. They verify that a player can traverse the screens and that the store-driven outcome reaches the DOM. They never re-verify engine arithmetic — the 31 Correctness Properties belong to the Vitest suites described in `unit-tests.instructions.md`.
 
@@ -44,7 +46,7 @@ Necesita su propio build porque `interrogationMode` se resuelve desde `import.me
 
 - Prefer user-facing, role-based locators: `getByRole`, `getByLabel`, `getByText`. Fall back to `getByTestId` only for the hooks the UI already exposes (`hud-timer`, `hud-score`, `accusation-submit`, `accusation-confirm`, `accusation-confirm-submit`, `accusation-cancel`, `final-score`)
 - Never add a `data-testid` to a component just to make a spec easier — find the accessible name instead
-- Rely on Playwright auto-waiting. `waitForTimeout`, `waitForLoadState`, and raised default timeouts are banned
+- Rely on Playwright auto-waiting. `waitForTimeout`, `waitForLoadState`, and raised default timeouts are banned — the sole exception is the manual Bedrock suite above, which waits on a real network round trip
 - Use auto-retrying web-first assertions (`await expect(...)`). Prefer `toHaveText`, `toContainText`, `toHaveCount`, `toHaveAttribute`, `toHaveURL` over a bare `toBeVisible()` when content or structure is the point
 - Assert the *store's* outcome, never a recomputation of it: check the end-screen heading and `final-score`, not a score you calculated in the spec
 
@@ -60,7 +62,7 @@ Necesita su propio build porque `interrogationMode` se resuelve desde `import.me
 
 Before finalizing specs, ensure:
 - [ ] Locators are accessible, specific, and free of strict-mode violations
-- [ ] No hard-coded waits and no inflated timeouts
+- [ ] No hard-coded waits and no inflated timeouts (except the manual Bedrock suite)
 - [ ] Assertions reflect what a player sees, not internal state
 - [ ] `npm run lint` passes — specs are type-checked under `tsconfig.node.json`
 - [ ] `npm run test:e2e` passes locally before commit

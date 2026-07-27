@@ -7,6 +7,7 @@
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
+  MAX_BODY_BYTES,
   MAX_HISTORY_TURNS,
   MAX_HISTORY_TURN_LENGTH,
   buildInterrogateUrl,
@@ -72,6 +73,23 @@ describe('bedrockService', () => {
     // Se conservan los más recientes, no los primeros: el último turno enviado
     // es el índice 10 de los 11 generados.
     expect(body.conversationHistory?.[MAX_HISTORY_TURNS - 1]?.text.startsWith('t10-')).toBe(true);
+  });
+
+  it('suelta los turnos más antiguos hasta que el cuerpo cabe en bytes', () => {
+    // 8 turnos de 500 caracteres acentuados pesan el doble en UTF-8 y superarían
+    // el límite del endpoint, que responde 400 y anula la respuesta remota.
+    const body = buildInterrogationRequestBody({
+      ...REQUEST,
+      conversationHistory: Array.from({ length: MAX_HISTORY_TURNS }, (_, i) => ({
+        role: i % 2 === 0 ? ('player' as const) : ('suspect' as const),
+        text: 'á'.repeat(MAX_HISTORY_TURN_LENGTH),
+      })),
+    });
+
+    const bytes = new TextEncoder().encode(JSON.stringify(body)).length;
+    expect(bytes).toBeLessThanOrEqual(MAX_BODY_BYTES);
+    expect(body.conversationHistory?.length).toBeGreaterThan(0);
+    expect(body.conversationHistory?.length).toBeLessThan(MAX_HISTORY_TURNS);
   });
 
   it('normaliza una presión no finita o negativa a cero', () => {

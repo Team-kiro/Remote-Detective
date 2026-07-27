@@ -18,6 +18,7 @@ import {
   InvokeModelCommand,
   type InvokeModelCommandInput,
 } from '@aws-sdk/client-bedrock-runtime';
+import type { InterrogationTurn } from './types';
 
 /** Timeout de Bedrock en milisegundos. */
 export const BEDROCK_TIMEOUT_MS = 10_000;
@@ -57,7 +58,7 @@ interface ClaudeMessage {
  * turnos consecutivos del mismo rol.
  */
 export function buildConversationMessages(
-  history: readonly { role: 'player' | 'suspect'; text: string }[],
+  history: readonly InterrogationTurn[],
   question: string,
 ): ClaudeMessage[] {
   const messages: ClaudeMessage[] = [];
@@ -93,7 +94,7 @@ export function buildConversationMessages(
 export async function invokeBedrock(
   systemPrompt: string,
   userMessage: string,
-  history: readonly { role: 'player' | 'suspect'; text: string }[] = [],
+  history: readonly InterrogationTurn[] = [],
   modelId: string = process.env['BEDROCK_MODEL_ID'] ??
     'us.anthropic.claude-haiku-4-5-20251001-v1:0',
   region: string = process.env['AWS_REGION'] ?? 'us-east-1',

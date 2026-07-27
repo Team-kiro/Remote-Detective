@@ -12,7 +12,7 @@ Source: `.github/instructions/playwright.instructions.md`
 - All specs live in `e2e-tests/` with the pattern `<feature-or-screen>.spec.ts`; never co-locate with `src/`.
 - Vitest owns `src/**/*.test.{ts,tsx}`; Playwright owns `e2e-tests/**/*.spec.ts`.
 - Prefer role-based locators (`getByRole`, `getByLabel`, `getByText`); use existing `data-testid` hooks only, never add new ones for tests.
-- Rely on auto-waiting: no `waitForTimeout`, no `waitForLoadState`, no raised default timeouts.
+- Rely on auto-waiting: no `waitForTimeout`, no `waitForLoadState`, no raised default timeouts. Only exception: the manual `chromium-bedrock` suite, which waits on a real network round trip.
 - Use auto-retrying web-first assertions and prefer content/structure assertions over bare `toBeVisible()`.
 - Assert the store-driven outcome, never a score or verdict recomputed inside the spec.
 - Frozen narrative applies: four suspects, six evidences, Daniel Rivas / `motive_silence` / `method_poison` as the only victory.

@@ -17,13 +17,22 @@ import type { InterrogationRequest, InterrogationTurn } from '@/data/types';
 export const INTERROGATE_PATH = '/interrogate';
 
 /**
- * Turnos previos que viajan al backend. El límite mantiene el cuerpo dentro de
- * los 8 KB que acepta el endpoint sin recortar la memoria útil de la llamada.
+ * Turnos previos que viajan al backend. Acota la memoria de la llamada sin
+ * llegar al peso que el endpoint rechaza; el límite duro se aplica en bytes al
+ * construir el cuerpo.
  */
 export const MAX_HISTORY_TURNS = 8;
 
 /** Longitud máxima del texto de cada turno del historial. */
 export const MAX_HISTORY_TURN_LENGTH = 500;
+
+/** Tamaño máximo del cuerpo que acepta el endpoint, en bytes. */
+export const MAX_BODY_BYTES = 8_192;
+
+/** Peso real del cuerpo serializado: los acentos y la ñ ocupan dos bytes. */
+function bodySizeBytes(body: InterrogationRequest): number {
+  return new TextEncoder().encode(JSON.stringify(body)).length;
+}
 
 /**
  * Permite al store conservar el controlador de la solicitud en curso para
@@ -48,19 +57,30 @@ export function buildInterrogationRequestBody(
   const rawPressure = request.gameContext.suspectPressure;
   const suspectPressure = Number.isFinite(rawPressure) ? Math.max(0, rawPressure) : 0;
 
-  const conversationHistory: InterrogationTurn[] = (request.conversationHistory ?? [])
-    .slice(-MAX_HISTORY_TURNS)
-    .map((turn) => ({ role: turn.role, text: turn.text.slice(0, MAX_HISTORY_TURN_LENGTH) }));
-
-  return {
+  const base = {
     suspectId: request.suspectId,
     question: request.question,
     gameContext: {
       discoveredContradictionIds: [...request.gameContext.discoveredContradictionIds],
       suspectPressure,
     },
-    conversationHistory,
   };
+
+  let conversationHistory: InterrogationTurn[] = (request.conversationHistory ?? [])
+    .slice(-MAX_HISTORY_TURNS)
+    .map((turn) => ({ role: turn.role, text: turn.text.slice(0, MAX_HISTORY_TURN_LENGTH) }));
+
+  // Los recortes anteriores cuentan caracteres y el endpoint mide bytes, así que
+  // el peso real solo se conoce ya serializado. Superarlo devolvería un 400 que
+  // descarta la respuesta remota entera: es preferible perder los turnos más
+  // antiguos y conservar la parte reciente de la conversación.
+  let body: InterrogationRequest = { ...base, conversationHistory };
+  while (conversationHistory.length > 0 && bodySizeBytes(body) > MAX_BODY_BYTES) {
+    conversationHistory = conversationHistory.slice(1);
+    body = { ...base, conversationHistory };
+  }
+
+  return body;
 }
 
 /**
