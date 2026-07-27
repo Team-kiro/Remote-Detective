@@ -17,16 +17,16 @@ Frontend y backend se despliegan de forma **completamente independiente**. El fr
 
 1. **Conectar el repositorio en Amplify**
 
-   En la consola de AWS Amplify → *Create new app* → *From Git* → seleccionar `Escarlatus/Remote-Detective` → rama `main`.
+   En la consola de AWS Amplify → *Create new app* → *From Git* → seleccionar `Team-kiro/Remote-Detective` → rama `main`.
 
 2. **Configuración de build**
 
-   El repositorio es un monorepo y la raíz no contiene dependencias, así que hay que apuntar Amplify al paquete del frontend. No hay `amplify.yml` versionado; los ajustes se definen en la consola (*App settings → Build settings*):
-   - Raíz de la app (monorepo app root): `frontend`.
-   - Instalación: `npm ci`.
+   El build está versionado en `amplify.yml` en la raíz del repositorio; Amplify lo detecta automáticamente y no hace falta configurar nada en *App settings → Build settings*:
+   - Raíz de la app: la raíz del repositorio (sin app root de monorepo). Las rutas del archivo son relativas a ella.
+   - Instalación: `npm --prefix frontend ci`.
    - Build: `npm run build` (compila TypeScript y genera el bundle).
-   - Directorio de artefactos: `dist` (relativo al app root `frontend`; usar `frontend/dist` solo si no se configura esa raíz).
-   - Caché de `node_modules` (también relativo al app root) para builds más rápidos.
+   - Directorio de artefactos: `frontend/dist`.
+   - Caché de `frontend/node_modules` para builds más rápidos.
 
 3. **Variables de entorno en Amplify (opcional)**
 
@@ -67,16 +67,17 @@ npm ci
 npm run build
 ```
 
-Esto transpila TypeScript a JavaScript en `backend/dist/`.
+Esto transpila TypeScript a JavaScript en `backend/dist/` y sirve como verificación de tipos. El paquete que se despliega **no** sale de ahí: lo produce `sam build`, que compila y empaqueta con esbuild en un único `handler.js`.
 
 ### Ejecución local con SAM
 
 ```bash
 cd backend
+sam build
 sam local start-api \
   --parameter-overrides \
     AllowedOrigins=http://localhost:5173 \
-    BedrockModelId=anthropic.claude-3-haiku-20240307-v1:0
+    BedrockModelId=us.anthropic.claude-haiku-4-5-20251001-v1:0
 ```
 
 El endpoint queda disponible en `http://localhost:3000/interrogate`. Para que Bedrock responda se necesitan credenciales de AWS válidas con permiso `bedrock:InvokeModel`. Sin ellas el backend devuelve error y el frontend cae al fallback local automáticamente.
@@ -85,8 +86,11 @@ El endpoint queda disponible en `http://localhost:3000/interrogate`. Para que Be
 
 ```bash
 cd backend
+sam build
 sam deploy --guided
 ```
+
+> **`sam build` no es opcional.** Sin él, `sam deploy` comprime `CodeUri` aplicando `.gitignore`, así que `dist/` y `node_modules/` quedan fuera del paquete y la Lambda arranca con `Runtime.ImportModuleError`.
 
 SAM solicita los parámetros interactivamente:
 
@@ -94,8 +98,8 @@ SAM solicita los parámetros interactivamente:
 |---|---|---|
 | Stack name | Nombre del stack CloudFormation | `remote-detective-backend` |
 | AWS Region | Región de despliegue | `us-east-1` |
-| AllowedOrigins | Orígenes CORS permitidos | `https://tu-app.amplifyapp.com,http://localhost:5173` |
-| BedrockModelId | Modelo a invocar | `anthropic.claude-3-haiku-20240307-v1:0` |
+| AllowedOrigins | Orígenes CORS permitidos (sin barra final: el origen se compara exacto) | `https://tu-app.amplifyapp.com,http://localhost:5173` |
+| BedrockModelId | Perfil de inferencia a invocar | `us.anthropic.claude-haiku-4-5-20251001-v1:0` |
 
 SAM guarda los parámetros en `backend/samconfig.toml` (no incluir credenciales en este archivo).
 
@@ -103,7 +107,7 @@ SAM guarda los parámetros en `backend/samconfig.toml` (no incluir credenciales 
 
 ```bash
 cd backend
-npm run build
+sam build
 sam deploy
 ```
 
@@ -112,7 +116,7 @@ sam deploy
 ```bash
 aws cloudformation describe-stacks \
   --stack-name remote-detective-backend \
-  --query "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue" \
+  --query "Stacks[0].Outputs[?OutputKey=='InterrogateApi'].OutputValue" \
   --output text
 ```
 
@@ -122,7 +126,7 @@ Esta URL es el valor de `VITE_API_URL` que se configura en Amplify.
 
 | Recurso | Tipo | Descripción |
 |---|---|---|
-| `InterrogateFunction` | Lambda (Node.js 20) | Handler del endpoint `/interrogate` |
+| `InterrogateFunction` | Lambda (Node.js 24) | Handler del endpoint `/interrogate` |
 | API Gateway REST | API Gateway | Endpoint público con CORS |
 | Rol IAM | IAM Role | Permisos mínimos: `bedrock:InvokeModel` |
 

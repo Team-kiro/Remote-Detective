@@ -229,7 +229,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - Explicar la secuencia lógica del caso, organización de módulos, ejecución independiente de frontend/backend y alcance de tres integrantes/tres días sin revelar metadatos internos en la UI ni añadir funcionalidad fuera de alcance.
     - _Requirements: 21.1-21.4_
 
-- [ ] 8. Checkpoint final de entrega - Ensure all tests pass
+- [x] 8. Checkpoint final de entrega - Ensure all tests pass
   - Ejecutar en modo no interactivo la suite frontend completa, pruebas backend, build TypeScript/Vite y validación de la plantilla SAM.
   - Confirmar que Amplify puede construir y publicar el frontend funcional en modo local con HTTPS aunque el backend no esté disponible, y que la configuración Bedrock conserva fallback local.
   - Confirmar que documentación y artefactos reproducen instalación, pruebas, builds y despliegues aprobados.
