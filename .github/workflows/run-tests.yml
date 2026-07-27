@@ -163,3 +163,27 @@ jobs:
 
       - name: Run backend tests
         run: npm test
+
+      - name: Set up AWS SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      # `sam build` es lo que produce el artefacto real de la Lambda (esbuild
+      # empaqueta src/handler.ts en un solo archivo). Un `npm run build` verde
+      # no dice nada sobre si el paquete desplegable se genera: cuando esta
+      # comprobación faltaba, un despliegue llegó a producción con solo los
+      # .ts dentro y la función arrancaba con Runtime.ImportModuleError.
+      - name: Validate SAM template
+        run: sam validate --lint
+        env:
+          AWS_REGION: us-east-1
+
+      - name: Build SAM package
+        run: sam build
+        env:
+          AWS_REGION: us-east-1
+
+      # El handler configurado en la plantilla debe existir en el artefacto.
+      - name: Verify Lambda artifact
+        run: test -f .aws-sam/build/InterrogateFunction/handler.js

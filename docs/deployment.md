@@ -148,9 +148,11 @@ El archivo `.github/workflows/run-tests.yml` ejecuta automáticamente en cada PR
 | `type-check` | `frontend/` | `npm run typecheck` | TypeScript estricto |
 | `unit-tests` | `frontend/` | `npm run test` | Suite Vitest (no interactivo) |
 | `e2e-tests` | `frontend/` | `npm run test:e2e` | Suite Playwright con Chromium |
-| `backend` | `backend/` | `npm run build && npm test` | Build y suite Jest del Lambda |
+| `backend` | `backend/` | `npm run build && npm test && sam validate --lint && sam build` | Build, suite Jest y empaquetado real del Lambda |
 
 Los cinco jobs corren en paralelo y cada uno instala solo las dependencias de su paquete. Si alguno falla, el PR no puede fusionarse.
+
+El job `backend` termina comprobando que `sam build` genere `.aws-sam/build/InterrogateFunction/handler.js`, el archivo que declara `Handler` en la plantilla. Un `npm run build` verde no dice nada sobre si el paquete desplegable se produce: sin esta comprobación, un despliegue llegó a producción con solo los `.ts` dentro y la función arrancaba con `Runtime.ImportModuleError`.
 
 El CI **no despliega** ni a Amplify ni a SAM; el despliegue es un paso manual o se puede configurar por separado como workflow adicional de Amplify/CloudFormation.
 

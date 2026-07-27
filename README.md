@@ -220,7 +220,7 @@ Pruebas unitarias del handler Lambda, validador, constructor de prompts y client
 
 ### CI automático
 
-GitHub Actions ejecuta lint, type-check, pruebas unitarias y E2E del frontend, más un job independiente que construye y prueba el backend, en paralelo en cada PR a `main` y en cada push a `main`. Ver `.github/workflows/run-tests.yml`.
+GitHub Actions ejecuta lint, type-check, pruebas unitarias y E2E del frontend, más un job independiente que construye el backend, corre su suite Jest y comprueba con `sam validate --lint` y `sam build` que el paquete desplegable de la Lambda se genera. Todo en paralelo en cada PR a `main` y en cada push a `main`. Ver `.github/workflows/run-tests.yml`.
 
 ---
 
