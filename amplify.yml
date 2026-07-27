@@ -1,0 +1,22 @@
+# Build de hosting del frontend en AWS Amplify (rama principal, publicación HTTPS).
+# Solo se instala y compila frontend/: el backend (Lambda/Bedrock) es independiente y
+# su ausencia o fallo nunca puede bloquear este build (requisito 17.7).
+# VITE_API_URL y VITE_INTERROGATION_MODE se inyectan como variables de entorno de la
+# app en Amplify; sin ellas el sitio publicado juega en modo local completo (16.5-16.6).
+# No declarar credenciales aquí.
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm --prefix frontend ci
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: frontend/dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - frontend/node_modules/**/*
