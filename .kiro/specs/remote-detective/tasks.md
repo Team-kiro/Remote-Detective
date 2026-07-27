@@ -216,7 +216,7 @@ Plan incremental para construir el MVP aprobado con React, TypeScript y Vite, ma
     - Ejecutar build y pruebas backend mediante sus scripts reproducibles, sin convertir su disponibilidad en requisito para las pruebas o build del frontend local.
     - _Requirements: 15.7, 16.2-16.6, 17.1-17.7_
 
-- [ ] 7. Preparar Amplify, documentación y artefactos reproducibles de entrega
+- [x] 7. Preparar Amplify, documentación y artefactos reproducibles de entrega
   - [x] 7.1 Configurar build y hosting del frontend en AWS Amplify
     - Crear `amplify.yml` con `npm ci`, `npm run build`, artefactos `dist` y caché de dependencias.
     - Asegurar que configuración local/Bedrock se inyecta por variables y que el frontend publicado queda completamente funcional en modo local aunque el backend falle, no esté desplegado o se retrase.
