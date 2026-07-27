@@ -772,6 +772,17 @@ export const useGameStore = create<GameState>((set, get) => {
 
       // 9. Único commit final atómico sobre el estado más reciente: no repite la
       // pregunta y conserva los mensajes añadidos concurrentemente.
+      //
+      // La declaración la decide el motor local, no el modelo: Bedrock responde
+      // con el contenido canónico pero devuelve `statementId: null` con enorme
+      // frecuencia, y sin declaración registrada no hay nada que contradecir.
+      // Bedrock puede añadir una declaración, nunca borrar la que el motor
+      // determinista ya identificó a partir de la pregunta.
+      const localStatementId = isValidInterrogationResponse(localCandidate, suspect)
+        ? localCandidate.statementId
+        : null;
+      const registeredStatementId = acceptedResponse.statementId ?? localStatementId;
+
       set((state) => {
         if (state.currentRequestId !== reqId) {
           return state;
@@ -781,13 +792,11 @@ export const useGameStore = create<GameState>((set, get) => {
           role: 'suspect',
           text: acceptedResponse.text,
           timestamp: Date.now(),
-          ...(acceptedResponse.statementId === null
-            ? {}
-            : { statementId: acceptedResponse.statementId }),
+          ...(registeredStatementId === null ? {} : { statementId: registeredStatementId }),
         };
         const nextRegisteredStatements = new Set(state.registeredStatements);
-        if (acceptedResponse.statementId !== null) {
-          nextRegisteredStatements.add(acceptedResponse.statementId);
+        if (registeredStatementId !== null) {
+          nextRegisteredStatements.add(registeredStatementId);
         }
 
         return {

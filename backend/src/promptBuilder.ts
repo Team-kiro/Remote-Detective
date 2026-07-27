@@ -17,7 +17,7 @@
 
 import type { SuspectProfile } from './gameData';
 import type { InterrogationGameContext } from './types';
-import { SUSPECT_PROFILES } from './gameData';
+import { STATEMENT_CONTENTS, SUSPECT_PROFILES } from './gameData';
 import type { SuspectId } from './types';
 
 /**
@@ -36,6 +36,15 @@ export function buildSystemPrompt(
     suspect.allowedStatementIds.length > 0
       ? suspect.allowedStatementIds.join(', ')
       : 'ninguno';
+
+  // Sin el contenido de cada declaración el modelo no puede saber cuándo la ha
+  // afirmado, devuelve `null` y el jugador se queda sin nada que contradecir.
+  const statementCatalog =
+    suspect.allowedStatementIds.length > 0
+      ? suspect.allowedStatementIds
+          .map((id) => `- ${id}: "${STATEMENT_CONTENTS[id]}"`)
+          .join('\n')
+      : '- (ninguna)';
 
   const pressure = context.suspectPressure;
   const pressureDesc =
@@ -74,8 +83,11 @@ FORMATO DE RESPUESTA — obligatorio, sin excepciones:
 Responde EXCLUSIVAMENTE con un objeto JSON válido, sin markdown, sin texto adicional:
 {"text":"<tu respuesta en español, máximo 500 caracteres>","statementId":"<uno de [${allowedIds}]>" | null}
 
-Elige statementId solo cuando la respuesta incluya o implique directamente esa declaración.
-Si ningún statementId aplica, usa null.`;
+DECLARACIONES QUE PUEDES REGISTRAR:
+${statementCatalog}
+
+Cuando la pregunta toque el tema de una de esas declaraciones, sostén ese contenido en tu respuesta y devuelve OBLIGATORIAMENTE su statementId; no lo omitas ni respondas con evasivas que lo eviten.
+Usa null solo si ninguna de esas declaraciones aplica al tema de la pregunta.`;
 }
 
 /**

@@ -12,7 +12,7 @@
  */
 
 import { buildSystemPrompt, buildPromptForSuspect } from '../promptBuilder';
-import { SUSPECT_PROFILES } from '../gameData';
+import { SUSPECT_PROFILES, STATEMENT_CONTENTS } from '../gameData';
 import type { InterrogationGameContext } from '../types';
 
 const CONTEXT_EMPTY: InterrogationGameContext = {
@@ -118,6 +118,15 @@ describe('buildSystemPrompt — statementId permitidos', () => {
     expect(prompt).not.toContain('"stmt_daniel_arrival"');
     expect(prompt).not.toContain('"stmt_daniel_office"');
     expect(prompt).not.toContain('"stmt_daniel_substance"');
+  });
+
+  it('describe el contenido de cada declaración permitida', () => {
+    for (const suspectId of ['daniel', 'elena', 'roberto', 'sofia'] as const) {
+      const prompt = buildSystemPrompt(SUSPECT_PROFILES[suspectId], CONTEXT_EMPTY);
+      for (const id of SUSPECT_PROFILES[suspectId].allowedStatementIds) {
+        expect(prompt).toContain(`${id}: "${STATEMENT_CONTENTS[id]}"`);
+      }
+    }
   });
 
   it('el prompt de roberto solo menciona stmt_roberto_knowledge como statementId', () => {

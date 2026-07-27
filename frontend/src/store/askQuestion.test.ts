@@ -177,6 +177,36 @@ describe('askQuestion: contrato de Bedrock y fallback', () => {
     startActiveCall();
   });
 
+  it('registra la declaración local cuando Bedrock devuelve statementId nulo', async () => {
+    enableBedrock();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve(
+          jsonResponse({ text: 'Llegué a las 20:50 con Roberto.', statementId: null }),
+        ),
+      ),
+    );
+
+    await useGameStore.getState().askQuestion(DANIEL_ARRIVAL_QUESTION);
+
+    const state = useGameStore.getState();
+    expect(state.callHistory.daniel[1]?.text).toBe('Llegué a las 20:50 con Roberto.');
+    expect(state.registeredStatements.has('stmt_daniel_arrival')).toBe(true);
+  });
+
+  it('no inventa declaración si tampoco la tiene la candidata local', async () => {
+    enableBedrock();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.resolve(jsonResponse({ text: 'No sé nada de eso.', statementId: null }))),
+    );
+
+    await useGameStore.getState().askQuestion(UNKNOWN_QUESTION);
+
+    expect(useGameStore.getState().registeredStatements.size).toBe(0);
+  });
+
   it('acepta una respuesta remota que cumple el contrato completo', async () => {
     enableBedrock();
     const fetchSpy = vi.fn(() =>

@@ -724,7 +724,7 @@ El jugador puede arrastrar evidencia sobre una declaración SIN terminar la llam
 
 ### Declaraciones como Tarjetas
 
-1. Cuando `askQuestion` acepta una respuesta con `statementId` válido → se registra internamente en `registeredStatements`.
+1. Cuando `askQuestion` acepta una respuesta con `statementId` válido → se registra internamente en `registeredStatements`. Si la respuesta aceptada trae `statementId: null`, se registra el de la candidata local válida: la declaración la decide el motor determinista y Bedrock solo puede añadirla, nunca borrarla.
 2. Aparece tarjeta canónica en panel inferior con `StatementDef.canonicalText`.
 3. Solo tarjetas registradas son zonas de drop válidas.
 4. Texto dinámico de Bedrock aparece en historial de chat; contradicciones se evalúan contra IDs canónicos.
