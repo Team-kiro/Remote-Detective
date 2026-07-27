@@ -20,7 +20,7 @@ Este documento describe la organización de los módulos de datos del caso y la 
 
 ---
 
-## Sospechosos (`src/data/suspects.ts`)
+## Sospechosos (`frontend/src/data/suspects.ts`)
 
 Cuatro sospechosos, cada uno con un perfil completo que incluye coartada, hechos verdaderos, mentira principal, secreto, conocimientos y desconocimientos.
 
@@ -29,13 +29,13 @@ Cuatro sospechosos, cada uno con un perfil completo que incluye coartada, hechos
 | `daniel` | Daniel Rivas | Socio financiero, 48 años | Afirma llegar a las 20:50 con Roberto. **Miente:** su tarjeta de acceso registra entrada a las 19:30. |
 | `elena` | Elena Vargas | Socia de operaciones, 45 años, exesposa | Afirma llegar después de las 21:00. **Miente:** su tarjeta registra entrada a las 20:45. |
 | `roberto` | Roberto Mendoza | Socio de tecnología, 50 años, amigo cercano de Marcos | Llegó a las 20:50. Coartada verificada por el registro. |
-| `sofia` | Sofía Castro | Socia de marketing, 38 años | Estuvo en el edificio a las 19:38 y 20:55. Dice no haber visto a nadie a las 19:40. **Miente:** la cámara la muestra observando a Daniel. |
+| `sofia` | Sofía Castillo | Socia comercial, 38 años | Estuvo en el edificio a las 19:38 y 20:55. Dice no haber visto a nadie a las 19:40. **Miente:** la cámara la muestra observando a Daniel. |
 
 > Los campos `_internal` del tipo `SuspectDef` (relevancia narrativa, sospechosos relacionados) son **Metadatos_Internos** que nunca se exponen en la UI.
 
 ---
 
-## Evidencias (`src/data/evidence.ts`)
+## Evidencias (`frontend/src/data/evidence.ts`)
 
 Seis evidencias disponibles desde el inicio de la partida. La UI muestra: nombre, imagen/placeholder, categoría, descripción e información observable. Los metadatos internos (`_internal`) solo los leen los motores.
 
@@ -50,7 +50,7 @@ Seis evidencias disponibles desde el inicio de la partida. La UI muestra: nombre
 
 ---
 
-## Declaraciones (`src/data/statements.ts`)
+## Declaraciones (`frontend/src/data/statements.ts`)
 
 Declaraciones predefinidas con identificadores únicos. Solo las declaraciones con un `statementId` válido participan en el sistema de contradicciones. Cada sospechoso tiene al menos las declaraciones necesarias para descubrir sus contradicciones.
 
@@ -65,7 +65,7 @@ Declaraciones predefinidas con identificadores únicos. Solo las declaraciones c
 
 ---
 
-## Contradicciones (`src/data/contradictions.ts`)
+## Contradicciones (`frontend/src/data/contradictions.ts`)
 
 Seis contradicciones predefinidas. Tres pertenecen a Daniel Rivas; una a cada uno de los otros sospechosos. La UI permite arrastrar una evidencia sobre una declaración; el `contradictionEngine` evalúa el par.
 
@@ -80,7 +80,7 @@ Seis contradicciones predefinidas. Tres pertenecen a Daniel Rivas; una a cada un
 
 ---
 
-## Solución narrativa (`src/data/solution.ts`)
+## Solución narrativa (`frontend/src/data/solution.ts`)
 
 ```typescript
 const SOLUTION = {
@@ -118,7 +118,7 @@ Alternativamente, al descubrir las tres contradicciones obligatorias de Daniel c
 
 ---
 
-## Módulo de respuestas locales (`src/data/localResponses.ts`)
+## Módulo de respuestas locales (`frontend/src/data/localResponses.ts`)
 
 Banco de respuestas deterministas por sospechoso. Cada respuesta incluye:
 
@@ -134,7 +134,7 @@ Cada sospechoso tiene al menos 5 respuestas principales + 1 respuesta genérica 
 
 ---
 
-## Reglas de puntuación (`src/data/scoringRules.ts`)
+## Reglas de puntuación (`frontend/src/data/scoringRules.ts`)
 
 | Evento | Puntos |
 |---|---|
@@ -156,4 +156,4 @@ Los siguientes campos **nunca se muestran en la UI**:
 | `Contradiction` | *(tabla interna completa)* | `contradictionEngine` y `confessionEngine` |
 | `NarrativeSolution` | `culpritId`, `motiveId`, etc. | `accusationEngine` y `confessionEngine` |
 
-La UI accede a los datos de evidencias y sospechosos exclusivamente a través de `src/data/viewModels.ts`, que expone solo los campos visibles.
+La UI accede a los datos de evidencias y sospechosos exclusivamente a través de `frontend/src/data/viewModels.ts`, que expone solo los campos visibles.
