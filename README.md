@@ -79,7 +79,7 @@ El backend requiere las siguientes variables de entorno en tiempo de ejecución 
 | Variable | Fuente | Descripción |
 |---|---|---|
 | `ALLOWED_ORIGINS` | Parámetro SAM | Lista de orígenes CORS separados por coma |
-| `BEDROCK_MODEL_ID` | Parámetro SAM | ID del modelo a invocar (por defecto `anthropic.claude-3-haiku-20240307-v1:0`) |
+| `BEDROCK_MODEL_ID` | Parámetro SAM | ID del modelo a invocar (por defecto `us.anthropic.claude-haiku-4-5-20251001-v1:0`) |
 | `AWS_REGION` | Inyectado por Lambda | Región de AWS; no declarar en `template.yaml` |
 
 ---
