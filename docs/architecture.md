@@ -207,14 +207,14 @@ Content-Type: application/json
 
 {
   "suspectId": "daniel" | "elena" | "roberto" | "sofia",
-  "question": "string (≤300 caracteres)",
+  "question": "string (1..300 caracteres)",
   "gameContext": {
     "discoveredContradictionIds": "ContradictionId[]",
     "suspectPressure": "number (finito, >= 0)"
   },
   "conversationHistory": [
     { "role": "player" | "suspect", "text": "string (1..500)" }
-  ] // opcional, máximo 8 turnos
+  ] // opcional, máximo 8 turnos previos (sin la pregunta actual), ordenados del más antiguo al más reciente
 }
 
 → 200 { "text": "string (1..500)", "statementId": "StatementId | null" }
