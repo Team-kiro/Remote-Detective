@@ -9,7 +9,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@aws-sdk/client-bedrock-runtime": "3.614.0",
+    "@aws-sdk/client-bedrock-runtime": "3.1097.0",
     "esbuild": "0.25.0"
   },
   "devDependencies": {
